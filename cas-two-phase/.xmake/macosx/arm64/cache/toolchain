@@ -1,0 +1,32 @@
+{
+    ["tool_target_cas-two-phase_macosx_arm64_cxx"] = {
+        toolname = "clang",
+        toolchain_info = {
+            name = "xcode",
+            plat = "macosx",
+            arch = "arm64",
+            cachekey = "xcode_arch_arm64_plat_macosx"
+        },
+        program = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+    },
+    xcode_arch_arm64_plat_macosx = {
+        plat = "macosx",
+        xcode_sysroot = "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX14.5.sdk",
+        xcode = "/Applications/Xcode.app",
+        bindir = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+        __global = true,
+        xcode_sdkver = "14.5",
+        target_minver = "14.5",
+        arch = "arm64"
+    },
+    ["tool_target_cas-two-phase_macosx_arm64_ld"] = {
+        toolname = "clangxx",
+        toolchain_info = {
+            name = "xcode",
+            plat = "macosx",
+            arch = "arm64",
+            cachekey = "xcode_arch_arm64_plat_macosx"
+        },
+        program = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
+    }
+}
