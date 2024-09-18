@@ -1,0 +1,66 @@
+% Deckblatt
+
+\begin{titlepage}
+    \newgeometry{top=2cm, bottom=2.5cm, left=2.5cm, right=2cm}
+    
+    \ifnum\value{documentfakultaet}=0
+    	\definecolor{strich}{cmyk}{0,.97,.92,.11} % Bau-Wasser-Boden
+    \fi\ifnum\value{documentfakultaet}=1
+    	\definecolor{strich}{rgb}{0,.62,.89} % Informatik
+    \fi
+    
+    \definecolor{text}{cmyk}{1,.55,0,.53} 
+    %\hfill
+    \begin{flushleft}
+    \includegraphics[scale=0.9]{Bilder/ostfalia_logo2.png}\\
+    %\vspace{2em}
+    \color{strich} 
+    \hspace{24mm}\rule{70mm}{0.25mm}\\
+    \hspace{24mm}\Large
+    \textsf{Fakultät
+        \ifnum\value{documentfakultaet}=0
+	    	Bau-Wasser-Boden
+	    \fi\ifnum\value{documentfakultaet}=1
+	    	Informatik
+	    \fi
+	}
+    \end{flushleft}
+    
+    \begin{flushleft}
+         \vspace{3em}
+         {\large\textsf{\textbf{\documentname, Matrikelnummer \documentmanr}}}\\
+         \vspace{3em}
+         \setstretch{2.2}
+        {\color{text}\fontsize{28}{32}{\textsf{\documenttitle}}}\\
+        \onehalfspacing
+        \vspace{4em}
+        {\color{black}\large\textsf{Abschlussarbeit zur Erlangung des Hochschulgrades\\
+        Bachelor of Science\\
+        \ \\
+        im Studiengang {\documentstudiengang} an der\\
+        Ostfalia Hochschule für angewandte Wissenschaften\\
+        – Hochschule Braunschweig/Wolfenbüttel\\
+        \color{strich}
+        \hrulefill\\
+        \ \\\color{black}
+        Betreuer: \documentbetreuer
+        \ \\
+        \ \\
+        }}
+        
+    \end{flushleft}
+    \begin{flushright}
+    %\vspace{14em}
+    \vfill
+    \color{text}\small\textsf{
+		\ifnum\value{documentfakultaet}=0
+    		Salzgitter $ \cdot $ \textbf{Suderburg} $ \cdot $ Wolfenbüttel $ \cdot $ Wolfsburg
+    	\fi\ifnum\value{documentfakultaet}=1
+    		Salzgitter $ \cdot $ Suderburg $ \cdot $ \textbf{Wolfenbüttel} $ \cdot $ Wolfsburg
+    	\fi
+    } 
+    \end{flushright}
+    
+\end{titlepage}
+
+\restoregeometry

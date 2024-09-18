@@ -1,0 +1,111 @@
+\documentclass[
+		11pt,
+		a4paper, 
+		oneside, % twoside use two sided for book layout
+		% openany,
+		toc=listofnumbered,
+		toc=bibliography, 
+		toftofoc,
+		headings=small,
+		headings=twolineappendix,
+		numbers=noenddot
+]{scrbook}
+\usepackage[utf8]{inputenc}
+
+\newif\ifdraft
+\drafttrue % Sagt aus, dass dieses Dokument ein Entwurf ist. Somit wird todonotes aktiviert. Zum deaktivieren diese Zeile auskommentieren oder auf \draftfalse setzen.
+
+\input{Meta/commands}
+\input{Meta/header}
+\input{Meta/silbentrennung}
+
+\begin{document}	
+	\listoftodos
+	% \input{deckblatt}
+	\input{deckblatt_neu}
+	
+	\frontmatter
+	\pagenumbering{Roman}
+	
+	\ifnum\value{documentfakultaet}=1
+		\input{erklaerung}
+		\markboth{Erklärung}{}
+	\fi
+	
+	\input{Vorwort.tex}
+	
+	% disable header
+	\fancyhead[L]{\chaptermark}  % L -> Left part
+	\fancyhead[RO]{\chaptermark} % RO -> Right part on Odd pages
+	
+	\pagestyle{plain}
+	\tableofcontents % Inhaltsverzeichnis
+	\listoffigures % Abbildungsverzeichnis
+	\listoftables % Tabellenverzeichnis
+	\input{abkuerzungsverzeichnis}
+	
+	\mainmatter
+	
+	% reanable header
+	\fancyhf{}
+	\rhead{\nouppercase\rightmark}
+	\lhead{\nouppercase\leftmark}
+	
+	\fancypagestyle{plain}{}
+	\fancyhead[LE]{\chaptermark} % Chapter in header Left
+	\fancyhead[RE]{\chaptermark} % Page number in header Right
+	\fancyfoot[LE]{\thepage}     % LE -> Left part on Even pages
+	\fancyfoot[RO]{\thepage}     % RO -> Right part on Odd pages
+	
+	% reset list of used acronyms
+	\acresetall
+	
+	\pagestyle{fancy}
+	% Kapitel hier einfügen
+	\input{./chapters/00/Einleitung-und-Motivation}
+	\input{./chapters/theorie/Compiler-Uebersicht}
+	\input{./chapters/theorie/TopDownCompiler}
+	\input{./chapters/theorie/ZweipassCompiler}
+	\input{./chapters/theorie/ParserEbnf}
+	\input{./chapters/theorie/Zwischensprache}
+	\input{./chapters/theorie/RiscBackend}
+	\input{./chapters/umsetzung/Planung-Des-Compilers}
+	\input{./chapters/umsetzung/ParserBauen}
+	\input{./chapters/umsetzung/ZwischenspracheBauen}
+	\input{./chapters/umsetzung/BackendBauen}
+	\input{./chapters/umsetzung/RiscInterpreterBauen}
+	\input{./chapters/fazit/Ergebnisse}
+	\input{./chapters/fazit/ThunderDome}
+	\input{./chapters/99/Schluss-und-Fazit}
+
+
+	\interlinepenalty10000
+	\bibliographystyle{dinat} 
+	\bibliography{literature.bib}
+	
+	\ifnum\value{documentfakultaet}=0
+		\input{erklaerung}
+		\markboth{Erklärung}{}
+	\fi
+	
+    \addtocontents{toc}{\cftpagenumbersoff{chapter}} % Keine Seitenzahl im Inhaltsverzeichnis
+	\begin{appendices}              % Anhang Titel-Seite
+	\end{appendices}
+	\fancyfoot[R] {\thepage}        % Seitenzahl Right
+	\appendix
+	
+	% hide tables and images from table of contents
+	\let\svaddcontentsline\addcontentsline
+	\renewcommand\addcontentsline[3]{
+		\ifthenelse{\equal{#1}{lof}}{}{
+			\ifthenelse{
+				\equal{#1}{lot}}{}{\svaddcontentsline{#1}{#2}{#3}
+			}
+		}
+	}
+	
+	\input{Anhang/Anhang.tex}
+	
+	\postappendix
+	
+\end{document}

@@ -1,0 +1,50 @@
+% Deckblatt
+
+\begin{titlepage}
+	\newgeometry{top=2cm, bottom=3.5cm, left=1.5cm, right=1.5cm}
+	
+	\hfill
+	\includegraphics[scale=1]{Bilder/OF_Logo_de_B.jpg}
+	
+	\begin{center}
+	 	\vfil
+	 	
+		{\Huge\textbf{\textsf{\documenttitle}}}
+		
+		\vspace{2em}
+		
+		{\LARGE\textbf{\textsf{Seminararbei im Modul ...\documentmodul}}}
+		
+		\vspace{4em}
+		
+		{\Large\textsf{vorgelegt der Fakultät 
+   			\ifnum\value{documentfakultaet}=0
+				Bau-Wasser-Boden
+			\fi\ifnum\value{documentfakultaet}=1
+				Informatik
+			\fi
+		}}
+		
+		{\Large\textsf{im}}
+		
+		{\Large\textsf{Studiengang \documentstudiengang}}
+		
+		{\Large\textsf{von}}
+	
+		{\Large\textsf{\documentname}}
+
+		{\Large\textsf{Matrikelnummer \documentmanr}}
+
+		\vfil
+
+		{\Large\textsf{Betreuerin/Betreuer: \documentbetreuer}}
+		
+		\vfil
+		
+		{\Large\textsf{Sommer-/Wintersemester \documentsemester}}
+		
+		\enlargethispage{10\baselineskip}
+	\end{center}	
+\end{titlepage}
+
+\restoregeometry

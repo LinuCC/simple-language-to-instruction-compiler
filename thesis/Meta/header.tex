@@ -1,0 +1,177 @@
+% In diesem Dokument werden die globalen \usepackage{}-Befehle eingefügt.
+% Definition des Seitestils (Ränder, Schriftart, Abstände, usw.)
+
+\usepackage[
+		top=2.5cm, 
+		bottom=2cm, 
+		left=3cm, 
+		right=2cm,
+		includeheadfoot
+]{geometry}
+
+\usepackage[ngerman]{babel}
+\selectlanguage{ngerman}
+\usepackage[scaled]{uarial}     % Schriftart Arial
+\usepackage[T1]{fontenc}        % bessere und richtige Schriftausgabe
+
+% here for tables
+\usepackage{here}
+
+% appendix
+\usepackage[toc,page]{appendix}
+\renewcommand\appendixpagename{Anhang}
+\renewcommand\appendixtocname{Anhang}
+
+% chapter 14pt, section 12pt, subsection 11pt
+\setkomafont{chapter}{\normalfont\bfseries\fontsize{14}{16.8}\selectfont}   
+\setkomafont{section}{\normalfont\bfseries\fontsize{12}{14.4}\selectfont}   
+\setkomafont{subsection}{\normalfont\bfseries\selectfont}     
+
+\usepackage{etoolbox}
+\makeatletter
+% No breake in chapter
+\patchcmd{\@@makechapterhead}{\endgraf\nobreak\vskip.5\baselineskip}{}{}{}
+
+
+\let\my@chapter\@chapter
+\renewcommand*{\@chapter}{%
+	\addtocontents{lof}{\protect\addvspace{0pt}}%
+	\my@chapter}
+
+\makeatother
+
+\setuptoc{toc}{totoc}		% Inhaltsverzeichnis im Inhaltsverzeichnis
+
+\usepackage[titles]{tocloft} % Anhang im Inhaltsverzeichnis
+
+% Abstand Chapter
+\renewcommand*{\chapterheadstartvskip}{\vspace*{-\baselineskip}}
+\renewcommand*{\chapterheadendvskip}{\vspace*{10pt}}
+
+% durchgehende nummerierung bei Tabellen und Bildern
+\usepackage{chngcntr}
+\counterwithout{figure}{chapter}
+\counterwithout{table}{chapter}
+
+% Prefixe von Abbildungen und Tabellen
+\addto\captionsngerman{\renewcommand{\figurename}{Abb.}}
+\addto\captionsngerman{\renewcommand{\tablename}{Tab.}}
+\renewcommand{\cftfigpresnum}{\figurename\ }
+\renewcommand{\cfttabpresnum}{\tablename\ }
+
+% Abstand zwischen Nummer und Name von Abbildungen und Tabellen in Verzeichnissen
+\newlength{\mylenf}
+\settowidth{\mylenf}{\cftfigpresnum}
+\setlength{\cftfignumwidth}{\dimexpr\mylenf+1.5em}
+\setlength{\cfttabnumwidth}{\dimexpr\mylenf+1.5em}
+
+% Einrückung in Tabellen- und Abbildungsverzeichnis aufheben
+\renewcommand{\cfttabindent}{0em}
+\renewcommand{\cftfigindent}{0em}
+
+
+\usepackage[bottom]{footmisc} % Fußnoten nach unten stellen
+
+\setlength{\parindent}{0em} % Absatzeinrückung
+\setlength{\parskip}{0.5em}  % Absatzeinrückung
+
+%1,5 facher Zeilenabstand
+\usepackage{setspace}
+\onehalfspacing			
+
+% Grafiken einbinden
+\usepackage{graphicx}
+
+% mainmatter erweitern
+% Kpfzeile auf auf seiten mit Kapitelstart
+\newcommand{\oldmainmatter}{}
+\let\oldmainmatter\mainmatter
+\renewcommand{\mainmatter}{\oldmainmatter \renewcommand{\chapterpagestyle}{fancy}}
+
+% Kopf und Fußzeilen
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\setlength{\headheight}{14.5pt}
+\setlength{\headsep}{0.7cm}
+\fancyhf{}
+\rhead{\nouppercase\rightmark}
+\lhead{\nouppercase\leftmark}
+\rfoot{Seite \thepage}
+
+% Split too long urls
+\usepackage{url}
+\def\UrlBreaks{\do\/\do-}
+
+% Literature
+\usepackage{csquotes}
+\usepackage[square,numbers]{natbib} % Natbib für DINAT
+
+% PDF Einstellungen
+\usepackage[pdftex, pdfborder={0 0 0}]{hyperref}
+\hypersetup{
+	pdfauthor={\documentname\ \documentmanr},
+	pdftitle={\documenttitle}
+	pdfkeywords={Betreuer:\ \documentbetreuer}
+}
+
+% Besseres Aussehen in PDF
+\usepackage{lmodern}
+
+% Anhang zusätzliche einstllungen:
+% Nummerierung ändern:
+\usepackage{ifthen}
+
+\newcommand{\oldappendix}{}
+\let\oldappendix\appendix
+\renewcommand{\appendix}{
+	
+	\oldappendix
+	\newcommand{\oldchapter}{}
+	\let\oldchapter\chapter
+	\renewcommand{\chapter}[2][]{
+		\ifthenelse{\equal{##1}{}}  {
+			\oldchapter{##2}
+		}{
+			\oldchapter[##1]{##2}
+		}    		% if title given
+		\setcounter{page}{1}
+	}    
+	    
+	\renewcommand{\thepage}{\Alph{chapter} \arabic{page}}
+	
+	%\cftaddtitleline{toc}{chapter}{\appendixname}{}
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+	\hypersetup{bookmarksdepth=-1}
+	%\renewcommand*{\autodot}{:}% Doppelpunkt nur im Anhang
+	
+	% reset counters
+	\setcounter{figure}{0}
+	\setcounter{table}{0}
+	
+	% Switch to Alph numbering
+	\renewcommand{\thefigure}{\Alph{figure}}
+	\renewcommand{\thetable}{\Alph{table}}
+}
+
+\newcommand{\postappendix}{
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{3}}
+	\hypersetup{bookmarksdepth=3}
+}
+
+
+% Todo package ein- und ausschalten
+\ifdraft
+	\usepackage{todonotes}
+\else
+	\usepackage[disable]{todonotes}
+\fi
+
+% Abkürzungsverzeichnis
+\usepackage[printonlyused]{acronym}
+
+% Ränder testen
+% \usepackage{showframe} % Auskommentieren, um die Layoutgrenzen anzuzeigen
+
+% Testtexte
+% \usepackage{lipsum}
+\usepackage{blindtext}
