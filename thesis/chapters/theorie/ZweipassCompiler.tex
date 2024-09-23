@@ -1,4 +1,54 @@
 \chapter{Der Compiler im Zweipass Verfahren}
-\label{chap:theory:twopassCompiler}
+\label{chap:theory:zweipassCompiler}
 
-Aufbau und Details zum Zweipass Verfahren
+Historisch wurde der Mehrpass-Compiler dem Einpass-Compiler vorgezogen, da das Unterteilen der Einzelschritte in mehreren Programmteilen die Nutzung von Arbeitsspeicher verringerte und das Compilieren von komplexen Programmiersprachen ermöglichte.
+Mit den Verbesserungen an Hard- und Software ist beides kein Problem mehr.
+Deswegen wird dem Mehrpass-Compiler entweder der Einpass-Compiler oder eine spezielle Variante des Mehrpass-Compilers, der Zweipass-Compiler, heutzutage vorgezogen\cite{mossenbock:2024}.\\
+Im Zweipass-Compiler werden die Phasen des Compilers in zwei Programmteile gruppiert.
+Der erste Teil, das Frontend des Compilers, überprüft den Programmcode auf Syntax und Semantik;
+Aus diesen Informationen wird eine Zwischensprache generiert, die den Programmcode in einer internen Darstellung abbildet.
+Der zweite Teil, das Backend, liest die Zwischensprache ein und generiert daraus Maschinencode.\\
+
+\begin{figure}[H]
+  \begin{tikzpicture}
+  \sffamily
+    \node[minimum height=1.5cm,minimum width=2cm,text centered,draw] (cppfrontend){C++ Frontend}
+    \node[above=1cm of cppfrontend, minimum height=1.5cm,minimum width=2cm,text centered,draw] (pascalfrontend){Pascal Frontend}
+    \node[right=2cm of {$(cppfrontend)!0.5!(pascalfrontend)+(0,0.25)$}, minimum height=1.5cm,minimum width=2cm,text centered,draw] (state){Zwischensprache}
+    \node [title,left=0.75cm of pascalfrontend, text width=2.5cm](pascalcode){Pascal\\
+    Programmcode}
+    \node [title,left=0.75cm of cppfrontend, text width=2.5cm](cppcode){C++\\
+    Programmcode}
+    \node [title,above=0.33cm of pascalfrontend](frontendstitle){Frontends}
+    \node[above=1cm of pascalfrontend, fit={(pascalfrontend)($(cppfrontend.south)+(0,-1)$)},minimum width=2cm,draw=black!50] (frontendsbox)
+    \node[right=4cm of pascalfrontend, minimum height=1.5cm,minimum width=2.5cm,text centered,draw] (riscbackend){RISC Backend}
+    \node[below right=1cm and 4cm of pascalfrontend, minimum height=1.5cm,minimum width=2.5cm,text centered,draw] (x86backend){X86 Backend}
+    \node [title,above=0.33cm of riscbackend](backendstitle){Backends}
+    \node[above=1cm of riscbackend, fit={(riscbackend)($(x86backend.south)+(0,-1)$)},minimum width=2cm,draw=black!50] (backendsbox)
+    \node [title,right=0.75cm of riscbackend, text width=2cm](riscbinary){RISC\\
+    Maschinencode}
+    \node [title,right=0.75cm of x86backend, text width=2cm](x86binary){X86\\
+    Maschinencode}
+    \node[above=1cm of pascalfrontend, fit={(frontendsbox)($(backendsbox.southeast)+(0, -4.25)$)},minimum width=2cm,draw=black!50] (compilerbox)
+    \node [title,above=2.5cm of state](compilertitle){Compiler}
+    \umltrans[arg=]{pascalcode}{pascalfrontend}
+    \umltrans[arg=]{cppcode}{cppfrontend}
+    \umltrans[arg=]{riscbackend}{riscbinary}
+    \umltrans[arg=]{x86backend}{x86binary}
+    \umlVHtrans[arg=]{cppfrontend}{state}
+    \umlVHtrans[arg=]{pascalfrontend}{state}
+    \umlHVtrans[arg=]{state}{riscbackend}
+    \umlHVtrans[arg=]{state}{x86backend}
+  \end{tikzpicture}
+  \caption{Flexibler Zweipass-Compiler mit mehreren möglichen Frontends und Backends}
+\end{figure}
+
+Dieser Aufbau bietet einige Vorteile gegenüber dem Einpass-Compiler:\\
+Zum einen können bei gleicher Zwischensprache mehrere Varianten von Frontend und Backend gebaut und benutzt werden;
+So kann man zum Beispiel eine andere Variante des Backends schreiben, um eine Programmiersprache in zwei unterschiedliche Prozessorarchitekturen zu übersetzen, ohne das Parsen nochmals zu schreiben.
+Das gleiche gilt auch für die einzulesenden Programmiersprachen, die mit unterschiedlichen Frontends geparst und mit dem gleichen Backend zu Maschinencode verarbeitet werden.\\
+Zum anderen ist die Zwischensprache ein guter Punkt um Optimierungen am der Struktur, Speichernutzung und so weiter vorzunehmen.
+Diese generellen Optimierungen können dann noch von Backends um Optimierungen, die für die Prozessorarchitektur spezifisch sind, erweitert werden.\\
+Da die Optimierung von Programmcode ein wichtiger Teil von modernen Compilern ist, sind diese überwiegend Zweipass-Compiler\cite{mossenbock:2024}.\\
+
+Der in dieser Arbeit behandelte Compiler SLICC verwendet das Zweipass-Verfahren um mehrere Ausgaben zu unterstützen und zukünftige Optimierungen zu ermöglichen.

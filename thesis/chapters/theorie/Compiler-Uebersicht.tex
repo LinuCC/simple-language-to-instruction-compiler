@@ -9,7 +9,7 @@
   \item Compiler Historie
   \item Einleitung zu den detaillierteren Beschreibungen:
   \begin{itemize}
-    \item Arten von Compilern 
+    \item [x] Arten von Compilern 
     \begin{itemize}
     \item[->] Spaeter genauer erklaert: Top-Down Compiler
     \end{itemize}
@@ -34,6 +34,7 @@
     \begin{itemize}
       \item[->] Passiert hier nicht, zu komplex und wild
     \end{itemize}
+    \item Referenz auf SLICC, meinen Kompiler
   \end{itemize}
 \end{itemize}
 
@@ -68,16 +69,23 @@ Sie vereinfachten die Implementierung von Programmen in domänenspezifischen Pro
 Heutzutage gibt es eine große Bandbreite an Programmen, die Compiler genannt werden.
 Der Compiler im klassischen Sinne übersetzt in Programmiersprachen geschriebenen Programmcode in Maschinencode.
 Die ``Cross-Compiler'' hingegen übersetzen von einer Programmiersprache in eine andere Programmiersprache.
-Zusätzlich dazu gibt es Compiler (oder auch ``compiler-ähnliche Werkzeuge'') die auf ganz anderen Datenstrukturen arbeiten und zum Beispiel Logdateien in Tabellen kompilieren\cite{mossenbock:2024}.
+Zusätzlich dazu gibt es Compiler (oder auch ``compiler-ähnliche Werkzeuge'') die auf ganz anderen Datenstrukturen arbeiten und zum Beispiel Logdateien in Tabellen kompilieren.
 Im Rahmen dieser Arbeit wird der klassische Compiler behandelt, mit dem eine Programmiersprache zu einer Maschinensprache kompiliert wird.\\
+Generell gibt es zwei Möglichkeiten, wie diese Compiler aufgebaut werden.
+In dem Einpass-Compiler wird der Programmcode in Teilen (Tokens) eingelesen, welche sofort ausgewertet werden.
+Ein Token wird eingelesen, geparst und der entsprechende Maschinencode wird generiert.
+Dann fährt der Einpass-Compiler mit den nächsten Tokens fort, bis das Ende des Programmcodes erreicht ist.\\
+Der Mehrpass-Compiler hingegen liest anfangs den gesamten Programmcode ein und parst ihn mithilfe von mehreren Programmteilen, wo der letzte den Maschinencode ausgibt\cite{mossenbock:2024}.\\
 Diese Compiler haben generell 6 Phasen, in denen sie arbeiten:\\
-Die *Lexikalische Analyse* unterteilt das Programm in Tokens, die Einheiten wie Variablennamen oder Operationszeichen aufteilen.\\
+Die Lexikalische Analyse unterteilt das Programm in Tokens, die Einheiten wie Variablennamen oder Operationszeichen aufteilen.\\
 Diese Tokens werden dann an die Syntaxanalyse geschickt, wo mithilfe grammatikalischer Regeln die Struktur des Programmcodes überprüft wird.
 Die Definition dieser Regeln zusammen mit dem Interpretieren der Tokens wird Parser genannt.
 Der Parser ordnet die einzelnen Tokens mitsamt der Regeln in eine Baumstruktur ein.
 Es gibt zwei grundlegende Arten von Parsern im Compilerbau;
-Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter, während der Bottom-Up Parser mit den einzelnen Tokens anfängt und diese zusammenfasst um zu einem Syntax Baum zu kommen\cite{meduna2007elements}.
+Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter, während der Bottom-Up Parser mit den einzelnen Tokens anfängt und diese zusammenfasst um einen Syntax Baum zu generieren\cite{meduna2007elements}.
 
 \textbf{\textit{Bild Top Down vs Bottom Up Tree}}
 
-Nach dem Parsen wird eine semantische Analyse auf dem Syntaxbaum ausgeführt, etc etc etc
+Nach dem Parsen wird eine semantische Analyse auf dem Syntaxbaum ausgeführt, wo zum Beispiel die Typen von Variablen überprüft werden.
+Wird einer Variable von Typ ``int'' inkorrekterweise ein Wert vom Type ``string'' zugewiesen wird das in der semantischen Analyse als Fehler aufgezeigt.
+Nach diesen Schritten 
