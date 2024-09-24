@@ -13,9 +13,9 @@
     \begin{itemize}
     \item[->] Spaeter genauer erklaert: Top-Down Compiler
     \end{itemize}
-    \item Compilerphasen
+  \item [x] Compilerphasen
     \begin{itemize}
-      \item Einpass vs Mehrpass vs Zweipass zur Trennung Frontend <-> Backend
+      \item [x] Einpass vs Mehrpass vs Zweipass zur Trennung Frontend <-> Backend
       \item[->] Spaeter genauer erklaert: Zweipass Compiler fuer separate Backends \& zukuenftige Optimierungsschritte
     \end{itemize}
     \item Parser: Arten (EBNF etc)
@@ -61,7 +61,7 @@ Da ein Interpreter selbst auf dem Computer ausgeführt werden muss, führt dies 
 Die ersten Compiler wurden geschrieben, um dieses Problem zu lösen.
 Sie übersetzten die vom Programmierer geschriebenen Befehlslisten in für die Prozessorarchitektur des Computers verständliche Instruktionen.
 Die Compiler übernahmen mit der Zeit weitere Aufgaben wie Speicherzugriffsoptimierungen und dynamische Speicherallokation.
-Verschiedene Programmiersprachen abstrahieren die Prozessorarchitektur weiter.
+Verschiedene Programmiersprachen abstrahierten die Prozessorarchitektur weiter.
 Sie vereinfachten die Implementierung von Programmen in domänenspezifischen Problemen wie Handel und Forschung und verbreiteten sich später mit dem Aufkommen von Allzweck-Programmiersprachen auch darüber hinaus\cite{calingaert:1979}.
 
 \section{Aufbau eines Compilers}
@@ -86,6 +86,15 @@ Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann d
 
 \textbf{\textit{Bild Top Down vs Bottom Up Tree}}
 
-Nach dem Parsen wird eine semantische Analyse auf dem Syntaxbaum ausgeführt, wo zum Beispiel die Typen von Variablen überprüft werden.
-Wird einer Variable von Typ ``int'' inkorrekterweise ein Wert vom Type ``string'' zugewiesen wird das in der semantischen Analyse als Fehler aufgezeigt.
-Nach diesen Schritten 
+Nach dem Parsen der Tokens wird eine semantische Analyse auf dem Syntaxbaum ausgeführt. 
+Hier werden unter anderem die Tokens als Symbole miteinander verknüpft und die Typen von Variablen überprüft.
+Wird zum Beispiel einer Variable von Typ ``int'' inkorrekterweise ein Wert vom Type ``string'' zugewiesen wird das in der semantischen Analyse als Fehler aufgezeigt.
+Nach diesen Schritten ist das grundlegende parsen erfolgreich abgeschlossen.\\
+Einfache Compiler generieren aus den Symbolen direkt Ausgaben wie Maschinencode mit Codegenerator;
+Oft wird aber vor diesem abschliessenden Schritt noch Optimierungen vorgenommen, die den Maschinencode in Nutzung von Ressourcen wie Arbeitsspeicher, Effizienz von Befehlen in der Zielprozessorarchitektur und Größe der Binärdatei verbessert.\\
+
+\section{Compiler Parser}
+
+\section{Compiler Codegenerierung}
+
+\section{SLICC?}
