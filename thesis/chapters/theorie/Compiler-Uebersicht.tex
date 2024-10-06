@@ -6,29 +6,11 @@
 
 \begin{itemize}
   \item Was ist ein Compiler?
-  \item Compiler Historie
   \item Einleitung zu den detaillierteren Beschreibungen:
   \begin{itemize}
     \item [x] Arten von Compilern 
     \begin{itemize}
-    \item[->] Spaeter genauer erklaert: Top-Down Compiler
-    \end{itemize}
-  \item [x] Compilerphasen
-    \begin{itemize}
-      \item [x] Einpass vs Mehrpass vs Zweipass zur Trennung Frontend <-> Backend
-      \item[->] Spaeter genauer erklaert: Zweipass Compiler fuer separate Backends \& zukuenftige Optimierungsschritte
-    \end{itemize}
-    \item Parser: Arten (EBNF etc)
-    \begin{itemize}
-    \item[->] Spaeter genauer erklaert: EBNF
-    \end{itemize}
-    \item Zwischensprache: Vereinfacht Optimierungen, separierte Backends und Frontends
-    \begin{itemize}
-      \item[->] Spaeter genauer erklaert: ??? (Wie so ein Zwischenstate aussehen soll ist scheinbar schwarze Magie, selber rausfinden)
-    \end{itemize}
-    \item Backends: Code Erzeugung etc
-    \begin{itemize}
-      \item[->] Spaeter genauer erklaert: RISC Binary, RISC assembly
+    \item[->] Spaeter genauer erklaert: Top-Down Parser
     \end{itemize}
     \item Bootstrapping compiler in eigener Sprache
     \begin{itemize}
@@ -77,24 +59,144 @@ Ein Token wird eingelesen, geparst und der entsprechende Maschinencode wird gene
 Dann fährt der Einpass-Compiler mit den nächsten Tokens fort, bis das Ende des Programmcodes erreicht ist.\\
 Der Mehrpass-Compiler hingegen liest anfangs den gesamten Programmcode ein und parst ihn mithilfe von mehreren Programmteilen, wo der letzte den Maschinencode ausgibt\cite{mossenbock:2024}.\\
 Diese Compiler haben generell 6 Phasen, in denen sie arbeiten:\\
+Zuerst wird der Programmcode 
 Die Lexikalische Analyse unterteilt das Programm in Tokens, die Einheiten wie Variablennamen oder Operationszeichen aufteilen.\\
+Die Aufteilung des Quellprogramm-einlesens in die lexikalische Analyse und Syntaxanalyse ist vor allem der Praktikalität der Implementierung geschuldet.
+Ohne die 
 Diese Tokens werden dann an die Syntaxanalyse geschickt, wo mithilfe grammatikalischer Regeln die Struktur des Programmcodes überprüft wird.
 Die Definition dieser Regeln zusammen mit dem Interpretieren der Tokens wird Parser genannt.
 Der Parser ordnet die einzelnen Tokens mitsamt der Regeln in eine Baumstruktur ein.
-Es gibt zwei grundlegende Arten von Parsern im Compilerbau;
-Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter, während der Bottom-Up Parser mit den einzelnen Tokens anfängt und diese zusammenfasst um einen Syntax Baum zu generieren\cite{meduna2007elements}.
 
-\textbf{\textit{Bild Top Down vs Bottom Up Tree}}
+\subsection{Der Parser}
+
+Es gibt zwei grundlegende Arten von Parsern im Compilerbau, den Top-Down und den Bottom-Up Parser.\\
+
+\textsf{Teilweise uebernommen}\\
+
+Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter.\\
+Für den Quellcode ``\textit{int myVar = x + 2;}'' liest der Parser zuerst den ganzen Ausdruck ein und teilt diesen dann auf;
+Nachdem er diesen Ausdruck in die einzelnen Tokens runtergebrochen und ebenfalls geparst hat wird geschlussfolgert dass der gesamte Ausdruck eine Variablenzuweisung ist.
+
+\textsf{Check ditt hier nochmal}
+
+\begin{figure}[H]
+  \centering
+  \begin{forest}
+    [Token Stream
+    [\textit{int myVar = x + 2;}\\
+    Ausdruck
+      [\textit{int myVar}\\
+      Linke Seite
+        [\textit{int}\\
+        Typ
+        ]
+        [\textit{myVar}\\
+        Variablenname
+        ]
+      ]
+      [\textit{=}\\
+      Operator
+      ]
+      [\textit{x + 2}\\
+      Rechte Seite
+        [\textit{x}\\
+        Variable
+        ]
+        [\textit{+}\\
+        Operator
+        ]
+        [\textit{2}\\
+        Konstante
+        ]
+      ]
+      [\textit{;}\\
+      Ausdruck Ende
+      ]
+    ]
+    ]
+  \end{forest}
+  \caption{Top Down Syntax Parsung}
+\end{figure}
+
+Der Bottom-Up Parser fängt mit einzelnen Tokens aus dem Quellcode an und fügt diese zusammen\cite{meduna2007elements}.
+Unser Ausdruck ``\textit{int myVar = x + 2;}'' wird zuerst in viele generische Tokens geparst.
+So könnten anfangs ``\textit{myVar}'' und ``\textit{x}'' als Name identifiziert werden, deren konkrete Verwendung noch nicht bekannt ist.
+Erst mit dem Zusammenfügen und Parsen des gesamten  Ausdrucks wird klar, dass ``\textit{myVar}'' eine neue Variablendefinition ist und ``\textit{x}'' eine existierende Variable, deren Wert benutzt wird um den Wert von ``\textit{myVar}'' zu setzen.
+
+
+\begin{figure}[H]
+  \centering
+  \begin{forest}
+    for tree={grow=north}
+    [\textit{int myVar = x + 2;}\\
+    Zuweisung
+      [\textit{;}\\
+      Ausdruck Ende
+        [\textit{;}\\
+        Ausdruck Ende
+        [Token]
+        ]
+      ]
+      [\textit{x + 2}\\
+      Ausdruck
+        [\textit{2}\\
+        Konstante
+        [Token]
+        ]
+        [\textit{+}\\
+        Operator
+        [Token]
+        ]
+        [\textit{x}\\
+        Name
+        [Token]
+        ]
+      ]
+      [\textit{=}\\
+      Operator
+        [\textit{=}\\
+        Operator
+          [Token]
+        ]
+      ]
+      [\textit{int myVar}\\
+      Variablendefinition
+        [\textit{myVar}\\
+        Name
+        [Token]
+        ]
+        [\textit{int}\\
+        Typ
+        [Token]
+        ]
+      ]
+    ]
+  \end{forest}
+  \caption{Bottom Up Syntax Parsung}
+\end{figure}
 
 Nach dem Parsen der Tokens wird eine semantische Analyse auf dem Syntaxbaum ausgeführt. 
 Hier werden unter anderem die Tokens als Symbole miteinander verknüpft und die Typen von Variablen überprüft.
-Wird zum Beispiel einer Variable von Typ ``int'' inkorrekterweise ein Wert vom Type ``string'' zugewiesen wird das in der semantischen Analyse als Fehler aufgezeigt.
-Nach diesen Schritten ist das grundlegende parsen erfolgreich abgeschlossen.\\
-Einfache Compiler generieren aus den Symbolen direkt Ausgaben wie Maschinencode mit Codegenerator;
-Oft wird aber vor diesem abschliessenden Schritt noch Optimierungen vorgenommen, die den Maschinencode in Nutzung von Ressourcen wie Arbeitsspeicher, Effizienz von Befehlen in der Zielprozessorarchitektur und Größe der Binärdatei verbessert.\\
+Wird zum Beispiel einer Variable von Typ ``\textit{int}'' inkorrekterweise ein Wert vom Type ``\textit{string}'' zugewiesen, wird das in der semantischen Analyse als Fehler aufgezeigt.
+Nach diesen Schritten ist das grundlegende Parsen erfolgreich abgeschlossen.\\
 
-\section{Compiler Parser}
+Die Aufteilung des Quellprogramm-Einlesens in die lexikalische Analyse und Syntaxanalyse ist vor allem der Praktikalität der Implementierung komplexerer Programmiersprachen geschuldet.
+Ohne die Aufteilung müsste der Parser auch Zeichen für Formatierung und Lesbarkeit (z.B. Leerzeichen, Newline, Kommentarstart und -ende) einlesen, was die Implementierung der Syntaxanalyse deutlich verkomplizieren würde.
 
-\section{Compiler Codegenerierung}
+\subsection{Der Codegenerator}
+
+Einfache Compiler generieren aus den Symbolen direkt Ausgaben wie Maschinencode mit dem Codegenerator.
+In modernen Compilern werden vor diesem abschliessenden Schritt noch Optimierungen vorgenommen, die den Maschinencode in Nutzung von Ressourcen wie Arbeitsspeicher, Effizienz von Befehlen in der Zielprozessorarchitektur und Größe der Binärdatei verbessert.\\
+
+Der Codegenerator hat hauptsächlich die folgenden Aufgaben zu erfüllen\cite{mossenbock:2024}:\\
+Zum einen müssen die geparsten Ausdrücke in Maschinencode lesbar für die angezielte Prozessorarchitektur generiert und als Maschinenprogramm in einer Datei gespeichert werden.
+Weiterhin müssen Konstrukte wie Schleifen und Verzweigungen in Sprungbefehle übersetzt werden.
+Der Codegenerator muss sich auch um lokale Variablen von Methoden kümmern, die im richtigen Kontext initialisiert und dann wieder freigegeben werden müssen.\\
+Während der Generierung ist auch Fehlerbehandlung wichtig, die verhindert, dass ein unlesbares oder inkorrektes Maschinenprogramm erzeugt wird.\\
+
+Der Codegenerator ist stark von der angezielten Prozessorarchitektur und ihren Instruktionstypen abhängig.
+Die \textit{Reduced Instruction Set Computer} (RISC) Architektur mit wenigen einfachen Instruktionstypen benötigt wenige Spezialfallbehandlungen und ist damit relativ simpel in einem Codegenerator umzusetzen.
+Im Gegensatz dazu steht die Architektur \textit{Complex instruction set computer} (CISC), zum Beispiel der x86 Architektur-Familie. 
+Mit einer Unmenge an Instruktionstypen, deren Funktionsweise sich teilweise überschneiden oder mehrere kleine Instruktionstypen zur Optimierung der Ausführung gruppiert werden, ist ein vollständiger, korrekter und optimierter Codegenerator für einer dieser Prozessorarchitekturen extrem groß und komplex.
 
 \section{SLICC?}

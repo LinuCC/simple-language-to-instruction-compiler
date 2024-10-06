@@ -1,8 +1,44 @@
-\chapter{Das RISC Binaercode erzeugende Backend}
+\chapter{Compiler-Backend mit RISC-V}
 \label{chap:theory:risc}
 
+Das Backend im Zweiphasen-Compiler generiert aus der Zwischensprache und der Symboltabelle den Maschinencode, der am Ende von der Zielplattform ausgeführt wird.
+Die Zwischensprache kann bereits durch einen Optimierungsschritt gelaufen sein, aber diese sind nicht unbedingt auf den Maschinencode zugeschnitten, der generiert wird.
+Das Backend kann demnach seine eigenen Optimierungen, speziell für die angezielte Prozessorarchitektur, mit einbringen.
+Ein Zweiphasen-Compiler hat somit nicht zwangsweise nur Zwischensprachen zwischen dem Frontend und dem Backend; Backends können ihre eigenen Zwischensprachen zu Optimierungszwecken implementieren\cite{aho:2006}:
+
+\begin{figure}[H]
+  \begin{tikzpicture}
+  \sffamily
+  \node[minimum height=1.5cm,minimum width=2cm,text centered,draw](frontend){Frontend};
+  \node[right=0.6cm of frontend, minimum height=1.5cm,minimum width=2cm,text centered,draw] (state){Zwischensprache};
+  \node[right=0.75cm of state, minimum height=1.5cm,text width=3cm,text centered,draw] (backendir){Spezifische\\
+  Zwischensprache};
+  \node[right=4.75cm of state, minimum height=1.5cm,text width=2cm,text centered,draw] (backendgen){Code\\
+  generator};
+  \node[right=0.75cm of backendgen, minimum height=1.5cm,minimum width=2cm,text centered,draw] (binary){Maschinencode};
+  \node[above=1cm of backendir, fit={(backendir)($(backendgen.southeast)+(0, -2)$)},minimum width=2cm,draw=black!50] (backendbox);
+  \node [title,above=-0.75cm of backendbox](backendtitle){Backend};
+  \umltrans[arg=]{frontend}{state}
+  \umltrans[arg=]{state}{backendbox}
+  \umltrans[arg=]{backendbox}{binary}
+  \umltrans[arg=]{backendir}{backendgen}
+  \end{tikzpicture}
+\end{figure}
+
+Im Gegensatz zu den generischen Zwischensprachen eines Compilers werden backendspezifische Zwischensprachen nicht zwischen Backends geteilt.
+Deswegen muss abgewägt werden, ob Optimierungen in der generischen Zwischensprache eingebaut werden können oder
+ob sie speziell für bestimmte Backends implementiert werden müssen und somit nur einzelne Backends von dieser Implementation profitieren.
+
+\subsection{RISC-V als Zielplattform}
+
+Die Zielarchitektur des in dieser Arbeit behandelten Compilers ist RISC.
+RISC steht für \textit{Reduced Instruction Set Computing} und ist ein Designprinzip für Prozessoren, das auf wenige, einfache und schnelle Instruktionen setzt.
+In den letzten Jahren hat die Architekturdefinition ``RISC-V'' immer mehr an Bedeutung gewonnen.
+Es ist ein offener Standard, der von der \textit{RISC-V Foundation} entwickelt wird und eine verhältnismäßig simple Zielplattform bietet.
+
+
+
 \begin{itemize}
-  \item Aufgabe des Backends
   \item Beschreibung Zielplattform RISC
   \begin{itemize}
     \item Detaillierte Uebersicht ueber Assembly, Call Stack und weitere Themen

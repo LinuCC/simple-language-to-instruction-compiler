@@ -15,6 +15,7 @@
 \usepackage[linguistics]{forest}
 \usepackage{tikz-uml}
 \usetikzlibrary{shapes,positioning}
+\usepackage{amsmath, mathtools}
 
 \newif\ifdraft
 \drafttrue % Sagt aus, dass dieses Dokument ein Entwurf ist. Somit wird todonotes aktiviert. Zum deaktivieren diese Zeile auskommentieren oder auf \draftfalse setzen.
@@ -56,9 +57,9 @@
 	\lhead{\nouppercase\leftmark}
 	
 	\fancypagestyle{plain}{}
-	\fancyhead[LE]{\chaptermark} % Chapter in header Left
-	\fancyhead[RE]{\chaptermark} % Page number in header Right
-	\fancyfoot[LE]{\thepage}     % LE -> Left part on Even pages
+	\fancyhead[L]{\chaptermark} % Chapter in header Left
+	\fancyhead[R]{\chaptermark} % Page number in header Right
+	\fancyfoot[L]{\thepage}     % LE -> Left part on Even pages
 	\fancyfoot[RO]{\thepage}     % RO -> Right part on Odd pages
 	
 	% reset list of used acronyms
@@ -68,16 +69,14 @@
 	% Kapitel hier einfügen
 	\input{./chapters/00/Einleitung-und-Motivation}
 	\input{./chapters/theorie/Compiler-Uebersicht}
-	\input{./chapters/theorie/TopDownCompiler}
+	\input{./chapters/theorie/Parser}
 	\input{./chapters/theorie/ZweipassCompiler}
-	\input{./chapters/theorie/ParserEbnf}
 	\input{./chapters/theorie/Zwischensprache}
 	\input{./chapters/theorie/RiscBackend}
 	\input{./chapters/umsetzung/Planung-Des-Compilers}
 	\input{./chapters/umsetzung/ParserBauen}
 	\input{./chapters/umsetzung/ZwischenspracheBauen}
 	\input{./chapters/umsetzung/BackendBauen}
-	\input{./chapters/umsetzung/RiscInterpreterBauen}
 	\input{./chapters/fazit/Ergebnisse}
 	\input{./chapters/fazit/ThunderDome}
 	\input{./chapters/99/Schluss-und-Fazit}

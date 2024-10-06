@@ -1,6 +1,90 @@
 \chapter{Die Zwischensprache im Compiler mit Zweipass Verfahren}
 \label{chap:theory:inBetweenLayer}
 
-Ziele der Zwischensprache, Aufbau, Verwendung, Aufzeigen moeglicher Optimierungen
+Die Zwischensprache trennt das Compilerfrontend, das den Quelltext einliest und parst, von dem Compilerbackend, welches den Maschinencode generiert.
+Eine gute Zwischensprache abstrahiert die Details vom Quelltext und die des Maschinencodes der Zielarchitektur, sodass die Frontends und Backends nicht voneinander abhängig sind.
+Damit kann man ein beliebiges Frontend mit einem beliebigen Backend kombinieren, und muss die jeweilige Komponente nur einmal schreiben.\\
+Das Aussehen der Zwischensprache kann viele Varianten annehmen.
+So ist zum Beispiel ein Syntaxbaum, der beim Parsen des Quelltextes aufgebaut wird, bereits eine mögliche Zwischensprache.
+Sie kann aber auch eher Maschinencode-nah sein und bereits auf einzelne Operationen und Register verweisen.
+Für Optimierungen des Kompilates kann es sogar sinnvoll sein, mehrere Zwischensprachen zu verwenden, die aufeinander aufbauen und immer mehr Details des Maschinencodes abbilden.\\
+Es gilt hier einen passenden Kompromiss zu finden, der die Optimierungsmöglichkeiten nicht einschränkt, aber auch nicht zu komplex wird.\\
 
-Vielleicht zu wenig Referenz Material fuer Theorie vor der Umsetzung, stattdessen eher die Umsetzung im Fazit Teil der Arbeit dokumentieren?
+\subsection{Three-Address Code}
+
+Eine Repräsentationsmöglichkeit von Operationen in einer Zwischensprache ist der ``Three-Address code''.
+Hier werden namensgebend drei Adressen in einer Operation mit genau einem Operator verwendet\cite{aho:2006}.
+Komplexere Operationen werden dadurch in mehrere dieser Operationen aufgeteilt, die dann leichter zu Maschinencode übersetzt werden können.\\
+Eine mathematische Operation wie $x = a + (y * z)$ wird in zwei Three-Address Code Operationen umgewandelt:
+\begin{figure}[H]
+  \begin{align*}
+    x &= y * z\\
+    a &= b + z
+  \end{align*}
+\end{figure}
+
+Da wir hier noch im Bereich der Zwischensprache sind, können die Adressen abstrakter dargestellt werden.
+Sie können eine Konstante oder eine Referenz auf eine Variable in der Symboltabelle sein.
+Hier ist es auch möglich andere Typen, wie zwischenzeitlich generierte Optimierungen, einzufügen\cite{aho:2006}.\\
+
+Three-Address Codes sind nicht nur auf mathematische Operationen beschränkt;
+Sie können viele andere Operationen wie Kontrollstrukturen oder Funktionsaufrufe abbilden.
+Ein konditionaler Sprung kann mit einem Operator und drei Adressen abgebildet werden.
+Operator und zwei Adressen werden für die Bedingung genutzt, die dritte Adresse zeigt auf den Ort, wohin gesprungen wird:
+
+\begin{figure}[H]
+  \begin{align*}
+    \text{if } x < y \text{ goto } T
+  \end{align*}
+\end{figure}
+
+Mit dem Three-Address Code als Grundeinheit kann die Zwischensprache damit bereits viele Funktionalitäten eines Programmes abbilden ohne große und komplexe Strukturen zu benötigen.\\
+Nehmen wir den Ausdruck eines nicht-trivialen Quelltextes
+
+\begin{figure}[H]
+  \begin{align*}
+    &\text{int } x = 0;\\
+    &\text{int } y = 1;\\
+    &\text{while } x < 10 \text{ \{}\\
+    &\quad\text{if } x\ /\ 2\ ==\ 0 \text{ \{}\\
+    &\quad\quad x = x + y;\\
+    &\quad\text{\}}\\
+    &\text{\}}
+  \end{align*}
+\end{figure}
+
+dann kann dieser in Three-Address Code umgewandelt werden:
+
+
+
+\begin{figure}[H]
+  \begin{align*}
+    \text{1: }\quad &x = 0\\
+    \text{2: }\quad &y = 1\\
+    \text{3: }\quad &t1 = x < 10\\
+    \text{4: }\quad &\text{if } t1 \text{ goto } 6\\
+    \text{5: }\quad &\text{goto } 12\\
+    \text{6: }\quad &t2 = x\ /\ 2\\
+    \text{7: }\quad &t3 = t2 == 0\\
+    \text{8: }\quad &\text{if } \text{not}\ t3 \text{ goto } 11\\
+    \text{9: }\quad &t4 = x + y\\
+    \text{10: }\quad &x = t4\\
+    \text{11: }\quad &\text{goto } 3\\
+    \text{12: }\quad &\text{end}
+  \end{align*}
+\end{figure}
+
+Hier fällt auf, dass diese Repräsentation nicht allzu weit entfernt von Assemblercode tatsächlicher Prozessorarchitekturen ist, aber noch unabhängig von Hardware-spezifischen Konzepten wie Register.\\
+Dieser Code hat bereits Optimierungspotential, so können Zeile 7 und 8 kombiniert werden indem der Vergleichsoperator von $t2 == 0$ direkt negiert wird statt das Ergebnis $t3$ zwischenzuspeichern und dann zu negieren.\\
+Das Sprungziel von Zeile 8 ist eine Zeile die auch einen nicht-konditionalen Sprung initiiert, daher ist das umschreiben von
+\begin{figure}[H]
+  \centering
+$
+    \text{if } \text{not}\ t3 \text{ goto } 11
+$\qquad\quad
+zu\qquad\quad
+$
+    \text{if } \text{not}\ t3 \text{ goto } 3
+$
+\end{figure}
+in Zeile 8 eine weitere Möglichkeit.

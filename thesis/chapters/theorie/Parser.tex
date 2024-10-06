@@ -1,0 +1,272 @@
+\chapter{Der Parser}
+\label{chap:theory:parser}
+
+\section{Historisches / Details}
+
+Einige Arten haben sich etabliert, um den Parser eines Compilers zu implementieren.
+Die häufigsten davon sind Varianten des Top-Down und Bottom-Up Parsers, bei denen die Baumstruktur des Syntaxbaums entweder aus der Wurzel der Syntaxdefinition nach ``unten'' hin oder den einzelnen Blättern nach ``oben'' hin gebaut wird.\\
+So gibt es zum Beispiel den Parser im Verfahren des rekursiven Abstiegs, das eines der einfachsten Varianten eines Parsers ist und auch ohne Werkzeuge von Hand schreibbar ist\cite{mossenbock:2024}.
+Demgegenüber stehen eine große Auswahl an Werkzeugen wie Parsergeneratoren, die aus Grammatikdefinitionen den Code zum parsen automatisch generieren.
+Diese haben den Vorteil dass sie hart-zu-implementierende Parservarianten, z.B. Bottom-Up Parser, automatisch implementieren.
+Beispiele für solche Werkzeuge sind YACC und ANTLR, die aus einer Grammatikdefinition in einer Notation wie zum Beispiel BNF / EBNF den Parsercode generieren.
+
+
+\subsection{Kontextfreie Grammatiken}
+
+\textbl{Ausflug: Kellerautomat wird benötigt, um kontextfreie Grammatiken zu parsen.}
+In dem Zusammenhang endliche Automaten definieren?
+Gibt bestimmt Pluspunkte bei HrMeissner.
+Siehe Moessenboeck, S. ~41
+
+
+\section{Top-Down Parser}
+
+Der Top-Down Parser baut den Syntax Baum aus der Wurzel der Grammatikdefinition heraus und bricht dann die Tokens immer mehr im Detail runter\cite{meduna2007elements}.\\
+Um dies zu verdeutlichen erstellen wir uns eine einfache Grammatikdefinition und wenden diese auf einen Eingabesatz an.\\
+\begin{figure}[H]
+  \begin{align*}
+    A &\quad\rightarrow\quad a\ R\ b \\
+    R &\quad\rightarrow\quad y\ |\ z
+  \end{align*}
+  \caption{Beispiel Grammatikdefinition}
+  \label{fig:theory:parser:topdown:grammar}
+\end{figure}
+
+In der Definition ist $A$ die Wurzel der Grammatik, die mit dem Token $a$ started und mit $b$ endet.
+Dazwischen ist eine weitere Grammatikregel $R$ referenziert.
+Diese besteht aus einer Entweder-Oder Regel, hier entweder das Token $y$ oder $z$.\\
+$A$, $R$ sind hier \textit{Nichtterminalsymbole}, die nur in Zwischenschritten während des Parsens vorkommen.
+$a$, $b$, $y$, $z$ sind \textit{Terminalsymbole}, die nicht weiter heruntergebrochen werden.\\
+Beispielshaft übergeben wir einem Parser in der Funktionsweise des rekursiven Abstiegs mit dieser Grammatik den Eingabesatz $a y b$.\\
+Der Parser liest das erste Token $a$, der mit dem ersten Token der Regel $A$ übereinstimmt.
+\begin{figure}[H]
+  \centering
+  \begin{forest}
+    [$A$
+      [$a$]
+      [$R$ ?]
+      [$b$ ?]
+    ]
+  \end{forest}
+  \caption{Das erste Token $a$ wird gelesen und $A$ geöffnet}
+\end{figure}
+Die Regel $A$ wird geöffnet und das nächste Token $y$ gelesen.
+da $A$ jetzt nur $R$ als mögliche Regel hat, wird $R$ geöffnet und mit $y$ aus dem Eingabesatz überprüft, der in $y | z$ enthalten ist.
+Zuletzt wird das Token $b$ gelesen und damit die Wurzel Regel $A$ abgeschlossen.
+Da auch der Eingabesatz abgearbeitet ist, ist dieser gültig geparst worden und der Syntaxbaum vollständig\cite[S.219]{aho:2006}.\\
+
+\begin{figure}[H]
+  \centering
+  \begin{forest}
+    [$A$
+      [$a$]
+      [$R$
+        [?]
+      ]
+      [$b$ ?]
+    ]
+  \end{forest}
+  \qquad
+  \qquad
+  \begin{forest}
+    [$A$
+      [$a$]
+      [$R$
+        [$y$]
+      ]
+      [$b$ ?]
+    ]
+  \end{forest}
+  \qquad
+  \qquad
+  \begin{forest}
+    [$A$
+      [$a$]
+      [$R$
+        [$y$]
+      ]
+      [$b$]
+    ]
+  \end{forest}
+  \caption{Die weiteren Tokens werden bis zur Vervollständigung des Syntaxbaums gelesen}
+\end{figure}
+
+Diese einfache Art des Parsens hat aber einige Restriktionen, die durch die Grammatik eingehalten werden müssen.\\
+So darf die Grammatik keine Linksrekursion enthalten, da der Parser sonst in eine Endlosschleife geraten kann.
+Will man, wie in folgender Grammatikregel, $A$ so erweitern, dass der Eingabesatz beliebig oft mit $R$ und $b$ forgeführt werden kann:
+
+\begin{figure}[H]
+  \begin{align*}
+    A &\quad\rightarrow\quad (A\ |\ a)\ R\ b \\
+    R &\quad\rightarrow\quad y\ |\ z
+  \end{align*}
+  \caption{Linksrekursive Grammatikdefinition}
+\end{figure}
+
+Kann der Parser im rekursiven Abstieg die Regel $A$ nicht mehr mit dem Eingabetoken lösen; Er muss dazu in $A$ absteigen, aber damit rekursiv immer wieder $A$ lösen.\\
+Oftmals lassen sich solche Linksrekursionen durch Umformung der linksrekursiven Regel vermeiden.
+In diesem Fall kann $A$ in zwei Regeln aufgeteilt werden, wie in Abbildung \ref{fig:theory:parser:topdown:recursive} dargestellt.
+$END$ entspricht hier dem Ende des Eingabesatzes, also ob der Parser noch ein Token lesen konnte oder bereits alle Token eingelesen hat.\\
+Dies ist jedoch nicht immer möglich.
+Eine mögliche Lösung ist die Grammatikdefinition zu vereinfachen;
+Allerdings kann man auch eine andere Parservariante, zum Beispiel die eines Bottom-Up Parsers, benutzen, die mit Linksrekursion umgehen kann (aber ihre eigenen Vor- und Nachteile besitzt).
+
+\begin{figure}[H]
+  \begin{align*}
+    A &\quad\rightarrow\quad a\ B \\
+    B &\quad\rightarrow\quad R\ b\ (END\ |\ B) \\
+    R &\quad\rightarrow\quad y\ |\ z
+  \end{align*}
+  \caption{Aufgelöste linksrekursive Grammatikdefinition}
+  \label{fig:theory:parser:topdown:recursive}
+\end{figure}
+
+\section{Bottom-Up Parser}
+
+Der Bottom-Up Parser baut den Syntax Baum von den Blättern der Grammatikdefinition zu der Wurzel auf\cite{meduna2007elements}.
+Mit der Grammatikdefinition aus Abbildung \ref{fig:theory:parser:topdown:grammar} und dem Eingabesatz $a y b$ liest der Parser das erste Token $a$ ein, das noch nicht zu einer Regel zugeordnet werden kann.
+Der Parser speichert dieses Token zwischen und liest das nächste Token $y$ ein.
+Das kann direkt der Regel $R$ zugeordnet werden.
+Mit dem letzten Token $b$ kann der Parser dann aus dem existierenden Teil des Baumes und diesem Token in die Regel $A$ zusammenfassen.
+
+\begin{figure}[H]
+  \centering
+  \begin{forest}
+    [?
+      [$a$]
+    ]
+  \end{forest}
+  \qquad
+  \qquad
+  \begin{forest}
+    [?
+      [$a$
+        [$a$]
+      ]
+      [$R$
+        [$y$]
+      ]
+    ]
+  \end{forest}
+  \qquad
+  \qquad
+  \begin{forest}
+    [$A$
+      [$a$
+        [$a$]
+      ]
+      [$R$
+        [$y$]
+      ]
+      [$b$
+        [$b$]
+      ]
+    ]
+  \end{forest}
+  \caption{Im Bottom-Up Verfahren wird der Syntaxbaum nach und nach von den Blättern aufgebaut}
+\end{figure}
+
+Der Bottom-Up Parser \textit{reduziert} hier mithilfe der Tokens die Grammatikregeln zu einen Syntaxbaum, im Gegensatz zu dem Top-Down Parser, der mithilfe der Tokens den Syntaxbaum aus den Grammatikregeln \textit{ableitet}.
+
+\subsection{Shift-Reduce Parser}
+
+Eine Variante des Bottom-Up Parsers ist der ``Shift-Reduce'' Parser, der die Tokens in einem Zwischenspeicher speichert und die Grammatikregeln aus den gelesenen Tokens und dem Zwischenspeicher reduziert.
+Im Gegensatz zu der Top-Down Parser Familie sind dessen Grammatikdefinitionen weniger beschränkt, er behandelt zum Beispiel linksrekursive Grammatiken ohne Probleme.
+Allerdings ist es schwerer die Semantikanalyse in den Parser zu integrieren, und die Implementation des Parsers selber ist wesentlich komplexer.
+So benötigt der Shift-Reduce Parser eine Parsertabelle.
+Ausserdem muss der Parser vorher geparste Token und daraus reduzierte Regeln zwischenspeichern, um diese im späteren Verlauf zu weiteren Teilen des Syntaxbaumes kombinieren zu können.
+Deswegen werden reale Bottom-Up Parser meistens von Parsergeneratoren aus Grammatikdefinitionen wie BNF generiert\cite{moessenboeck:2024}.\\
+
+Der Shift-Reduce Parser wird, wie viele Parser von kontextfreien Grammatiken, als Kellerautomat implementiert. 
+Er speichert die Tokens, die er einliest, in einem Stack (``Keller''), und reduziert sie aus der Grammatikdefinition zu dem Syntaxbaum, wenn sie vollständig sind.
+Ein Shift-Reduce Parser arbeitet grundlegend mit vier Operationen während des Einlesens der Tokens\cite{moessenboeck:2024}:
+
+\begin{itemize}
+  \item \textbf{shift}: Das gelesene Token wird vom Eingabesatz in den Keller verschoben.
+  \item \textbf{reduce}: Tokens im Keller werden zu Nichtterminalsymbole reduziert
+  \item \textbf{accept}: Der Eingabesatz ist vollständig gelesen und der Syntaxbaum vollständig aufgebaut.
+  \item \textbf{error}: Der Parser kann den Eingabesatz nicht weiter auf die Grammatikdefinition anwenden, der Eingabesatz ist fehlerhaft
+\end{itemize}
+
+
+Als Beispiel wird wieder der Eingabesatz $a\ y\ b\ \#$ (wobei $\#$ für das Ende des Eingabesatzes steht) mit der Grammatikdefinition aus Abbildung \ref{fig:theory:parser:topdown:grammar} geparst.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{r|l|l}
+    Keller        & Eingabe                        & Aktion                    \\
+    \qquad\qquad\qquad\qquad        & \qquad\qquad\qquad\qquad\qquad                        & \qquad                    \\
+                  & \textit{\textbf{a}}\ \ $y$\ \ $b$\ \ $\#$ & $shift$                   \\
+    $a$           & \textit{\textbf{y}}\ \ $b$\ \ $\#$      & $shift$                   \\
+    $a$\ \ $y$      & $b$ \ \ $\#$                    & $reduce$ $y$ \rightarrow\ $R$       \\
+    $a$\ \ $R$      & \textit{\textbf{b}}\ \ $\#$           & $shift$                   \\
+    $a$\ \ $R$\ \ $b$ & $\#$                          & $reduce$ $a\ R\ b$ \rightarrow\ $A$ \\
+    $A$           & \textit{\textbf{\#}}                          & $accept$                 
+  \end{tabular}
+  \caption{Ablauf des Shift-Reduce Parsers}
+  \label{fig:theory:parser:shiftreduce}
+\end{table}
+
+In der Tabelle \ref{fig:theory:parser:shiftreduce} sind die einzelnen Schritte des Parsers aufgeführt.
+Zuerst wird das Token $a$ gelesen und in den Keller verschoben ($shift$).
+Da aus diesem Token kein Nichtterminalsymbol reduziert werden kann, wird das nächste Token $y$ gelesen und ebenfalls gekellert.
+$y$ hingegen kann in der Grammatikdefinition als $R$ reduziert werden, was in Schritt 3 mit $reduce$ durchgeführt wird.
+$a$ bleibt weiterhin unverändert im Keller, nur die Tokens zur Regel $R$ werden mit dem Nichtterminalsymbol $R$ im Keller ersetzt.
+Mit dem Lesen von Token $b$ in Schritt 4 können wir alle Tokens im Keller mit der Regel für $A$ in Schritt 5 reduzieren.
+Der Parser ist dann am Ende des Eingabesatzes angekommen und konnte die Tokens vollständig zu der Wurzel in der Grammatikdefinition reduzieren.\\
+
+Eine reale Implementation des Kellerautomaten wird mithilfe von States, in die sich der Parser befinden kann, gelöst.
+Die Übergänge zwischen den States werden in einer Parsertabelle festgehalten:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|c|}
+State & $a$ & $b$ & $y$ & $z$ & $\#$ & $A$ & $R$ \\\hline
+0     & s1        &           &           &          &          & s5 &   \\
+1     &           &           & s2        & s2       &          &   & s3 \\
+2     &           & rR        &           &          &          &   &   \\
+3     &           & s4        &           &          &          &   &   \\
+4     &           &           &           &          & rA       &   &   \\
+5     &           &           &           &          & acc      &   &   \\
+\end{tabular}
+\caption{Shift-Reduce Parser Tabelle}
+\end{table}
+
+Die States werden im Keller gespeichert und ähnlich wie in der Tabelle \ref{fig:theory:parser:shiftreduce} bei Reduzierungen
+im Keller entfernt.
+Die Kombination aus State und Token gibt an, welche Aktion der Parser durchführen soll.\\
+Mit $sx$ wird das jetzige Zeichen geshifted und der Zustand $x$ an den Keller angehängt.\\
+$rX$ reduziert das Nichtterminalsymbol $X$ und entfernt die States der Token von $X$, die am Ende des Kellers stehen.
+$X$ wird dann benutzt, um den nächsten Stateübergang herbeizuführen.\\
+$acc$ beendet den Parser, wenn das Ende des Eingabesatzes ($\#$) erreicht wird, erfolgreich.\\
+Leere Tabellenfelder sind Fehlerzustände, bei denen der Eingabesatz ungültig ist.\\
+
+Angewendet auf unser Beispiel $a\ y\ b\ \#$ ergibt sich folgender Ablauf:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{r|l|l|l}
+    Keller                   &             &  Eingabe                        & Aktion                    \\
+    \qquad\qquad\qquad\qquad &             &  \qquad\qquad\qquad\qquad\qquad                        & \qquad                    \\
+               \textbf{0}    &             &  \textit{\textbf{a}}\ \ $y$\ \ $b$\ \ $\#$ & $s1$                   \\
+    0\         \textbf{1}    &             &  \textit{\textbf{y}}\ \ $b$\ \ $\#$      & $s2$                   \\
+    0\ 1\      \textbf{2}    &             &  \textit{\textbf{b}} \ \ $\#$                    & $rR$       \\
+    0\ 1\                    & \textbf{R}  &  \textit{b} \ \ $\#$                    & $s3$       \\
+    0\ 1\      \textbf{3}    &             &  \textit{\textbf{b}}\ \ $\#$           & $s4$                   \\
+    0\ 1\ 3\   \textbf{4}    &             &  \textit{\textbf{\#}}           & $rA$                   \\
+                       0     & \textbf{A}  &  \textit{\#}           & $s5$                   \\
+    0\         \textbf{5}    &             &  \textit{\textbf{\#}}                          & $acc$
+  \end{tabular}
+  \caption{Stateübergänge des Shift-Reduce Parsers}
+  \label{fig:theory:parser:shiftreducestate}
+\end{table}
+
+In der Parsertabelle ist gut zu erkennen, dass jeder State für ein Token maximal einen Übergang hat.
+Das ist nur bei simplen Grammatiken der Fall.
+Man bezeichnet diese Grammatiken als $LR(0)$ Grammatik.
+Das $LR$ rührt vom Bottom-Up Parser, der von \textit{L}inks nach \textit{R}echts parst und deswegen auch LR-Parser genannt wird. 
+Mit der $0$ wird angegeben, dass der Parser kein ``Vorgriffssymbol'' benötigt, also nicht mehr als ein Token aus dem Eingabesatz im Voraus lesen muss, um den Syntaxbaum abzuleiten.\\
+Komplexere Grammatiken werden $LR(n)$ genannt, bei der $n$ die Anzahl der Vorgriffssymbole angibt, die ein Parser zum erfolgreichen Parsen der Grammatik benötigt.
+Diese werden nochmals in eine Subkatetegorie $LALR(n)$ eingeteilt, bei denen unter kleinen Einschränkungen in der Grammatikdefinition die Menge an States in der Parsertabelle und somit der Kellerautomat deutlich vereinfacht werden kann.\\
+Weit verbreitete Parsergeneratoren wie ``YACC'' und ``GNU Bison'' generieren aus diesen $LALR(1)$ Grammatiken den Bottom-Up Parser.
+Sie nutzen Vorteile wie die vereinfachte Fehlerbehandlungen durch die Parsertabelle und dem Fakt das $LALR(1)$ Grammatiken mächtiger sind als $LL(1)$ Grammatiken, die für Top-Down Parser verwendet werden.\\
