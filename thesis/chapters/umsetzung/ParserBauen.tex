@@ -4,10 +4,161 @@
 Der angezielte Parser ist ein Bottom-Up Parser generiert durch einen Parsergenerator.
 Die lexikalische Analyse wird von ``Flex'', einer erweiterten Alternative zum klassischen ``Lex'', übernommen.
 Flex parst eine Datei mit einer zu diesem Werkzeug spezifischen Syntax und schreibt den Lexer als autogenerierten C oder C++ Code in eine Datei.
-Mit der Schnittstelle dieses Lexers kann dann gearbeitet werden, um die Tokens während des parsens weiterzuverarbeiten.
+Mit der Schnittstelle dieses Lexers kann dann gearbeitet werden, um die Tokens während des Parsens weiterzuverarbeiten.\\
+Flex bringt eine spezielle Schnittstelle mit, mit der Syntaxparsergeneratoren wie ``Yacc'' oder kompatible Derivate wie ``GNU Bison'' direkt integriert werden können ohne in handgeschriebenen Programmcode verbindet werden zu müssen\cite{flex:1995}.\\
+Bison bietet sich auch direkt an da es noch weiterentwickelt wird und ebenfalls das Yacc-kompatible Interface implementiert.
+Der Parser von Bison implementiert interessante Möglichkeiten, wie zum Beispiel die Erweiterung des Parsers von \textit{LR(1)} Grammatiken zu \textit{GLR} (Generalized LR) Grammatiken.
+Dadurch kann der Parser auch mit Shift-Reduce Konflikten umgehen, indem der Parser mehrere Parse-Stränge gleichzeitig verfolgt und bei Fehlern diese wieder schliesst, bis nur der eine gültige Strang (bei korrekter Grammatikdefinition) weiterverfolgt wird\cite{bisonmanual}.\\
+
+\section{Der Aufbau der Programmiersprache Slang}
+
+Die Programmiersprache Slang ist eine Pascal-ähnliche Sprache, die in einer einzelnen Datei ein volles Programm repräsentiert.
+Anhand eines Beispiels werden die Grammatikregeln gezeigt, die für das Parsen der Programmiersprache benötigt werden:
+
+\begin{figure}[H]
+  \begin{lstlisting}
+program foo {
+    int i = 0;
+    int y;
+    int foo = 5;
+    int[5] bar;
+    int barsize = 5;
+    
+    foo = i + 5;
+    
+    for (y < barsize; y = y + 1) {
+      bar[y] = x + y;
+    }
+    while (bar[2] < 10) {
+      bar[2] = bar[2] + 1;
+    }
+
+    call_by_value(foo);
+    call_by_reference(y);
+    write(call_with_return(y));
+}
+
+func void call_by_value(int val) {
+  write(val);
+}
+
+func void call_by_reference(ref int val) {
+  read(val);
+}
+
+func int call_with_return(int val) {
+  int x = 2;
+  return x / 2 + val * 2;
+}
+  \end{lstlisting}
+  \caption{Beispielcode in Slang}
+  \label{fig:slicc:slang}
+\end{figure}
+
+Der Eintrittspunkt des Programms ist das \texttt{program}-Token, mit dessen Block die Ausführung des Programmes beginnt.
+Im ersten Schritt werden dort die Variablen definiert, die im Programm verwendet werden.
+Danach werden Anweisungen wie Zuweisungen, Kontrollstrukturen und Funktionsaufrufe ausgeführt.
+Zwei spezielle Funktionen sind \texttt{read(i)} und \texttt{write(i)}, die standardmäßig bereitstehen und in stdin oder stdout des Programmes schreiben.
+Nach dem Programmblock können Funktionen definiert werden, die im Programm selber aufgerufen werden können.\\
+
+Eine BNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen:
+
+  \begin{lstlisting}
+/* Start der Grammatik, unser Programmcode beginnt mit program { }, */
+/* dahinter stehen die Funktionsdefinitionen */
+<main> ::= <program> <wso> <func_def>* <wso>
+
+/* Ein Programm besteht aus einem Block */
+<program> ::= "program" <wso> <id> <wso> <block>
+
+<block> ::=  <wso> "{"  <wso> <block_body>  <wso> "}" <wso>
+
+/* Ein Block besteht aus optionalen Variablendefinitionen und einer */ 
+/* Anweisungsliste */
+<block_body> ::= <variable_list> <wso> <statement_list>
+               | <statement_list>
+
+<variable_list> ::= <variable_declaration>
+                  | <variable_declaration> <wso> <variable_list>
+
+/* Eine Variable kann deklariert oder mit einem Wert initialisiert werden */
+<variable_declaration> ::= ((<type> <wso> <id> <wso> "=" <wso> <intliteral> <wso>) | (<type> <wso> <id> <wso>)) ";"
+
+<statement_list> ::= <statement>
+                   | <statement> <wso> <statement_list>
+
+/* Ein Statement ist eine Variablenzuweisung, eine Kontrollstruktur, */
+/* eine for-Schleife, ein Funktionsaufruf oder ein `return` */
+<statement> ::= <statement_assignment> <wso> ";"
+              | <if_statement>
+              | <for_loop>
+              | <func_call> <wso> ";"
+              | "return" <wso> <expression> <wso> ";"
+
+<statement_assignment> ::= <assigment_left> <wso> "=" <wso> <expression> <wso>
+
+/* Eine Variablenzuweisung kann auch einen Array-Eintrag referenzieren */
+/* z.B. `foo[x] = 1' */
+<assigment_left> ::= (<id>) | (<id> "[" <wso> (<intliteral> | <id>) <wso> "]")
+
+/* Ein Ausdruck ist eine mathematische Operation, ein Funktionsaufruf oder ein Vergleich */
+<expression> ::= <intliteral>
+               | <id>
+               | <func_call>
+               | <expression> <wso> "+" <wso> <expression>
+               | <expression> <wso> "-" <wso> <expression>
+               | <expression> <wso> "*" <wso> <expression>
+               | <expression> <wso> "/" <wso> <expression>
+               | <compare_expression>
+               | "(" <wso> <expression> <wso> ")"
+
+<comparison_operator> ::= "=="
+                        | "!="
+                        | "<"
+                        | "<="
+                        | ">"
+                        | ">="
+
+/* Erlaube erstmal nur leichte Ausdruecke im Vergleich */
+<compare_expression> ::= <id> <wso> <comparison_operator> <wso> <id>
+                       | <id> <wso> <comparison_operator> <wso> <intliteral>
+                       | <intliteral> <wso> <comparison_operator> <wso> <id>
+                       | <intliteral> <wso> <comparison_operator> <wso> <intliteral>
+
+/* Eine if-Kontrollstruktur mit optionalem else */
+<if_statement> ::= "if" <wso> "(" <wso> <compare_expression> <wso> ")" <wso> <block>
+                 | "if" <wso> "(" <wso> <compare_expression> <wso> ")"  <wso> <block> <wso> "else" <wso> <block>
+
+/* Eine for-Schleife ohne Variablendeklaration; diese ist im ersten */
+/* Teil des blocks zu definieren */
+<for_loop> ::= "for" <wso> "(" <wso> <compare_expression> ";"  <wso> <statement_assignment> <wso> ")" <wso> <block>
+
+/* Ein Funktionsaufruf mit Argumenten */
+<func_call> ::= <id> <wso> "(" <wso> <func_args> <wso> ")" <wso>
+<func_args> ::= <expression>
+              | <expression> <wso> "," <wso> <func_args>
+
+/* Eine Funktionsdefinition */
+<func_def> ::= "func" <wso> (<type> | "void") <wso> <id> <wso> "(" <wso> <func_args_def> <wso> ")" <wso> <block>
+<func_args_def> ::= <func_arg_def>
+                  | <func_arg_def> <wso> "," <wso> <func_args_def>
+<func_arg_def> ::= <type> <wso> <id>
+                  | "ref" <wso> <type> <wso> <id> <wso>
+
+/* Typen und Variablen */
+<type> ::= "int" | <intarray>
+<intarray> ::= "int[" <intliteral> "]"
+
+/* Andere Zeichen */
+<digit> ::= [0-9]
+<intliteral> ::= <digit>+
+<alphachar> ::= [a-z]
+<id> ::= <alphachar> (<alphachar> | <digit> | "_")*
+<ws> ::= " " | "\t" | "\n"
+
+/* Optionale Leerzeichen oder newlines */
+<wso> ::= <ws>*
+
+  \end{lstlisting}
 
 
-
-Wie sieht die Sprache aus, wie parst der diese Sprache, wie mappe ich das auf die Zwischensprache.
-
-Weitere Details: Speichereffizienz, Geschwindigkeit des Parsers, EBNF trickery (zur Optimierung von Geschwindigkeit etc), Fehlerbehandlung der Input Datei (Syntax Fehler / Logik Fehler / etc)

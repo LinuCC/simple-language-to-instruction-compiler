@@ -15,11 +15,11 @@ Es gilt hier einen passenden Kompromiss zu finden, der die Optimierungsmöglichk
 Eine Repräsentationsmöglichkeit von Operationen in einer Zwischensprache ist der ``Three-Address code''.
 Hier werden namensgebend drei Adressen in einer Operation mit genau einem Operator verwendet\cite{aho:2006}.
 Komplexere Operationen werden dadurch in mehrere dieser Operationen aufgeteilt, die dann leichter zu Maschinencode übersetzt werden können.\\
-Eine mathematische Operation wie $x = a + (y * z)$ wird in zwei Three-Address Code Operationen umgewandelt:
+Eine mathematische Operation wie \texttt{x = a + (y * z)} wird in zwei Three-Address Code Operationen umgewandelt:
 \begin{figure}[H]
   \begin{align*}
-    x &= y * z\\
-    a &= b + z
+    \texttt{x} &\texttt{\ = y * z}\\
+    \texttt{a} &\texttt{\ = b + z}
   \end{align*}
 \end{figure}
 
@@ -34,7 +34,7 @@ Operator und zwei Adressen werden für die Bedingung genutzt, die dritte Adresse
 
 \begin{figure}[H]
   \begin{align*}
-    \text{if } x < y \text{ goto } T
+    \texttt{\text{if } x < y \text{ goto } T}
   \end{align*}
 \end{figure}
 
@@ -43,13 +43,13 @@ Nehmen wir den Ausdruck eines nicht-trivialen Quelltextes
 
 \begin{figure}[H]
   \begin{align*}
-    &\text{int } x = 0;\\
-    &\text{int } y = 1;\\
-    &\text{while } x < 10 \text{ \{}\\
-    &\quad\text{if } x\ /\ 2\ ==\ 0 \text{ \{}\\
-    &\quad\quad x = x + y;\\
-    &\quad\text{\}}\\
-    &\text{\}}
+    &\texttt{\text{int } x = 0;}\\
+    &\texttt{\text{int } y = 1;}\\
+    &\texttt{\text{while } x < 10 \text{ \{}}\\
+    &\texttt{\quad\text{if } x\ /\ 2\ ==\ 0 \text{ \{}}\\
+    &\texttt{\quad\quad x = x + y;}\\
+    &\texttt{\quad\text{\}}}\\
+    &\texttt{\text{\}}}
   \end{align*}
 \end{figure}
 
@@ -59,32 +59,29 @@ dann kann dieser in Three-Address Code umgewandelt werden:
 
 \begin{figure}[H]
   \begin{align*}
-    \text{1: }\quad &x = 0\\
-    \text{2: }\quad &y = 1\\
-    \text{3: }\quad &t1 = x < 10\\
-    \text{4: }\quad &\text{if } t1 \text{ goto } 6\\
-    \text{5: }\quad &\text{goto } 12\\
-    \text{6: }\quad &t2 = x\ /\ 2\\
-    \text{7: }\quad &t3 = t2 == 0\\
-    \text{8: }\quad &\text{if } \text{not}\ t3 \text{ goto } 11\\
-    \text{9: }\quad &t4 = x + y\\
-    \text{10: }\quad &x = t4\\
-    \text{11: }\quad &\text{goto } 3\\
-    \text{12: }\quad &\text{end}
+    \text{1: }\quad &\texttt{x = 0}\\
+    \text{2: }\quad &\texttt{y = 1}\\
+    \text{3: }\quad &\texttt{t1 = x < 10}\\
+    \text{4: }\quad &\texttt{\text{if } t1 \text{ goto } 6}\\
+    \text{5: }\quad &\texttt{\text{goto } 12}\\
+    \text{6: }\quad &\texttt{t2 = x\ /\ 2}\\
+    \text{7: }\quad &\texttt{t3 = t2 == 0}\\
+    \text{8: }\quad &\texttt{\text{if } \text{not}\ t3 \text{ goto } 11}\\
+    \text{9: }\quad &\texttt{t4 = x + y}\\
+    \text{10: }\quad &\texttt{x = t4}\\
+    \text{11: }\quad &\texttt{\text{goto } 3}\\
+    \text{12: }\quad &\texttt{\text{end}}
   \end{align*}
 \end{figure}
 
 Hier fällt auf, dass diese Repräsentation nicht allzu weit entfernt von Assemblercode tatsächlicher Prozessorarchitekturen ist, aber noch unabhängig von Hardware-spezifischen Konzepten wie Register.\\
-Dieser Code hat bereits Optimierungspotential, so können Zeile 7 und 8 kombiniert werden indem der Vergleichsoperator von $t2 == 0$ direkt negiert wird statt das Ergebnis $t3$ zwischenzuspeichern und dann zu negieren.\\
+Dieser Code hat bereits Optimierungspotential, so können Zeile 7 und 8 kombiniert werden indem der Vergleichsoperator von \texttt{t2 == 0} direkt negiert wird statt das Ergebnis \texttt{t3} zwischenzuspeichern und dann zu negieren.\\
 Das Sprungziel von Zeile 8 ist eine Zeile die auch einen nicht-konditionalen Sprung initiiert, daher ist das umschreiben von
 \begin{figure}[H]
   \centering
-$
-    \text{if } \text{not}\ t3 \text{ goto } 11
-$\qquad\quad
-zu\qquad\quad
-$
-    \text{if } \text{not}\ t3 \text{ goto } 3
-$
+  \texttt{\text{if} \text{not}\ t3 \text{goto} 11}
+\qquad
+zu\qquad
+  \texttt{\text{if} \text{not}\ t3 \text{goto} 3}
 \end{figure}
 in Zeile 8 eine weitere Möglichkeit.

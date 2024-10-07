@@ -71,12 +71,12 @@ Als Ordnerstruktur wird folgendes gewählt:
     [slang\_parser/\quad \normalfont{\textit{(Frontend)}}
     [parser.yy \quad \normalfont{\textit{(GNU Bison basierter Parser)}}]
     [scan.ll \quad \normalfont{\textit{(Flex basierter Lexer)}}]
-      [CMakeLists.txt]
+      [CMakeLists.txt \quad \normalfont{\textit{(Generiert }} \texttt{slang\_parser.o})]
     ]
     [risc\_gen/\quad \normalfont{\textit{(Backend)}}
       [code\_gen.cc \quad \normalfont{\textit{(Code Generator)}}]
       [optimizer.cc \quad \normalfont{\textit{(Backend-spezifische Optimierungen)}}]
-      [CMakeLists.txt]
+      [CMakeLists.txt \quad \normalfont{\textit{(Generiert }} \texttt{risc\_gen.o})]
     ]
     [other\_frontend/
       [...]
@@ -87,7 +87,7 @@ Als Ordnerstruktur wird folgendes gewählt:
     [main.cc]
     [optimizer.cc \quad \normalfont{\textit{(Generische Optimierungen auf Zwischensprache)}}]
   ]
-  [CMakeLists.txt]
+[CMakeLists.txt \quad \normalfont\textit{(Generiert }\texttt{slicc} \textit{Binärdatei)}]
 ]
 \end{forest}
 \end{figure}
