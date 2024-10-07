@@ -34,13 +34,13 @@ ob sie speziell für bestimmte Backends implementiert werden müssen und somit n
 Die Zielarchitektur des in dieser Arbeit behandelten Compilers ist RISC.
 RISC steht für \textit{Reduced Instruction Set Computing} und ist ein Designprinzip für Prozessoren, das auf wenige, einfache und schnelle Instruktionen setzt.
 In den letzten Jahren hat die Architekturdefinition ``RISC-V'' immer mehr an Bedeutung gewonnen.
-Es ist ein offener Standard, der von der \textit{RISC-V Foundation} entwickelt wird und eine verhältnismäßig simple Zielplattform bietet.
+Es ist ein offener Standard, der von der \textit{RISC-V Foundation} entwickelt wird und eine verhältnismäßig simple Zielplattform bietet\cite{RISCV}.\\
 
-
-
-\begin{itemize}
-  \item Beschreibung Zielplattform RISC
-  \begin{itemize}
-    \item Detaillierte Uebersicht ueber Assembly, Call Stack und weitere Themen
-  \end{itemize}
-\end{itemize}
+RISC-V besteht grundlegend aus einer Integer Befehlssatzarchitektur mit optionalen Erweiterungen dazu.
+Prozessoren müssen damit mindestens eine der beiden Varianten dieser Befehlssatzarchitektur, ``RV32I'' mit 32-bit Adressierung oder ``RV64I'' mit 64-bit Adressierung, implementieren.
+Eine spezielle Alternative für kleine Prozessoren, ``RV32E'', implementiert nur einen Teil der ``RV32I'' um Kosten dieser gering zu halten\cite{waterman:2017}.\\
+Eine interessante Erweiterung ist die ``C'' Erweiterung (zum Beispiel in ``RV32C'').
+Sie erlaubt es, komprimierte 16-bit Befehle gemischt mit den Standard 32-bit Befehlen zu benutzen und dadurch die Programmgröße zu verringern.
+Nur Befehle, die auf eine bestimmte Art auf Register zugreifen, können so komprimiert werden.
+Ein Compiler, dass diese Erweiterung unterstützt, benötigt somit einen Optimierungsschritt, der für die RISC-V Zielarchitektur spezifisch ist.
+Diese Optimierung kann daher nur in dem speziellen Backend implementiert werden und nicht in der generischen Zwischensprache des Compilers.

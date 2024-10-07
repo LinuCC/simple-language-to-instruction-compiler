@@ -4,6 +4,9 @@ CMakeCache.txt
 Makefile
 cmake_install.cmake
 
+# Unsere Binary
+slicc
+
 # MacOS Cache
 .DS_Store
 
