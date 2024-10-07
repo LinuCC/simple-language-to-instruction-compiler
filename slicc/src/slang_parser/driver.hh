@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-namespace parser_gen {
+namespace slang_parser {
 
 /// Forward declarations of classes
 class Parser;
@@ -33,6 +33,6 @@ private:
   friend class Scanner;
 };
 
-} // namespace parser_gen
+} // namespace slang_parser
 
 #endif /* !DRIVER_HH_ */

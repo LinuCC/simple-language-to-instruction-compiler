@@ -1,6 +1,6 @@
 # Add subdirectories
 
-add_subdirectory(parser_gen)
+add_subdirectory(slang_parser)
 
 # Add the binary and sources
 add_executable(
@@ -8,5 +8,5 @@ add_executable(
   main.cc
 )
 
-target_link_libraries(slicc parser_gen)
-set_target_properties(slicc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../..")
+target_link_libraries(slicc slang_parser)
+set_target_properties(slicc PROPERTIES RUNTIME_OUTPUT_DIRECTORY "..")

@@ -5,19 +5,20 @@
 
 #ifndef YY_DECL
 #define YY_DECL                                                                \
-  parser_gen::Parser::token_type parser_gen::Scanner::yylex(                   \
-      parser_gen::Parser::semantic_type *yylval,                               \
-      parser_gen::Parser::location_type *yylloc, parser_gen::Driver &driver)
+  slang_parser::Parser::token_type slang_parser::Scanner::yylex(               \
+      slang_parser::Parser::semantic_type *yylval,                             \
+      slang_parser::Parser::location_type *yylloc,                             \
+      slang_parser::Driver &driver)
 #endif
 
 #ifndef __FLEX_LEXER_H
-#define yyFlexLexer parseFlexLexer
+#define yyFlexLexer ParserGenFlexLexer
 #include <FlexLexer.h>
 #undef yyFlexLexer
 #endif
 
-namespace parser_gen {
-class Scanner : public parseFlexLexer {
+namespace slang_parser {
+class Scanner : public ParserGenFlexLexer {
 public:
   Scanner();
 
@@ -29,6 +30,6 @@ public:
 
   void set_debug(bool b);
 };
-} // namespace parser_gen
+} // namespace slang_parser
 
 #endif // SCANPIT_HH_

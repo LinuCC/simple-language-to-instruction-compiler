@@ -37,7 +37,7 @@
 
 
 // First part of user prologue.
-#line 1 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
+#line 1 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
      /* PARSER */
 
 #include "parser.hh"
@@ -45,7 +45,7 @@
 
 #define yylex driver.scanner_->yylex
 
-#line 49 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.cc"
+#line 49 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
 
 #include "parser.hh"
@@ -141,9 +141,9 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-namespace parser_gen {
-#line 147 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.cc"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+namespace slang_parser {
+#line 147 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
   /// Build a parser object.
   Parser::Parser (Driver &driver_yyarg)
@@ -614,7 +614,7 @@ namespace parser_gen {
           switch (yyn)
             {
 
-#line 618 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.cc"
+#line 618 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
             default:
               break;
@@ -966,62 +966,114 @@ namespace parser_gen {
   }
 
 
-  const signed char Parser::yypact_ninf_ = -1;
+  const signed char Parser::yypact_ninf_ = -47;
 
   const signed char Parser::yytable_ninf_ = -1;
 
   const signed char
   Parser::yypact_[] =
   {
-      -1,     0,    -1
+      11,     8,    64,    40,   -47,   -47,    50,    52,   -47,   -47,
+      46,    53,    41,     4,   -47,    41,    54,   -47,   -47,    56,
+      39,    39,    15,   -47,   -47,   -47,   -47,   -47,    55,    29,
+      29,    58,    57,   -47,   -47,    15,   -19,    59,   -47,   -47,
+     -47,   -47,   -47,   -47,    49,    51,     8,    60,    13,    15,
+      15,    15,    15,    15,    15,    15,    15,    15,    15,    61,
+     -47,   -47,   -47,   -47,    72,    62,   -47,   -19,   -19,   -19,
+     -19,   -19,   -19,   -19,   -19,   -19,   -19,   -47,     8,     8,
+     -47,   -47
   };
 
   const signed char
   Parser::yydefact_[] =
   {
-       2,     0,     1
+       0,     0,     0,     0,     5,     1,     0,     0,    41,    42,
+       0,     0,     0,     6,     4,     9,     0,    12,    13,     0,
+       0,     0,     0,     2,     3,     7,    10,    11,     0,     0,
+       0,     0,     0,    15,    16,     0,    14,     0,    28,    29,
+      30,    31,    32,    33,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      37,    36,    35,    34,    38,     0,    27,    17,    18,    19,
+      20,    21,    22,    23,    24,    25,    26,     8,     0,     0,
+      39,    40
   };
 
   const signed char
   Parser::yypgoto_[] =
   {
-      -1,    -1
+     -47,   -46,   -47,   -47,    66,   -47,    16,   -47,    22,   -34,
+      63,    65,   -47,   -47,   -47
   };
 
   const signed char
   Parser::yydefgoto_[] =
   {
-       0,     1
+       0,     4,    11,     2,    12,    13,    14,    15,    16,    36,
+      44,    31,    17,    18,    19
   };
 
   const signed char
   Parser::yytable_[] =
   {
-       2
+      64,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+      57,    58,     8,     9,     1,    67,    68,    69,    70,    71,
+      72,    73,    74,    75,    76,     3,    33,    34,    24,    66,
+      35,    26,    80,    81,    49,    50,    51,    52,    53,    54,
+      55,    56,    57,    58,     6,     6,     7,     7,     8,     9,
+      29,    30,    10,    10,    38,    39,    40,    41,    42,    43,
+      60,    61,    62,    63,     5,    20,    22,    21,    28,    65,
+      59,    23,    10,    27,    46,    37,    47,    78,    79,    25,
+      77,     0,     0,     0,     0,     0,    32,     0,     0,     0,
+       0,     0,     0,    45
   };
 
   const signed char
   Parser::yycheck_[] =
   {
-       0
+      46,    35,    21,    22,    23,    24,    25,    26,    27,    28,
+      29,    30,     8,     9,     3,    49,    50,    51,    52,    53,
+      54,    55,    56,    57,    58,    17,    11,    12,    12,    16,
+      15,    15,    78,    79,    21,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,     4,     4,     6,     6,     8,     9,
+      11,    12,    12,    12,    25,    26,    27,    28,    29,    30,
+      11,    12,    11,    12,     0,    15,    20,    15,    12,    47,
+      11,    18,    12,    19,    16,    20,    19,     5,    16,    13,
+      19,    -1,    -1,    -1,    -1,    -1,    21,    -1,    -1,    -1,
+      -1,    -1,    -1,    30
   };
 
   const signed char
   Parser::yystos_[] =
   {
-       0,     4,     0
+       0,     3,    34,    17,    32,     0,     4,     6,     8,     9,
+      12,    33,    35,    36,    37,    38,    39,    43,    44,    45,
+      15,    15,    20,    18,    37,    35,    37,    19,    12,    11,
+      12,    42,    42,    11,    12,    15,    40,    20,    25,    26,
+      27,    28,    29,    30,    41,    41,    16,    19,    40,    21,
+      22,    23,    24,    25,    26,    27,    28,    29,    30,    11,
+      11,    12,    11,    12,    32,    39,    16,    40,    40,    40,
+      40,    40,    40,    40,    40,    40,    40,    19,     5,    16,
+      32,    32
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,     3,     4
+       0,    31,    32,    33,    33,    34,    35,    35,    36,    37,
+      37,    38,    38,    38,    39,    40,    40,    40,    40,    40,
+      40,    40,    40,    40,    40,    40,    40,    40,    41,    41,
+      41,    41,    41,    41,    42,    42,    42,    42,    43,    43,
+      44,    45,    45
   };
 
   const signed char
   Parser::yyr2_[] =
   {
-       0,     2,     0
+       0,     2,     3,     2,     1,     2,     1,     2,     5,     1,
+       2,     2,     1,     1,     3,     1,     1,     3,     3,     3,
+       3,     3,     3,     3,     3,     3,     3,     3,     1,     1,
+       1,     1,     1,     1,     3,     3,     3,     3,     5,     7,
+       7,     1,     1
   };
 
 
@@ -1031,16 +1083,28 @@ namespace parser_gen {
   const char*
   const Parser::yytname_[] =
   {
-  "TOK_EOF", "error", "\"invalid token\"", "$accept", "start", YY_NULLPTR
+  "TOK_EOF", "error", "\"invalid token\"", "TOK_PROGRAM", "TOK_IF",
+  "TOK_ELSE", "TOK_FOR", "TOK_FUNC", "TOK_INT", "TOK_INT_ARRAY",
+  "TOK_VOID", "TOK_INT_LITERAL", "TOK_ID", "TOK_LBRACKET", "TOK_RBRACKET",
+  "TOK_LPAREN", "TOK_RPAREN", "TOK_LBRACE", "TOK_RBRACE", "TOK_SEMICOLON",
+  "TOK_ASSIGN", "TOK_PLUS", "TOK_MINUS", "TOK_MUL", "TOK_DIV", "TOK_EQ",
+  "TOK_NEQ", "TOK_LT", "TOK_LEQ", "TOK_GT", "TOK_GEQ", "$accept", "block",
+  "block_body", "program", "variable_list", "variable_declaration",
+  "statement_list", "statement", "statement_assignment", "expression",
+  "comparison_operator", "compare_expression", "if", "for", "type", YY_NULLPTR
   };
 #endif
 
 
 #if YYDEBUG
-  const signed char
+  const unsigned char
   Parser::yyrline_[] =
   {
-       0,    58,    58
+       0,    84,    84,    90,    91,    97,   101,   102,   107,   112,
+     113,   118,   119,   120,   125,   130,   131,   132,   133,   134,
+     135,   136,   137,   138,   139,   140,   141,   142,   146,   147,
+     148,   149,   150,   151,   155,   156,   157,   158,   165,   166,
+     173,   181,   181
   };
 
   void
@@ -1104,10 +1168,13 @@ namespace parser_gen {
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     1,     2
+       2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
+      25,    26,    27,    28,    29,    30
     };
     // Last valid token kind.
-    const int code_max = 257;
+    const int code_max = 285;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -1117,14 +1184,17 @@ namespace parser_gen {
       return symbol_kind::S_YYUNDEF;
   }
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-} // parser_gen
-#line 1123 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.cc"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+} // slang_parser
+#line 1190 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
-#line 64 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
+#line 184 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
 
-namespace parser_gen
+/*
+ * Simple Fehlerbehandlung für den Parser
+ */
+namespace slang_parser
 {
     void Parser::error(const location& l, const std::string& m)
     {

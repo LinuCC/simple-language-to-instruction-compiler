@@ -1,7 +1,6 @@
 \part{Umsetzung des Compilers}
 \chapter{Planung Des Compilers}
 
-
 Die Implementierung des Compilers soll folgende Ziele erfuellen:
 
 \begin{itemize}
@@ -9,6 +8,88 @@ Die Implementierung des Compilers soll folgende Ziele erfuellen:
 \item Flexibles Backend: Der Compiler soll in der Lage sein, auf verschiedene Zielplattformen wie RISC Assembly und RISC Binary zu kompilieren.
 \end{itemize}
 
-Weitere Aufgaben:
+Der in dieser Arbeit erstellte Compiler ``SLICC'' (Simple Language to Instruction Compiler in C++)  wird hauptsächlich in C++ geschrieben, da die Werkzeuge wie die Parsergeneratoren, die benutzt werden, gut darauf aufbauen.
+Damit der Compiler selbst möglichst interoperabel auf verschiedenen Plattformen kompiliert werden kann, wird das robuste und weit verbreitete ``CMake'' zum bauen der Binärdatei benutzt.\\
+Da der Compiler ein Zweipass-Compiler ist, benötigen wird die Auftrennung des Compilers in Frontend und Backend durch eine Zwischensprache.
+Die Zwischensprache wird in diesem Fall ein - in dem Theorie-Teil bereits erwähnter - ``Three-Address Code'' sein, der die Operationen des Programmcodes in einfache Operationen mit drei Adressen aufteilt.
+Diese Zwischensprache trennt ein Frontend, dass eine simple, Pascal-ähnliche Programmiersprache namens ``Slang'' (Simple Language) parst, von einem Backend, dass den Three-Address Code in lesbaren RISC Assembly oder RISC Binary übersetzt und in eine Datei speichert.\\
 
-- Die generierte RISC Binary kann irgendwie ausgefuehrt werden
+\begin{figure}[H]
+  \begin{tikzpicture}
+  \sffamily
+    \node[minimum height=1.5cm,minimum width=2cm,text centered,draw](slangfrontend){Slang Frontend};
+    \node[right=0.9cm of slangfrontend, minimum height=1.5cm,minimum width=2cm,text centered, text width=2cm, draw] (state){Three-Address\\
+    Code};
+    \node[title,left=0.75cm of slangfrontend, text width=2.5cm, text centered](slangcode){Slang\\
+    Programmcode};
+    \node[title,above=0.33cm of slangfrontend](frontendstitle){Frontends};
+    \node[above=1cm of slangfrontend, fit={(slangfrontend)($(slangfrontend)+(0,-1.75)$)},minimum width=2cm,draw=black!50] (frontendsbox);
+    \node[right=4cm of slangfrontend, minimum height=1.5cm,minimum width=2.5cm,text centered,draw](riscbackend){RISC Backend};
+    \node [title,above=0.33cm of riscbackend](backendstitle){Backends};
+    \node[above=1cm of riscbackend, fit={(riscbackend)($(riscbackend.south)+(0,-1)$)},minimum width=2cm,draw=black!50] (backendsbox);
+    \node [title,right=0.75cm of riscbackend, text width=2cm, text centered](riscbinary){RISC\\
+    Maschinencode};
+    \node[above=0.25cm of slangfrontend, fit={(frontendsbox)($(backendsbox.southeast)+(0, -1.75)$)},minimum width=2cm,draw=black!50] (compilerbox);
+    \node [title,above=1.5cm of state](compilertitle){SLICC Compiler};
+    \umltrans[arg=]{slangcode}{slangfrontend}
+    \umltrans[arg=]{riscbackend}{riscbinary}
+    \umltrans[arg=]{x86backend}{x86binary}
+    \umltrans[arg=]{slangfrontend}{state}
+    \umltrans[arg=]{state}{riscbackend}
+  \end{tikzpicture}
+  \caption{Aufbau des SLICC Compilers}
+  \label{fig:slicc:compiler}
+\end{figure}
+
+Da hier erstmal nur ein Frontend und ein Backend implementiert werden, muss die Entkopplung in der Implementierung des Compilers sichergestellt werden um die Flexibilität des Projektes zu wahren.\\
+Um dies durchzusetzen wird das Submodul-Feature von CMake benutzt um das Frontend und Backend zu Bibliotheken zu kapseln, die dann vom Hauptprogramm, dem ``Driver'', eingebunden werden können.
+Als Ordnerstruktur wird folgendes gewählt:
+
+\begin{figure}[H]
+\begin{forest}
+  for tree={
+    font=\ttfamily,
+    grow'=0,
+    child anchor=west,
+    parent anchor=south,
+    anchor=west,
+    calign=first,
+    edge path={
+      \noexpand\path [draw, \forestoption{edge}]
+      (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+    },
+    before typesetting nodes={
+      if n=1
+        {insert before={[,phantom]}}
+        {}
+    },
+    fit=band,
+    before computing xy={l=15pt},
+  }
+[slicc/
+  [src/
+    [slang\_parser/\quad \normalfont{\textit{(Frontend)}}
+    [parser.yy \quad \normalfont{\textit{(GNU Bison basierter Parser)}}]
+    [scan.ll \quad \normalfont{\textit{(Flex basierter Lexer)}}]
+      [CMakeLists.txt]
+    ]
+    [risc\_gen/\quad \normalfont{\textit{(Backend)}}
+      [code\_gen.cc \quad \normalfont{\textit{(Code Generator)}}]
+      [optimizer.cc \quad \normalfont{\textit{(Backend-spezifische Optimierungen)}}]
+      [CMakeLists.txt]
+    ]
+    [other\_frontend/
+      [...]
+    ]
+    [other\_backend/
+      [...]
+    ]
+    [main.cc]
+    [optimizer.cc \quad \normalfont{\textit{(Generische Optimierungen auf Zwischensprache)}}]
+  ]
+  [CMakeLists.txt]
+]
+\end{forest}
+\end{figure}
+
+Dadurch können dann in \texttt{main.cc} die Frontend- und Backend-Bibliotheken eingebunden und je nach Eingabeparameter bei der Ausführung ausgewählt werden.

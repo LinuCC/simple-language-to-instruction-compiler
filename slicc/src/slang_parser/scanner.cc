@@ -1,6 +1,6 @@
-#line 1 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+#line 1 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
-#line 3 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+#line 3 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
 #define  YY_INT_ALIGNED short int
 
@@ -28,28 +28,28 @@
      * We will address this in a future release of flex, or omit the C++ scanner
      * altogether.
      */
-    #define yyFlexLexer parseFlexLexer
+    #define yyFlexLexer ParserGenFlexLexer
 /* %endif */
 
 /* %if-c-only */
 /* %endif */
 
 #ifdef yyalloc
-#define parsealloc_ALREADY_DEFINED
+#define ParserGenalloc_ALREADY_DEFINED
 #else
-#define yyalloc parsealloc
+#define yyalloc ParserGenalloc
 #endif
 
 #ifdef yyrealloc
-#define parserealloc_ALREADY_DEFINED
+#define ParserGenrealloc_ALREADY_DEFINED
 #else
-#define yyrealloc parserealloc
+#define yyrealloc ParserGenrealloc
 #endif
 
 #ifdef yyfree
-#define parsefree_ALREADY_DEFINED
+#define ParserGenfree_ALREADY_DEFINED
 #else
-#define yyfree parsefree
+#define yyfree ParserGenfree
 #endif
 
 /* %if-c-only */
@@ -424,8 +424,8 @@ int yyFlexLexer::yywrap() { return 1; }
 /* %% [3.0] code to copy yytext_ptr to yytext[] goes here, if %array \ */\
 	(yy_c_buf_p) = yy_cp;
 /* %% [4.0] data tables for the DFA and the user's section 1 definitions go here */
-#define YY_NUM_RULES 4
-#define YY_END_OF_BUFFER 5
+#define YY_NUM_RULES 33
+#define YY_END_OF_BUFFER 34
 /* This struct is not used in this scanner,
    but its presence is necessary. */
 struct yy_trans_info
@@ -433,9 +433,15 @@ struct yy_trans_info
 	flex_int32_t yy_verify;
 	flex_int32_t yy_nxt;
 	};
-static const flex_int16_t yy_accept[11] =
+static const flex_int16_t yy_accept[63] =
     {   0,
-        0,    0,    5,    3,    1,    2,    2,    1,    2,    0
+        0,    0,   34,   32,   30,   31,   31,   32,   12,   13,
+       20,   18,   19,   21,    9,   16,   26,   17,   27,   14,
+       15,   29,   29,   29,   29,   29,   29,   10,   11,   30,
+       31,   23,   28,    9,   24,   22,   25,   29,   29,   29,
+       29,    2,   29,   29,   29,   28,   29,    4,   29,    7,
+       29,   29,    3,    5,    0,   29,    6,    8,   29,   29,
+        1,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -443,17 +449,17 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
         1,    1,    4,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    2,    5,    1,    1,    1,    1,    1,    1,    6,
+        7,    8,    9,    1,   10,    1,   11,   12,   12,   12,
+       12,   12,   12,   12,   12,   12,   12,    1,   13,   14,
+       15,   16,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+       17,    1,   18,    1,   19,    1,   20,   21,   22,   23,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+       24,   25,   26,   21,   27,   21,   21,   28,   29,   30,
+       31,   32,   21,   33,   34,   35,   36,   37,   21,   21,
+       21,   21,   38,    1,   39,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -470,43 +476,82 @@ static const YY_CHAR yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static const YY_CHAR yy_meta[5] =
+static const YY_CHAR yy_meta[40] =
     {   0,
-        1,    2,    3,    3
+        1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
+        1,    3,    1,    1,    1,    1,    1,    1,    3,    3,
+        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+        3,    3,    3,    3,    3,    3,    3,    1,    1
     } ;
 
-static const flex_int16_t yy_base[13] =
+static const flex_int16_t yy_base[65] =
     {   0,
-        0,    0,    7,    8,    0,    0,    0,    0,    0,    8,
-        4,    2
+        0,    0,   80,   81,   77,   37,   39,   63,   81,   81,
+       81,   81,   81,   66,   64,   81,   60,   59,   58,   81,
+       81,    0,   44,   13,   20,   38,   39,   81,   81,   67,
+       43,   81,    0,   56,   81,   81,   81,    0,   33,   33,
+       35,    0,   29,   32,   35,    0,   37,    0,   38,   42,
+       32,   34,    0,    0,   38,   22,    0,   81,   34,   23,
+        0,   81,   45,   50
     } ;
 
-static const flex_int16_t yy_def[13] =
+static const flex_int16_t yy_def[65] =
     {   0,
-       10,    1,   10,   10,   11,   12,   12,   11,   12,    0,
-       10,   10
+       62,    1,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   63,   63,   63,   63,   63,   63,   62,   62,   62,
+       62,   62,   64,   62,   62,   62,   62,   63,   63,   63,
+       63,   63,   63,   63,   63,   64,   63,   63,   63,   63,
+       63,   63,   63,   63,   62,   63,   63,   62,   63,   63,
+       63,    0,   62,   62
     } ;
 
-static const flex_int16_t yy_nxt[13] =
+static const flex_int16_t yy_nxt[121] =
     {   0,
-        4,    5,    6,    7,    9,    8,   10,    3,   10,   10,
-       10,   10
+        4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
+       14,   15,   16,   17,   18,   19,   20,   21,    4,   22,
+       22,   22,   22,   23,   24,   22,   25,   22,   22,   22,
+       22,   26,   22,   22,   22,   22,   27,   28,   29,   31,
+       31,   31,   31,   40,   42,   31,   31,   38,   41,   43,
+       46,   61,   46,   60,   59,   58,   57,   56,   55,   54,
+       53,   52,   51,   50,   49,   48,   47,   34,   30,   45,
+       44,   39,   37,   36,   35,   34,   33,   32,   30,   62,
+        3,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62
     } ;
 
-static const flex_int16_t yy_chk[13] =
+static const flex_int16_t yy_chk[121] =
     {   0,
-        1,    1,    1,    1,   12,   11,    3,   10,   10,   10,
-       10,   10
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    6,
+        6,    7,    7,   24,   25,   31,   31,   63,   24,   25,
+       64,   60,   64,   59,   56,   55,   52,   51,   50,   49,
+       47,   45,   44,   43,   41,   40,   39,   34,   30,   27,
+       26,   23,   19,   18,   17,   15,   14,    8,    5,    3,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62,
+       62,   62,   62,   62,   62,   62,   62,   62,   62,   62
     } ;
 
 /* Table of booleans, true if rule could match eol. */
-static const flex_int32_t yy_rule_can_match_eol[5] =
+static const flex_int32_t yy_rule_can_match_eol[34] =
     {   0,
-0, 1, 0, 0,     };
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,     };
 
-static const flex_int16_t yy_rule_linenum[4] =
+static const flex_int16_t yy_rule_linenum[33] =
     {   0,
-       61,   63,   65
+       66,   67,   68,   69,   70,   72,   73,   74,   76,   82,
+       83,   84,   85,   87,   88,   90,   91,   93,   94,   95,
+       96,   99,  100,  101,  102,  103,  104,  107,  109,  115,
+      116,  119
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -516,16 +561,14 @@ static const flex_int16_t yy_rule_linenum[4] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
-#line 2 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
+#line 1 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 2 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
 
 #include "parser.hh"
 #include "scanner.hh"
 #include "driver.hh"
 
 /*  Defines some macros to update locations */
-
-
 #define STEP()                                      \
   do {                                              \
     yylloc->step ();                      \
@@ -542,18 +585,23 @@ static const flex_int16_t yy_rule_linenum[4] =
 #define YY_USER_ACTION				                      \
   COL(yyleng);
 
-
-typedef parser_gen::Parser::token token;
-typedef parser_gen::Parser::token_type token_type;
+/**
+ * Vorgefertigte Tokens von flex' slang_parser::Parser::token abkürzen
+ * 
+ * Die Tokens werden mit Bison in der Datei `parse.yy` referenziert und dadurch hier rein generiert.
+ * Um weitere Tokens im Lexer zu parsen, müssen diese in `parse.yy` referenziert werden.
+ */
+typedef slang_parser::Parser::token token;
+typedef slang_parser::Parser::token_type token_type;
 
 #define yyterminate() return token::TOK_EOF
 
-#line 551 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+#line 599 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 /*
 %option stack
 */
 /* Abbreviations.  */
-#line 556 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+#line 604 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
 #define INITIAL 0
 
@@ -745,17 +793,17 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 52 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
+#line 57 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
 
 
-#line 55 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
+#line 60 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
  /* The rules.  */
 
   STEP();
 
 
-
-#line 758 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+  /* Tokens für die Kontrollstruktur */
+#line 806 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -784,13 +832,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 11 )
+				if ( yy_current_state >= 63 )
 					yy_c = yy_meta[yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
 			++yy_cp;
 			}
-		while ( yy_current_state != 10 );
+		while ( yy_current_state != 62 );
 		yy_cp = (yy_last_accepting_cpos);
 		yy_current_state = (yy_last_accepting_state);
 
@@ -819,12 +867,12 @@ do_action:	/* This label is used only to access EOF actions. */
 			{
 			if ( yy_act == 0 )
 				std::cerr << "--scanner backing up\n";
-			else if ( yy_act < 4 )
+			else if ( yy_act < 33 )
 				std::cerr << "--accepting rule at line " << yy_rule_linenum[yy_act] <<
 				         "(\"" << yytext << "\")\n";
-			else if ( yy_act == 4 )
+			else if ( yy_act == 33 )
 				std::cerr << "--accepting default rule (\"" << yytext << "\")\n";
-			else if ( yy_act == 5 )
+			else if ( yy_act == 34 )
 				std::cerr << "--(end of buffer or a NUL)\n";
 			else
 				std::cerr << "--EOF (start condition " << YY_START << ")\n";
@@ -842,32 +890,194 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 61 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
-STEP();
+#line 66 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_PROGRAM; }
 	YY_BREAK
 case 2:
-/* rule 2 can match eol */
 YY_RULE_SETUP
-#line 63 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
-LINE(yyleng);
+#line 67 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_IF; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 65 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
-{
-                std::cerr << *yylloc << " Unexpected token : "
-                                              << *yytext << std::endl;
-                driver.error_ = (driver.error_ == 127 ? 127
-                                : driver.error_ + 1);
-                STEP ();
-              }
+#line 68 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_ELSE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 73 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
+#line 69 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_FOR; }
+	YY_BREAK
+case 5:
+YY_RULE_SETUP
+#line 70 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_FUNC; }
+	YY_BREAK
+/* Tokens für Typen */
+case 6:
+YY_RULE_SETUP
+#line 72 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_VOID; }
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+#line 73 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_INT; }
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 74 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_INT_ARRAY; }
+	YY_BREAK
+/* Tokens für Konstanten */
+case 9:
+YY_RULE_SETUP
+#line 76 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ 
+  /* Übersetzt die gelesenen Zeichen zu einer Nummer und speichert sie in das Objekt dass an Bison übergeben wird */
+  yylval->int_val = atoi(yytext); 
+  return token::TOK_INT_LITERAL; 
+}
+	YY_BREAK
+/* Umschliessende Klammern */
+case 10:
+YY_RULE_SETUP
+#line 82 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_LBRACE; }
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 83 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_RBRACE; }
+	YY_BREAK
+case 12:
+YY_RULE_SETUP
+#line 84 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_LPAREN; }
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 85 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_RPAREN; }
+	YY_BREAK
+/* Momentan nur für Arrays benutzt */
+case 14:
+YY_RULE_SETUP
+#line 87 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_LBRACKET; } 
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+#line 88 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_RBRACKET; }
+	YY_BREAK
+/* Mehr Zeichen */
+case 16:
+YY_RULE_SETUP
+#line 90 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_SEMICOLON; }
+	YY_BREAK
+case 17:
+YY_RULE_SETUP
+#line 91 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_ASSIGN; }
+	YY_BREAK
+/* Operatoren */
+case 18:
+YY_RULE_SETUP
+#line 93 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_PLUS; }
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
+#line 94 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_MINUS; }
+	YY_BREAK
+case 20:
+YY_RULE_SETUP
+#line 95 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_MUL; }
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+#line 96 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_DIV; }
+	YY_BREAK
+/* Vergleiche */
+case 22:
+YY_RULE_SETUP
+#line 99 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_EQ; }
+	YY_BREAK
+case 23:
+YY_RULE_SETUP
+#line 100 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_NEQ; }
+	YY_BREAK
+case 24:
+YY_RULE_SETUP
+#line 101 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_LEQ; }
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 102 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_GEQ; }
+	YY_BREAK
+case 26:
+YY_RULE_SETUP
+#line 103 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_LT; }
+	YY_BREAK
+case 27:
+YY_RULE_SETUP
+#line 104 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ return token::TOK_GT; }
+	YY_BREAK
+/* Jede Zeile die mit "/" und "*" beginnt wird ignoriert, wir überspringen diese einfach */
+case 28:
+YY_RULE_SETUP
+#line 107 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ }
+	YY_BREAK
+case 29:
+YY_RULE_SETUP
+#line 109 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{ 
+  yylval->str_val = yytext;
+  return token::TOK_ID; 
+}
+	YY_BREAK
+/* Leerzeichen */
+case 30:
+YY_RULE_SETUP
+#line 115 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+STEP();
+	YY_BREAK
+case 31:
+/* rule 31 can match eol */
+YY_RULE_SETUP
+#line 116 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+LINE(yyleng);
+	YY_BREAK
+case 32:
+YY_RULE_SETUP
+#line 119 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+{
+                std::cerr << *yylloc << " Unerwartetes Token : "
+                                              << *yytext << std::endl;
+                driver.error_ = (driver.error_ == 127 ? 127
+                                : driver.error_ + 1);
+                /* Wenn wir das Token nicht parsen können, überspringen wir es einfach */
+                STEP ();
+              }
+	YY_BREAK
+case 33:
+YY_RULE_SETUP
+#line 128 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
 ECHO;
 	YY_BREAK
-#line 870 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scanner.cc"
+#line 1080 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1307,7 +1517,7 @@ int yyFlexLexer::yy_get_next_buffer()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 11 )
+			if ( yy_current_state >= 63 )
 				yy_c = yy_meta[yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
@@ -1340,11 +1550,11 @@ int yyFlexLexer::yy_get_next_buffer()
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 11 )
+		if ( yy_current_state >= 63 )
 			yy_c = yy_meta[yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + yy_c];
-	yy_is_jam = (yy_current_state == 10);
+	yy_is_jam = (yy_current_state == 62);
 
 		return yy_is_jam ? 0 : yy_current_state;
 }
@@ -1994,7 +2204,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 73 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/scan.ll"
+#line 128 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
 
 
 
@@ -2004,11 +2214,11 @@ void yyfree (void * ptr )
 
 */
 
-namespace parser_gen
+namespace slang_parser
 {
 
     Scanner::Scanner()
-    : parseFlexLexer()
+    : ParserGenFlexLexer()
     {
     }
 
@@ -2026,9 +2236,9 @@ namespace parser_gen
 # undef yylex
 #endif
 
-int parseFlexLexer::yylex()
+int ParserGenFlexLexer::yylex()
 {
-  std::cerr << "call parsepitFlexLexer::yylex()!" << std::endl;
+  std::cerr << "call ParserGenpitFlexLexer::yylex()!" << std::endl;
   return 0;
 }
 

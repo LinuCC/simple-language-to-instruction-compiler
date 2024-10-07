@@ -31,12 +31,12 @@
 // version 2.2 of Bison.
 
 /**
- ** \file /Users/linucc/code/projects/slic/slicc/src/parser_gen/location.hh
- ** Define the parser_gen::location class.
+ ** \file /Users/linucc/code/projects/slic/slicc/src/slang_parser/location.hh
+ ** Define the slang_parser::location class.
  */
 
-#ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_LOCATION_HH_INCLUDED
-# define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_LOCATION_HH_INCLUDED
+#ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_LOCATION_HH_INCLUDED
+# define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_LOCATION_HH_INCLUDED
 
 # include <iostream>
 # include <string>
@@ -53,9 +53,9 @@
 #  endif
 # endif
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-namespace parser_gen {
-#line 59 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/location.hh"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+namespace slang_parser {
+#line 59 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/location.hh"
 
   /// A point in a source file.
   class position
@@ -299,8 +299,8 @@ namespace parser_gen {
     return ostr;
   }
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-} // parser_gen
-#line 305 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/location.hh"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+} // slang_parser
+#line 305 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/location.hh"
 
-#endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_LOCATION_HH_INCLUDED
+#endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_LOCATION_HH_INCLUDED

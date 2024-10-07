@@ -14,7 +14,7 @@ flex_target(Scanner scan.ll ${CMAKE_CURRENT_BINARY_DIR}/scanner.cc)
 
 add_flex_bison_dependency(Scanner Parser)
 
-add_library(parser_gen
+add_library(slang_parser
             STATIC
             ${FLEX_Scanner_OUTPUTS}
             ${BISON_Parser_OUTPUTS}

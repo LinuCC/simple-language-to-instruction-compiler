@@ -32,8 +32,8 @@
 
 
 /**
- ** \file /Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh
- ** Define the parser_gen::parser class.
+ ** \file /Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh
+ ** Define the slang_parser::parser class.
  */
 
 // C++ LALR(1) parser skeleton written by Akim Demaille.
@@ -42,17 +42,17 @@
 // especially those whose name start with YY_ or yy_.  They are
 // private implementation details that can be changed or removed.
 
-#ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_PARSER_HH_INCLUDED
-# define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_PARSER_HH_INCLUDED
+#ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
+# define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 // "%code requires" blocks.
-#line 10 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
+#line 10 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
   #include <iostream>
   #include "driver.hh"
   #include "location.hh"
   #include "position.hh"
 
-#line 56 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh"
+#line 56 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 # include <cstdlib> // std::abort
@@ -186,9 +186,9 @@
 # define YYDEBUG 1
 #endif
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-namespace parser_gen {
-#line 192 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+namespace slang_parser {
+#line 192 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 
@@ -206,11 +206,14 @@ namespace parser_gen {
     /// Symbol semantic values.
     union value_type
     {
-#line 46 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
+#line 47 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
- /* YYLTYPE */
+  /* Ein Integer-Wert für Nummer-Konstanten */
+  int int_val;
+  /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
+  char* str_val;
 
-#line 214 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh"
+#line 217 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
     };
 #endif
@@ -246,7 +249,35 @@ namespace parser_gen {
         YYEMPTY = -2,
     TOK_EOF = 0,                   // TOK_EOF
     YYerror = 256,                 // error
-    YYUNDEF = 257                  // "invalid token"
+    YYUNDEF = 257,                 // "invalid token"
+    TOK_PROGRAM = 258,             // TOK_PROGRAM
+    TOK_IF = 259,                  // TOK_IF
+    TOK_ELSE = 260,                // TOK_ELSE
+    TOK_FOR = 261,                 // TOK_FOR
+    TOK_FUNC = 262,                // TOK_FUNC
+    TOK_INT = 263,                 // TOK_INT
+    TOK_INT_ARRAY = 264,           // TOK_INT_ARRAY
+    TOK_VOID = 265,                // TOK_VOID
+    TOK_INT_LITERAL = 266,         // TOK_INT_LITERAL
+    TOK_ID = 267,                  // TOK_ID
+    TOK_LBRACKET = 268,            // TOK_LBRACKET
+    TOK_RBRACKET = 269,            // TOK_RBRACKET
+    TOK_LPAREN = 270,              // TOK_LPAREN
+    TOK_RPAREN = 271,              // TOK_RPAREN
+    TOK_LBRACE = 272,              // TOK_LBRACE
+    TOK_RBRACE = 273,              // TOK_RBRACE
+    TOK_SEMICOLON = 274,           // TOK_SEMICOLON
+    TOK_ASSIGN = 275,              // TOK_ASSIGN
+    TOK_PLUS = 276,                // TOK_PLUS
+    TOK_MINUS = 277,               // TOK_MINUS
+    TOK_MUL = 278,                 // TOK_MUL
+    TOK_DIV = 279,                 // TOK_DIV
+    TOK_EQ = 280,                  // TOK_EQ
+    TOK_NEQ = 281,                 // TOK_NEQ
+    TOK_LT = 282,                  // TOK_LT
+    TOK_LEQ = 283,                 // TOK_LEQ
+    TOK_GT = 284,                  // TOK_GT
+    TOK_GEQ = 285                  // TOK_GEQ
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -263,13 +294,54 @@ namespace parser_gen {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 3, ///< Number of tokens.
+        YYNTOKENS = 31, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // TOK_EOF
         S_YYerror = 1,                           // error
         S_YYUNDEF = 2,                           // "invalid token"
-        S_YYACCEPT = 3,                          // $accept
-        S_start = 4                              // start
+        S_TOK_PROGRAM = 3,                       // TOK_PROGRAM
+        S_TOK_IF = 4,                            // TOK_IF
+        S_TOK_ELSE = 5,                          // TOK_ELSE
+        S_TOK_FOR = 6,                           // TOK_FOR
+        S_TOK_FUNC = 7,                          // TOK_FUNC
+        S_TOK_INT = 8,                           // TOK_INT
+        S_TOK_INT_ARRAY = 9,                     // TOK_INT_ARRAY
+        S_TOK_VOID = 10,                         // TOK_VOID
+        S_TOK_INT_LITERAL = 11,                  // TOK_INT_LITERAL
+        S_TOK_ID = 12,                           // TOK_ID
+        S_TOK_LBRACKET = 13,                     // TOK_LBRACKET
+        S_TOK_RBRACKET = 14,                     // TOK_RBRACKET
+        S_TOK_LPAREN = 15,                       // TOK_LPAREN
+        S_TOK_RPAREN = 16,                       // TOK_RPAREN
+        S_TOK_LBRACE = 17,                       // TOK_LBRACE
+        S_TOK_RBRACE = 18,                       // TOK_RBRACE
+        S_TOK_SEMICOLON = 19,                    // TOK_SEMICOLON
+        S_TOK_ASSIGN = 20,                       // TOK_ASSIGN
+        S_TOK_PLUS = 21,                         // TOK_PLUS
+        S_TOK_MINUS = 22,                        // TOK_MINUS
+        S_TOK_MUL = 23,                          // TOK_MUL
+        S_TOK_DIV = 24,                          // TOK_DIV
+        S_TOK_EQ = 25,                           // TOK_EQ
+        S_TOK_NEQ = 26,                          // TOK_NEQ
+        S_TOK_LT = 27,                           // TOK_LT
+        S_TOK_LEQ = 28,                          // TOK_LEQ
+        S_TOK_GT = 29,                           // TOK_GT
+        S_TOK_GEQ = 30,                          // TOK_GEQ
+        S_YYACCEPT = 31,                         // $accept
+        S_block = 32,                            // block
+        S_block_body = 33,                       // block_body
+        S_program = 34,                          // program
+        S_variable_list = 35,                    // variable_list
+        S_variable_declaration = 36,             // variable_declaration
+        S_statement_list = 37,                   // statement_list
+        S_statement = 38,                        // statement
+        S_statement_assignment = 39,             // statement_assignment
+        S_expression = 40,                       // expression
+        S_comparison_operator = 41,              // comparison_operator
+        S_compare_expression = 42,               // compare_expression
+        S_if = 43,                               // if
+        S_for = 44,                              // for
+        S_type = 45                              // type
       };
     };
 
@@ -554,7 +626,7 @@ namespace parser_gen {
 
 #if YYDEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-    static const signed char yyrline_[];
+    static const unsigned char yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r) const;
     /// Print the state stack on the debug stream.
@@ -781,9 +853,9 @@ namespace parser_gen {
     /// Constants.
     enum
     {
-      yylast_ = 0,     ///< Last index in yytable_.
-      yynnts_ = 2,  ///< Number of nonterminal symbols.
-      yyfinal_ = 2 ///< Termination state number.
+      yylast_ = 93,     ///< Last index in yytable_.
+      yynnts_ = 15,  ///< Number of nonterminal symbols.
+      yyfinal_ = 5 ///< Termination state number.
     };
 
 
@@ -793,15 +865,15 @@ namespace parser_gen {
   };
 
 
-#line 39 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
-} // parser_gen
-#line 799 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh"
+#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+} // slang_parser
+#line 871 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 // "%code provides" blocks.
-#line 18 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parse.yy"
+#line 18 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
-  namespace parser_gen
+  namespace slang_parser
   {
     // Forward declaration of the Driver class
     class Driver;
@@ -813,7 +885,7 @@ namespace parser_gen {
     }
   }
 
-#line 817 "/Users/linucc/code/projects/slic/slicc/src/parser_gen/parser.hh"
+#line 889 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
-#endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_PARSER_GEN_PARSER_HH_INCLUDED
+#endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED

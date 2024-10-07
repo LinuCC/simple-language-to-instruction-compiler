@@ -1,6 +1,13 @@
 \chapter{Umsetzung des Parsers}
 \label{chap:building:parser}
 
+Der angezielte Parser ist ein Bottom-Up Parser generiert durch einen Parsergenerator.
+Die lexikalische Analyse wird von ``Flex'', einer erweiterten Alternative zum klassischen ``Lex'', übernommen.
+Flex parst eine Datei mit einer zu diesem Werkzeug spezifischen Syntax und schreibt den Lexer als autogenerierten C oder C++ Code in eine Datei.
+Mit der Schnittstelle dieses Lexers kann dann gearbeitet werden, um die Tokens während des parsens weiterzuverarbeiten.
+
+
+
 Wie sieht die Sprache aus, wie parst der diese Sprache, wie mappe ich das auf die Zwischensprache.
 
 Weitere Details: Speichereffizienz, Geschwindigkeit des Parsers, EBNF trickery (zur Optimierung von Geschwindigkeit etc), Fehlerbehandlung der Input Datei (Syntax Fehler / Logik Fehler / etc)
