@@ -45,14 +45,15 @@
 #ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 # define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 // "%code requires" blocks.
-#line 10 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 12 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
   #include <iostream>
   #include "driver.hh"
   #include "location.hh"
   #include "position.hh"
+  #include "../tac.hh"
 
-#line 56 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 57 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 # include <cstdlib> // std::abort
@@ -186,9 +187,9 @@
 # define YYDEBUG 1
 #endif
 
-#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 namespace slang_parser {
-#line 192 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 193 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 
@@ -206,14 +207,21 @@ namespace slang_parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 47 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 53 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
   /* Ein Integer-Wert für Nummer-Konstanten */
   int int_val;
   /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
   char* str_val;
 
-#line 217 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+  /* Speichert Werte von Typen */
+  struct {
+    slicc_tac::SymbolType symbol_type;
+    /* Ein Array muss eine Anzahl an Elementen angeben, die hier gespeichert werden */
+    int arr_element_amount;
+  } type_val;
+
+#line 225 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
     };
 #endif
@@ -255,29 +263,32 @@ namespace slang_parser {
     TOK_ELSE = 260,                // TOK_ELSE
     TOK_FOR = 261,                 // TOK_FOR
     TOK_FUNC = 262,                // TOK_FUNC
-    TOK_INT = 263,                 // TOK_INT
-    TOK_INT_ARRAY = 264,           // TOK_INT_ARRAY
-    TOK_VOID = 265,                // TOK_VOID
-    TOK_INT_LITERAL = 266,         // TOK_INT_LITERAL
-    TOK_ID = 267,                  // TOK_ID
-    TOK_LBRACKET = 268,            // TOK_LBRACKET
-    TOK_RBRACKET = 269,            // TOK_RBRACKET
-    TOK_LPAREN = 270,              // TOK_LPAREN
-    TOK_RPAREN = 271,              // TOK_RPAREN
-    TOK_LBRACE = 272,              // TOK_LBRACE
-    TOK_RBRACE = 273,              // TOK_RBRACE
-    TOK_SEMICOLON = 274,           // TOK_SEMICOLON
-    TOK_ASSIGN = 275,              // TOK_ASSIGN
-    TOK_PLUS = 276,                // TOK_PLUS
-    TOK_MINUS = 277,               // TOK_MINUS
-    TOK_MUL = 278,                 // TOK_MUL
-    TOK_DIV = 279,                 // TOK_DIV
-    TOK_EQ = 280,                  // TOK_EQ
-    TOK_NEQ = 281,                 // TOK_NEQ
-    TOK_LT = 282,                  // TOK_LT
-    TOK_LEQ = 283,                 // TOK_LEQ
-    TOK_GT = 284,                  // TOK_GT
-    TOK_GEQ = 285                  // TOK_GEQ
+    TOK_RETURN = 263,              // TOK_RETURN
+    TOK_INT = 264,                 // TOK_INT
+    TOK_INT_ARRAY = 265,           // TOK_INT_ARRAY
+    TOK_VOID = 266,                // TOK_VOID
+    TOK_REF = 267,                 // TOK_REF
+    TOK_INT_LITERAL = 268,         // TOK_INT_LITERAL
+    TOK_ID = 269,                  // TOK_ID
+    TOK_LBRACKET = 270,            // TOK_LBRACKET
+    TOK_RBRACKET = 271,            // TOK_RBRACKET
+    TOK_LPAREN = 272,              // TOK_LPAREN
+    TOK_RPAREN = 273,              // TOK_RPAREN
+    TOK_LBRACE = 274,              // TOK_LBRACE
+    TOK_RBRACE = 275,              // TOK_RBRACE
+    TOK_SEMICOLON = 276,           // TOK_SEMICOLON
+    TOK_COMMA = 277,               // TOK_COMMA
+    TOK_ASSIGN = 278,              // TOK_ASSIGN
+    TOK_PLUS = 279,                // TOK_PLUS
+    TOK_MINUS = 280,               // TOK_MINUS
+    TOK_MUL = 281,                 // TOK_MUL
+    TOK_DIV = 282,                 // TOK_DIV
+    TOK_EQ = 283,                  // TOK_EQ
+    TOK_NEQ = 284,                 // TOK_NEQ
+    TOK_LT = 285,                  // TOK_LT
+    TOK_LEQ = 286,                 // TOK_LEQ
+    TOK_GT = 287,                  // TOK_GT
+    TOK_GEQ = 288                  // TOK_GEQ
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -294,7 +305,7 @@ namespace slang_parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 31, ///< Number of tokens.
+        YYNTOKENS = 34, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // TOK_EOF
         S_YYerror = 1,                           // error
@@ -304,44 +315,54 @@ namespace slang_parser {
         S_TOK_ELSE = 5,                          // TOK_ELSE
         S_TOK_FOR = 6,                           // TOK_FOR
         S_TOK_FUNC = 7,                          // TOK_FUNC
-        S_TOK_INT = 8,                           // TOK_INT
-        S_TOK_INT_ARRAY = 9,                     // TOK_INT_ARRAY
-        S_TOK_VOID = 10,                         // TOK_VOID
-        S_TOK_INT_LITERAL = 11,                  // TOK_INT_LITERAL
-        S_TOK_ID = 12,                           // TOK_ID
-        S_TOK_LBRACKET = 13,                     // TOK_LBRACKET
-        S_TOK_RBRACKET = 14,                     // TOK_RBRACKET
-        S_TOK_LPAREN = 15,                       // TOK_LPAREN
-        S_TOK_RPAREN = 16,                       // TOK_RPAREN
-        S_TOK_LBRACE = 17,                       // TOK_LBRACE
-        S_TOK_RBRACE = 18,                       // TOK_RBRACE
-        S_TOK_SEMICOLON = 19,                    // TOK_SEMICOLON
-        S_TOK_ASSIGN = 20,                       // TOK_ASSIGN
-        S_TOK_PLUS = 21,                         // TOK_PLUS
-        S_TOK_MINUS = 22,                        // TOK_MINUS
-        S_TOK_MUL = 23,                          // TOK_MUL
-        S_TOK_DIV = 24,                          // TOK_DIV
-        S_TOK_EQ = 25,                           // TOK_EQ
-        S_TOK_NEQ = 26,                          // TOK_NEQ
-        S_TOK_LT = 27,                           // TOK_LT
-        S_TOK_LEQ = 28,                          // TOK_LEQ
-        S_TOK_GT = 29,                           // TOK_GT
-        S_TOK_GEQ = 30,                          // TOK_GEQ
-        S_YYACCEPT = 31,                         // $accept
-        S_block = 32,                            // block
-        S_block_body = 33,                       // block_body
-        S_program = 34,                          // program
-        S_variable_list = 35,                    // variable_list
-        S_variable_declaration = 36,             // variable_declaration
-        S_statement_list = 37,                   // statement_list
-        S_statement = 38,                        // statement
-        S_statement_assignment = 39,             // statement_assignment
-        S_expression = 40,                       // expression
-        S_comparison_operator = 41,              // comparison_operator
-        S_compare_expression = 42,               // compare_expression
-        S_if = 43,                               // if
-        S_for = 44,                              // for
-        S_type = 45                              // type
+        S_TOK_RETURN = 8,                        // TOK_RETURN
+        S_TOK_INT = 9,                           // TOK_INT
+        S_TOK_INT_ARRAY = 10,                    // TOK_INT_ARRAY
+        S_TOK_VOID = 11,                         // TOK_VOID
+        S_TOK_REF = 12,                          // TOK_REF
+        S_TOK_INT_LITERAL = 13,                  // TOK_INT_LITERAL
+        S_TOK_ID = 14,                           // TOK_ID
+        S_TOK_LBRACKET = 15,                     // TOK_LBRACKET
+        S_TOK_RBRACKET = 16,                     // TOK_RBRACKET
+        S_TOK_LPAREN = 17,                       // TOK_LPAREN
+        S_TOK_RPAREN = 18,                       // TOK_RPAREN
+        S_TOK_LBRACE = 19,                       // TOK_LBRACE
+        S_TOK_RBRACE = 20,                       // TOK_RBRACE
+        S_TOK_SEMICOLON = 21,                    // TOK_SEMICOLON
+        S_TOK_COMMA = 22,                        // TOK_COMMA
+        S_TOK_ASSIGN = 23,                       // TOK_ASSIGN
+        S_TOK_PLUS = 24,                         // TOK_PLUS
+        S_TOK_MINUS = 25,                        // TOK_MINUS
+        S_TOK_MUL = 26,                          // TOK_MUL
+        S_TOK_DIV = 27,                          // TOK_DIV
+        S_TOK_EQ = 28,                           // TOK_EQ
+        S_TOK_NEQ = 29,                          // TOK_NEQ
+        S_TOK_LT = 30,                           // TOK_LT
+        S_TOK_LEQ = 31,                          // TOK_LEQ
+        S_TOK_GT = 32,                           // TOK_GT
+        S_TOK_GEQ = 33,                          // TOK_GEQ
+        S_YYACCEPT = 34,                         // $accept
+        S_main = 35,                             // main
+        S_program = 36,                          // program
+        S_block = 37,                            // block
+        S_block_body = 38,                       // block_body
+        S_variable_list = 39,                    // variable_list
+        S_variable_declaration = 40,             // variable_declaration
+        S_statement_list = 41,                   // statement_list
+        S_statement = 42,                        // statement
+        S_statement_assignment = 43,             // statement_assignment
+        S_expression = 44,                       // expression
+        S_comparison_operator = 45,              // comparison_operator
+        S_compare_expression = 46,               // compare_expression
+        S_if = 47,                               // if
+        S_for = 48,                              // for
+        S_type = 49,                             // type
+        S_func_call = 50,                        // func_call
+        S_func_args = 51,                        // func_args
+        S_func_def_list = 52,                    // func_def_list
+        S_func_def = 53,                         // func_def
+        S_func_args_def = 54,                    // func_args_def
+        S_func_arg_def = 55                      // func_arg_def
       };
     };
 
@@ -553,7 +574,7 @@ namespace slang_parser {
 
 
     /// Stored state numbers (used for stacks).
-    typedef signed char state_type;
+    typedef unsigned char state_type;
 
     /// The arguments of the error message.
     int yy_syntax_error_arguments_ (const context& yyctx,
@@ -593,7 +614,7 @@ namespace slang_parser {
     // Tables.
     // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
     // STATE-NUM.
-    static const signed char yypact_[];
+    static const short yypact_[];
 
     // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
     // Performed when YYTABLE does not specify something else to do.  Zero
@@ -601,7 +622,7 @@ namespace slang_parser {
     static const signed char yydefact_[];
 
     // YYPGOTO[NTERM-NUM].
-    static const signed char yypgoto_[];
+    static const short yypgoto_[];
 
     // YYDEFGOTO[NTERM-NUM].
     static const signed char yydefgoto_[];
@@ -609,9 +630,9 @@ namespace slang_parser {
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
     // number is the opposite.  If YYTABLE_NINF, syntax error.
-    static const signed char yytable_[];
+    static const unsigned char yytable_[];
 
-    static const signed char yycheck_[];
+    static const short yycheck_[];
 
     // YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
     // state STATE-NUM.
@@ -626,7 +647,7 @@ namespace slang_parser {
 
 #if YYDEBUG
     // YYRLINE[YYN] -- Source line where rule number YYN was defined.
-    static const unsigned char yyrline_[];
+    static const short yyrline_[];
     /// Report on the debug stream that the rule \a r is going to be reduced.
     virtual void yy_reduce_print_ (int r) const;
     /// Print the state stack on the debug stream.
@@ -853,8 +874,8 @@ namespace slang_parser {
     /// Constants.
     enum
     {
-      yylast_ = 93,     ///< Last index in yytable_.
-      yynnts_ = 15,  ///< Number of nonterminal symbols.
+      yylast_ = 157,     ///< Last index in yytable_.
+      yynnts_ = 22,  ///< Number of nonterminal symbols.
       yyfinal_ = 5 ///< Termination state number.
     };
 
@@ -865,13 +886,13 @@ namespace slang_parser {
   };
 
 
-#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 } // slang_parser
-#line 871 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 892 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 // "%code provides" blocks.
-#line 18 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 21 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 
   namespace slang_parser
   {
@@ -885,7 +906,9 @@ namespace slang_parser {
     }
   }
 
-#line 889 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+  
+
+#line 912 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 #endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED

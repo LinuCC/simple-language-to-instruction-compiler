@@ -67,10 +67,12 @@ id      [a-z][a-z0-9_]*
 "else"          { return token::TOK_ELSE; }
 "for"          { return token::TOK_FOR; }
 "func"          { return token::TOK_FUNC; }
+"return"           {return  token::TOK_RETURN; }
   /* Tokens für Typen */
 "void"              { return token::TOK_VOID; }
 "int"              { return token::TOK_INT; }
-"int[]"            { return token::TOK_INT_ARRAY; }
+"ref"              { return token::TOK_REF; }
+"int["             { return token::TOK_INT_ARRAY; }
   /* Tokens für Konstanten */
 {digit}+           { 
   /* Übersetzt die gelesenen Zeichen zu einer Nummer und speichert sie in das Objekt dass an Bison übergeben wird */
@@ -87,6 +89,7 @@ id      [a-z][a-z0-9_]*
 "]"                { return token::TOK_RBRACKET; }
   /* Mehr Zeichen */
 ";"                { return token::TOK_SEMICOLON; }
+","                { return token::TOK_COMMA; }
 "="                { return token::TOK_ASSIGN; }
   /* Operatoren */
 "+"                { return token::TOK_PLUS; }
@@ -106,7 +109,7 @@ id      [a-z][a-z0-9_]*
 "//".*     { }
 
 {id}         { 
-  yylval->str_val = yytext;
+  yylval->str_val = strdup(yytext); /* Don't forget to `strdup`! */
   return token::TOK_ID; 
 }
 
@@ -118,8 +121,8 @@ id      [a-z][a-z0-9_]*
 .             {
                 std::cerr << *yylloc << " Unerwartetes Token : "
                                               << *yytext << std::endl;
-                driver.error_ = (driver.error_ == 127 ? 127
-                                : driver.error_ + 1);
+                driver.error = (driver.error == 127 ? 127
+                                : driver.error + 1);
                 /* Wenn wir das Token nicht parsen können, überspringen wir es einfach */
                 STEP ();
               }

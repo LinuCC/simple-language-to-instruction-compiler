@@ -53,7 +53,7 @@
 #  endif
 # endif
 
-#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 namespace slang_parser {
 #line 59 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/location.hh"
 
@@ -299,7 +299,7 @@ namespace slang_parser {
     return ostr;
   }
 
-#line 37 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
 } // slang_parser
 #line 305 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/location.hh"
 

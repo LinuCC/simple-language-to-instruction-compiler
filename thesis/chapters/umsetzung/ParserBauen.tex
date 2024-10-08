@@ -29,13 +29,10 @@ program foo {
     for (y < barsize; y = y + 1) {
       bar[y] = x + y;
     }
-    while (bar[2] < 10) {
-      bar[2] = bar[2] + 1;
-    }
-
     call_by_value(foo);
     call_by_reference(y);
-    write(call_with_return(y));
+    foo = call_with_return(y);
+    write(foo);
 }
 
 func void call_by_value(int val) {
@@ -61,9 +58,9 @@ Danach werden Anweisungen wie Zuweisungen, Kontrollstrukturen und Funktionsaufru
 Zwei spezielle Funktionen sind \texttt{read(i)} und \texttt{write(i)}, die standardmäßig bereitstehen und in stdin oder stdout des Programmes schreiben.
 Nach dem Programmblock können Funktionen definiert werden, die im Programm selber aufgerufen werden können.\\
 
-Eine BNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen:
+Eine EBNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen:
 
-  \begin{lstlisting}
+\begin{lstlisting}
 /* Start der Grammatik, unser Programmcode beginnt mit program { }, */
 /* dahinter stehen die Funktionsdefinitionen */
 <main> ::= <program> <wso> <func_def>* <wso>
@@ -159,6 +156,40 @@ Eine BNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen:
 /* Optionale Leerzeichen oder newlines */
 <wso> ::= <ws>*
 
-  \end{lstlisting}
+\end{lstlisting}
+\hfil\textit{Validiert mit BNF Playground\cite{paulklineBNFPlayground}}\\
 
+\section{Parserdefinition von GNU Bison}
+
+Während einige Parsergeneratoren mit EBNF oder BNF Grammatiken arbeiten, arbeitet Bison mit einem eigenen Definitionsformat, welches von Yacc übernommen und erweitert wurde.
+Diese ist daran angelehnt, beim Parsen direkt C oder C++ Code auszuführen, der den einzelnen Grammatikregeln zugewiesen wurde.\\
+Eine typische Regel in einer Bison \texttt{.y}-Datei definiert also nicht nur die Grammatikregel, sondern was mit den Werten, die aus dieser herausgelesen werden können, passieren soll:
+
+\begin{lstlisting}
+/* parser.yy */
+
+...
+
+%token TOK_PLUS "+"
+%token TOK_MINUS "-"
+%token <value> TOK_INTLITERAL
+
+%%
+
+expr:
+  TOK_INTLITERAL { $$ = $1; }
+  | expr TOK_PLUS expr { $$ = $1 + $3; }
+  | expr TOK_MINUS expr { $$ = $1 - $3; }
+  ;
+
+%%
+\end{lstlisting}
+
+In diesem Beispiel wird ein einfacher Parser für mathematische Ausdrücke definiert, der die Addition oder Subtraktion zweier Integer berechnet.
+Hierbei ist der Ausdruck in den geschweiften Klammern Template-Code, der beim Parsen aufgerufen wird, um aus dem Parser Daten zur Weiterverarbeitung zu bekommen.
+Zum Beispiel wird hier der mathematische Ausdruck, der geparst wird, direkt ausgeführt.
+Dabei bezeichnen \texttt{\$1} und \texttt{\$3} Die Werte der geparsten Tokens an der Stelle 1 und 3.
+Beide lassen sich auf das Terminalsymbol \texttt{TOK\_INTLITERAL} zurückführen, welches vom Lexer bereits in eine Integer übersetzt und als \texttt{<value>} reingegeben wurde. 
+Das Ergebnis der Ausführung des mathematischen Asudrucks wird in \texttt{\$\$} gespeichert, das über eine Schnittstelle auslesbar ist.\\
+Die Behandlung des Syntaxbaums wird somit von Bison komplett übernommen, der Implementierer muss nur noch den Wert, der an dieser Stelle des Baumes steht, definieren.
 
