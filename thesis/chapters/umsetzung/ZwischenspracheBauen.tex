@@ -1,9 +1,44 @@
 \chapter{Umsetzung der Zwischensprache}
 \label{chap:build:inBetweenState}
 
-Aufbau, wie halte ich Frontends und Backends kompatibel ohne zu sehr auf eine Architektur zu schielen mit der Datenstruktur
+Die Zwischensprache im Compiler besteht aus der Symboltabelle, die die definierten Variablen und Funktionen speichert, und dem Drei-Adressen Code, der die Operationen auflistet.\\
+Da die Datentypen dieser Konzepte die Schnittstelle zwischen Frontend und Backend darstellen, werden sie in dem globalen Namespace im Compiler definiert.
+Die Compiler-Frontends generieren bei der Analyse des Quelltextes die Daten, die die Symboltabelle und den Drei-Adressen Code repräsentieren, der dann an das Compiler-Backend weitergegeben und dort zu Maschinencode weiterverarbeitet wird.\\
 
-Weitere Details: Speichereffizienz, Geschwindigkeit, Fehlerbehandlung
 
-Three-Adress Code Implementierung aus \cite{aho:2006}
+\section{Die Symboltabelle}
 
+Die Symboltabelle speichert alle Attribute, die zu einer Deklaration eines Symbols gehören.
+Als Datentyp verwendet der \ac{SLICC} Compiler eine Liste \texttt{std::list} auf ein \texttt{struct}, welches alle potentiellen Attribute eines Symbols speichert.\\
+Die Attribute sind:
+
+\begin{itemize}
+  \item \textbf{name}: Der Name des Symbols, z.B. der Variablenname, Funktionsname oder Programmname
+  \item \textbf{type}: Der Typ des Symbols aus einem enum, z.B. eine Variable vom Typ \texttt{SymbolType::INT} eine Funktion vom Typ \texttt{SymbolType::FUNC} oder ein Funktionsargument vom Typ \texttt{SymbolType::FUNC_ARG}
+  \item \textbf{line}: Die Zeile, in der das Symbol definiert wurde
+  \item \textbf{col}: Das Zeichen in der Zeile, in der das Symbol definiert wurde
+  \item \textbf{element\_count}: Die Größe eines Arrays, wenn das Symbol ein Array ist
+  \item \textbf{parent}: Der Name des Elternsymbols, z.B. der Funktionsname, in der das Symbol definiert wurde
+  \item \textbf{func\_arg\_position}: Die Position des Arguments in der Funktionsdeklaration, wenn das Symbol ein Funktionsargument ist
+  \item \textbf{is\_ref}: Ein boolscher Wert, der angibt, ob das Funktionsargument ein Call-by-Reference Argument ist
+\end{itemize}
+
+Damit Einträge aus dem Drei-Adressen Code eindeutig Einträge in der Symboltabelle referenzieren können, wird die Kombination aus Name (\texttt{name}) und Elternsymbol (\texttt{parent}) als eindeutiger Schlüssel verwendet.
+Theoretisch kann die Symboltabelle durch das Elternsymbol mehrere Ebenen von Symbolabhängigkeiten speichern (\texttt{parent1 < parent2 < mySym}), aber in der Praxis sind die Frontends durch den eindeutigen Schlüssel auf eine Ebene beschränkt.
+Theoretisch könnten sie die Hierarchie manuell abbilden (z.B. durch \texttt{mySym.parent = "parent1:parent2"}), was aber im Backend auch unterstützt werden müsste und diese miteinander Koppeln würde.\\
+
+\section{Der Drei-Adressen Code}
+
+Der Drei-Adressen Code ist eine Liste \texttt{std::list} von mit \texttt{struct} repräsentierten Operationen, die in der Listen-Reihenfolge ausgeführt werden.
+Die Struct besteht aus dem Operationstypen \texttt{op\_type}, zwei Typen-gemischte Argumente \texttt{arg1} und \texttt{arg2} und einer Referenz für das Ergebnis \texttt{result\_ref}.
+Je nach Operationstyp werden nur bestimmte Teile der Argumente verwendet, um die Operation auszuführen:
+
+\begin{itemize}
+  \item \textbf{ADD, SUB, MUL, DIV, MOD} arithmetische Operationen \texttt{result\_ref := arg1 op arg2}
+  \item \textbf{LT, GT, LE, GE, EQ, NE} Vergleichsoperationen \texttt{result\_ref := arg1 op arg2}, die 0 als \texttt{false} und 1 als \texttt{true} zurückgeben
+  \item \textbf{ASSIGN} Zuweisung eines Wertszu einem Symbol \texttt{result\_ref := arg1}
+  \item \textbf{GOTO} Sprung zu einem Label \texttt{goto result\_ref}
+  \item \textbf{COND\_GOTO} Konditionaler Sprung zu einem Label \texttt{if arg1 == arg2 goto result\_ref}
+\end{itemize}
+
+Die beiden Argumente \texttt{arg1} und \texttt{arg2} werden durch ein \texttt{union} abgebildet, die entweder eine Referenz auf ein Symbol \texttt{sym\_ref} oder einen Integer-Wert \texttt{int\_val} speichert.

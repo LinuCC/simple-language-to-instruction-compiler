@@ -5,10 +5,10 @@
 
 Einige Arten haben sich etabliert, um den Parser eines Compilers zu implementieren.
 Die häufigsten davon sind Varianten des Top-Down und Bottom-Up Parsers, bei denen die Baumstruktur des Syntaxbaums entweder aus der Wurzel der Syntaxdefinition nach ``unten'' hin oder den einzelnen Blättern nach ``oben'' hin gebaut wird.\\
-So gibt es zum Beispiel den Parser im Verfahren des rekursiven Abstiegs, das eines der einfachsten Varianten eines Parsers ist und auch ohne Werkzeuge von Hand schreibbar ist\cite{mossenbock:2024}.
+So gibt es zum Beispiel den Rekursiver-Abstieg Parser, das eines der einfachsten Varianten eines Parsers ist und auch ohne Werkzeuge von Hand schreibbar ist\cite{mossenbock:2024}.
 Demgegenüber stehen eine große Auswahl an Werkzeugen wie Parsergeneratoren, die aus Grammatikdefinitionen den Code zum parsen automatisch generieren.
 Diese haben den Vorteil dass sie hart-zu-implementierende Parservarianten, z.B. Bottom-Up Parser, automatisch implementieren.
-Beispiele für solche Werkzeuge sind YACC und ANTLR, die aus einer Grammatikdefinition in einer Notation wie zum Beispiel BNF / EBNF den Parsercode generieren.
+Beispiele für solche Werkzeuge sind YACC und ANTLR, die aus einer Grammatikdefinition in einer Notation wie zum Beispiel BNF / \acfi{EBNF} den Parsercode generieren.
 
 \section{Top-Down Parser}
 
@@ -166,11 +166,11 @@ Im Gegensatz zu der Top-Down Parser Familie sind dessen Grammatikdefinitionen we
 Allerdings ist es schwerer die Semantikanalyse in den Parser zu integrieren, und die Implementation des Parsers selber ist wesentlich komplexer.
 So benötigt der Shift-Reduce Parser eine Parsertabelle.
 Ausserdem muss der Parser vorher geparste Token und daraus reduzierte Regeln zwischenspeichern, um diese im späteren Verlauf zu weiteren Teilen des Syntaxbaumes kombinieren zu können.
-Deswegen werden reale Bottom-Up Parser meistens von Parsergeneratoren aus Grammatikdefinitionen wie BNF generiert\cite{moessenboeck:2024}.\\
+Deswegen werden reale Bottom-Up Parser meistens von Parsergeneratoren aus Grammatikdefinitionen wie der \acfi{BNF} generiert\cite{mossenbock:2024}.\\
 
 Der Shift-Reduce Parser wird, wie viele Parser von kontextfreien Grammatiken, als Kellerautomat implementiert. 
-Er speichert die Tokens, die er einliest, in einem Stack (``Keller''), und reduziert sie aus der Grammatikdefinition zu dem Syntaxbaum, wenn sie vollständig sind.
-Ein Shift-Reduce Parser arbeitet grundlegend mit vier Operationen während des Einlesens der Tokens\cite{moessenboeck:2024}:
+Er speichert die Tokens, die er einliest, in einem Stack (``Keller''), und reduziert sie während des parsens aus der Grammatikdefinition zu dem Syntaxbaum.
+Ein Shift-Reduce Parser arbeitet grundlegend mit vier Operationen während des Einlesens der Tokens\cite{mossenbock:2024}:
 
 \begin{itemize}
   \item \textbf{shift}: Das gelesene Token wird vom Eingabesatz in den Keller verschoben.

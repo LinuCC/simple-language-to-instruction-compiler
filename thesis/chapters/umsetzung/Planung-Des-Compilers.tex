@@ -8,11 +8,11 @@ Die Implementierung des Compilers soll folgende Ziele erfuellen:
 \item Flexibles Backend: Der Compiler soll in der Lage sein, auf verschiedene Zielplattformen wie RISC Assembly und RISC Binary zu kompilieren.
 \end{itemize}
 
-Der in dieser Arbeit erstellte Compiler ``SLICC'' (Simple Language to Instruction Compiler in C++)  wird hauptsächlich in C++ geschrieben, da die Werkzeuge wie die Parsergeneratoren, die benutzt werden, gut darauf aufbauen.
+Der in dieser Arbeit erstellte Compiler \acfi{SLICC} wird hauptsächlich in C++ geschrieben, da die Werkzeuge wie die Parsergeneratoren, die benutzt werden, gut darauf aufbauen.
 Damit der Compiler selbst möglichst interoperabel auf verschiedenen Plattformen kompiliert werden kann, wird das robuste und weit verbreitete ``CMake'' zum bauen der Binärdatei benutzt.\\
 Da der Compiler ein Zweipass-Compiler ist, benötigen wird die Auftrennung des Compilers in Frontend und Backend durch eine Zwischensprache.
-Die Zwischensprache wird in diesem Fall ein - in dem Theorie-Teil bereits erwähnter - ``Three-Address Code'' sein, der die Operationen des Programmcodes in einfache Operationen mit drei Adressen aufteilt.
-Diese Zwischensprache trennt ein Frontend, dass eine simple, Pascal-ähnliche Programmiersprache namens ``Slang'' (Simple Language) parst, von einem Backend, dass den Three-Address Code in lesbaren RISC Assembly oder RISC Binary übersetzt und in eine Datei speichert.\\
+Die Zwischensprache wird in diesem Fall ein - in dem Theorie-Teil bereits erwähnter - Drei-Adressen Code sein, der die Operationen des Programmcodes in einfache Operationen mit drei Adressen aufteilt.
+Diese Zwischensprache trennt ein Frontend, dass eine simple, Pascal-ähnliche Programmiersprache namens \acfi{SLang} parst, von einem Backend, dass den Drei-Adressen Code in lesbaren RISC Assembly oder RISC Binary übersetzt und in eine Datei speichert.\\
 
 \begin{figure}[H]
   \begin{tikzpicture}

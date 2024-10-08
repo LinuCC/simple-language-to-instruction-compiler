@@ -1,5 +1,5 @@
 \part{Compiler Theorie}
-\chapter{Compiler Uebersicht}
+\chapter{Einleitung in den Compilerbau}
 \label{chap:theory:compilerHistory}
 
 \section{Compilerhistorie}
@@ -35,25 +35,20 @@ Die ``Cross-Compiler'' hingegen übersetzen von einer Programmiersprache in eine
 Zusätzlich dazu gibt es Compiler (oder auch ``compiler-ähnliche Werkzeuge'') die auf ganz anderen Datenstrukturen arbeiten und zum Beispiel Logdateien in Tabellen kompilieren.
 Im Rahmen dieser Arbeit wird der klassische Compiler behandelt, mit dem eine Programmiersprache zu einer Maschinensprache kompiliert wird.\\
 Generell gibt es zwei Möglichkeiten, wie diese Compiler aufgebaut werden.
-In dem Einpass-Compiler wird der Programmcode in Teilen (Tokens) eingelesen, welche sofort ausgewertet werden.
-Ein Token wird eingelesen, geparst und der entsprechende Maschinencode wird generiert.
-Dann fährt der Einpass-Compiler mit den nächsten Tokens fort, bis das Ende des Programmcodes erreicht ist.\\
+In dem Einpass-Compiler wird der Programmcode, der Eingabesatz, in Zeichen für Zeichen eingelesen, welche in Lexeme, lexikalische Gruppen, eingeordnet werden.
+Ein Lexem wird eingelesen, geparst und der entsprechende Maschinencode wird generiert.
+Dann fährt der Einpass-Compiler mit den nächsten Eingabezeichen fort, bis das Ende des Programmcodes erreicht ist.\\
 Der Mehrpass-Compiler hingegen liest anfangs den gesamten Programmcode ein und parst ihn mithilfe von mehreren Programmteilen, wo der letzte den Maschinencode ausgibt\cite{mossenbock:2024}.\\
-Diese Compiler haben generell 6 Phasen, in denen sie arbeiten:\\
-Zuerst wird der Programmcode 
-Die Lexikalische Analyse unterteilt das Programm in Tokens, die Einheiten wie Variablennamen oder Operationszeichen aufteilen.\\
-Die Aufteilung des Quellprogramm-einlesens in die lexikalische Analyse und Syntaxanalyse ist vor allem der Praktikalität der Implementierung geschuldet.
-Ohne die 
-Diese Tokens werden dann an die Syntaxanalyse geschickt, wo mithilfe grammatikalischer Regeln die Struktur des Programmcodes überprüft wird.
-Die Definition dieser Regeln zusammen mit dem Interpretieren der Tokens wird Parser genannt.
-Der Parser ordnet die einzelnen Tokens mitsamt der Regeln in eine Baumstruktur ein.
+Diese Compiler haben generell 6 Phasen, in denen sie arbeiten.\\
+Die erste, die lexikalische Analyse, unterteilt das Programm in Lexeme, die Einheiten wie Variablennamen oder Operationszeichen gruppieren.\\
+Als nächstes überprüft die Syntaxanalyse die Struktur des Programmcodes mithilfe von grammatikalischen Regeln.
+Sie generiert mit den Lexemen zusätzliche Daten und ordnet die resultierenden Tokens in eine Baumstruktur, den Syntaxbaum, ein.\\
+
+\textsf{TODO: Besser!}
 
 \subsection{Der Parser}
 
 Es gibt zwei grundlegende Arten von Parsern im Compilerbau, den Top-Down und den Bottom-Up Parser.\\
-
-\textsf{Teilweise uebernommen}\\
-
 Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter.\\
 Für den Quellcode ``\textit{int myVar = x + 2;}'' liest der Parser zuerst den ganzen Ausdruck ein und teilt diesen dann auf;
 Nachdem er diesen Ausdruck in die einzelnen Tokens runtergebrochen und ebenfalls geparst hat wird geschlussfolgert dass der gesamte Ausdruck eine Variablenzuweisung ist.
@@ -176,8 +171,6 @@ Der Codegenerator muss sich auch um lokale Variablen von Methoden kümmern, die 
 Während der Generierung ist auch Fehlerbehandlung wichtig, die verhindert, dass ein unlesbares oder inkorrektes Maschinenprogramm erzeugt wird.\\
 
 Der Codegenerator ist stark von der angezielten Prozessorarchitektur und ihren Instruktionstypen abhängig.
-Die \textit{Reduced Instruction Set Computer} (RISC) Architektur mit wenigen einfachen Instruktionstypen benötigt wenige Spezialfallbehandlungen und ist damit relativ simpel in einem Codegenerator umzusetzen.
-Im Gegensatz dazu steht die Architektur \textit{Complex instruction set computer} (CISC), zum Beispiel der x86 Architektur-Familie. 
+Die \acfi{RISC} Architektur mit wenigen einfachen Instruktionstypen benötigt wenige Spezialfallbehandlungen und ist damit relativ simpel in einem Codegenerator umzusetzen.
+Im Gegensatz dazu steht die Architektur \acfi{CISC}, zum Beispiel der x86 Architektur-Familie. 
 Mit einer Unmenge an Instruktionstypen, deren Funktionsweise sich teilweise überschneiden oder mehrere kleine Instruktionstypen zur Optimierung der Ausführung gruppiert werden, ist ein vollständiger, korrekter und optimierter Codegenerator für einer dieser Prozessorarchitekturen extrem groß und komplex.
-
-\section{SLICC?}

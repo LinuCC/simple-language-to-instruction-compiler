@@ -10,12 +10,12 @@ Sie kann aber auch eher Maschinencode-nah sein und bereits auf einzelne Operatio
 Für Optimierungen des Kompilates kann es sogar sinnvoll sein, mehrere Zwischensprachen zu verwenden, die aufeinander aufbauen und immer mehr Details des Maschinencodes abbilden.\\
 Es gilt hier einen passenden Kompromiss zu finden, der die Optimierungsmöglichkeiten nicht einschränkt, aber auch nicht zu komplex wird.\\
 
-\subsection{Three-Address Code}
+\subsection{Drei-Adressen Code}
 
-Eine Repräsentationsmöglichkeit von Operationen in einer Zwischensprache ist der ``Three-Address code''.
+Eine Repräsentationsmöglichkeit von Operationen in einer Zwischensprache ist der ``Drei-Adressen Code'' (en. ``Three-Address Code'').
 Hier werden namensgebend drei Adressen in einer Operation mit genau einem Operator verwendet\cite{aho:2006}.
 Komplexere Operationen werden dadurch in mehrere dieser Operationen aufgeteilt, die dann leichter zu Maschinencode übersetzt werden können.\\
-Eine mathematische Operation wie \texttt{x = a + (y * z)} wird in zwei Three-Address Code Operationen umgewandelt:
+Eine mathematische Operation wie \texttt{x = a + (y * z)} wird in zwei Drei-Adressen Code Operationen umgewandelt:
 \begin{figure}[H]
   \begin{align*}
     \texttt{x} &\texttt{\ = y * z}\\
@@ -27,7 +27,7 @@ Da wir hier noch im Bereich der Zwischensprache sind, können die Adressen abstr
 Sie können eine Konstante oder eine Referenz auf eine Variable in der Symboltabelle sein.
 Hier ist es auch möglich andere Typen, wie zwischenzeitlich generierte Optimierungen, einzufügen\cite{aho:2006}.\\
 
-Three-Address Codes sind nicht nur auf mathematische Operationen beschränkt;
+Drei-Adressen codes sind nicht nur auf mathematische Operationen beschränkt;
 Sie können viele andere Operationen wie Kontrollstrukturen oder Funktionsaufrufe abbilden.
 Ein konditionaler Sprung kann mit einem Operator und drei Adressen abgebildet werden.
 Operator und zwei Adressen werden für die Bedingung genutzt, die dritte Adresse zeigt auf den Ort, wohin gesprungen wird:
@@ -38,7 +38,7 @@ Operator und zwei Adressen werden für die Bedingung genutzt, die dritte Adresse
   \end{align*}
 \end{figure}
 
-Mit dem Three-Address Code als Grundeinheit kann die Zwischensprache damit bereits viele Funktionalitäten eines Programmes abbilden ohne große und komplexe Strukturen zu benötigen.\\
+Mit dem Drei-Adressen code als Grundeinheit kann die Zwischensprache damit bereits viele Funktionalitäten eines Programmes abbilden ohne große und komplexe Strukturen zu benötigen.\\
 Nehmen wir den Ausdruck eines nicht-trivialen Quelltextes
 
 \begin{figure}[H]
@@ -53,7 +53,7 @@ Nehmen wir den Ausdruck eines nicht-trivialen Quelltextes
   \end{align*}
 \end{figure}
 
-dann kann dieser in Three-Address Code umgewandelt werden:
+dann kann dieser in Drei-Adressen Code umgewandelt werden:
 
 
 

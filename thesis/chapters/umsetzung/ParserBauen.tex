@@ -12,80 +12,202 @@ Dadurch kann der Parser auch mit Shift-Reduce Konflikten umgehen, indem der Pars
 
 \section{Der Aufbau der Programmiersprache Slang}
 
-Die Programmiersprache Slang ist eine Pascal-ähnliche Sprache, die in einer einzelnen Datei ein volles Programm repräsentiert.
-Anhand eines Beispiels werden die Grammatikregeln gezeigt, die für das Parsen der Programmiersprache benötigt werden:
-
-\begin{figure}[H]
-  \begin{lstlisting}
-program foo {
-    int i = 0;
-    int y;
-    int foo = 5;
-    int[5] bar;
-    int barsize = 5;
-    
-    foo = i + 5;
-    
-    for (y < barsize; y = y + 1) {
-      bar[y] = x + y;
-    }
-    call_by_value(foo);
-    call_by_reference(y);
-    foo = call_with_return(y);
-    write(foo);
-}
-
-func void call_by_value(int val) {
-  write(val);
-}
-
-func void call_by_reference(ref int val) {
-  read(val);
-}
-
-func int call_with_return(int val) {
-  int x = 2;
-  return x / 2 + val * 2;
-}
-  \end{lstlisting}
-  \caption{Beispielcode in Slang}
-  \label{fig:slicc:slang}
-\end{figure}
-
-Der Eintrittspunkt des Programms ist das \texttt{program}-Token, mit dessen Block die Ausführung des Programmes beginnt.
-Im ersten Schritt werden dort die Variablen definiert, die im Programm verwendet werden.
-Danach werden Anweisungen wie Zuweisungen, Kontrollstrukturen und Funktionsaufrufe ausgeführt.
-Zwei spezielle Funktionen sind \texttt{read(i)} und \texttt{write(i)}, die standardmäßig bereitstehen und in stdin oder stdout des Programmes schreiben.
-Nach dem Programmblock können Funktionen definiert werden, die im Programm selber aufgerufen werden können.\\
-
-Eine EBNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen:
+Die Programmiersprache Slang ist eine Pascal- und C-ähnliche Sprache, die in einer einzelnen Datei ein volles Programm repräsentiert.
+Sie unterstützt Funktionalitäten wie Variablendeklarationen, Zuweisungen, Kontrollstrukturen wie Schleifen und Verzweigungen sowie Funktionsaufrufe.
+Die Grundbausteine der Programmiersprache sind dabei die Definition von Programmen und Funktionen, in denen Anweisungsblöcke den Programmcode enthalten.\\
 
 \begin{lstlisting}
-/* Start der Grammatik, unser Programmcode beginnt mit program { }, */
-/* dahinter stehen die Funktionsdefinitionen */
 <main> ::= <program> <wso> <func_def>* <wso>
 
-/* Ein Programm besteht aus einem Block */
+<ws> ::= " " | "\t" | "\n"
+<wso> ::= <ws>*
+\end{lstlisting}
+
+Wir definieren in unserer Grammatik zuerst eine Regel \texttt{<main>}, die mit einem \texttt{<program>} beginnt und dann eine beliebige Anzahl von Funktionsdefinitionen enthält.\\
+Das Token \texttt{<wso>} steht für Formatierungszeichen, die in der Grammatik ignoriert werden.
+Wir koppeln Anweisungen und Blöcke mit Tokens wie Klammern (\texttt{\{\}}) und Semikolons \texttt{;} voneinander ab, damit die Formatierung des Programmcodes keine Rolle spielt, womit wir Leerzeichen, Tabs und Zeilenumbrüche ignorieren können.\\
+In den nächsten Abschnitten gehen wir den Grammatikbaum von \texttt{<main>} ab, um die Grammatik von Slang komplett zu definieren.\\
+
+\subsection{Programme}
+
+\begin{lstlisting}
+program my_calculations {
+
+}
+\end{lstlisting}
+
+Ein ``Programm'' in Slang ist ein Anweisungsblock, der mit dem Token \texttt{program} gekennzeichnet wird.
+Ein Programm wird mit \texttt{<id>} benannt, was momentan aber nur der Lesbarkeit dient und keine praktische Funktion hat.
+Dies wird gefolgt von einem \texttt{<block>}, der die Anweisungen des Programms enthält.\\
+
+\begin{lstlisting}
 <program> ::= "program" <wso> <id> <wso> <block>
 
 <block> ::=  <wso> "{"  <wso> <block_body>  <wso> "}" <wso>
+<id> ::= <alphachar> (<alphachar> | <digit> | "_")*
+<alphachar> ::= [a-z]
+<digit> ::= [0-9]
+\end{lstlisting}
 
-/* Ein Block besteht aus optionalen Variablendefinitionen und einer */ 
-/* Anweisungsliste */
+\subsection{Funktionen}
+
+\begin{lstlisting}
+func void call_by_value(int val) {
+
+}
+
+func void call_by_reference(ref int val) {
+
+}
+
+func int call_with_return(int val) {
+
+}
+\end{lstlisting}
+
+Funktionsdefinitionen in Slang werden mit dem Token \texttt{func} eingeleitet.
+Wenn zukünftig globalen Variablendeklarationen implementiert werden, macht es etwas leichter, diese grammatikalisch von den Funktionsdefinitionen zu unterscheiden.\\
+Auf das \texttt{func} folgt der Typ des Rückgabewertes der Funktion, der entweder ein Datentyp wie \texttt{int} oder \texttt{void} sein kann, sowie eine \texttt{<id>}, die den Namen der Funktion definiert.\\
+Danach folgt eine optionale Liste von Argumenten, die in Klammern stehen und durch Kommata getrennt sind.
+Diese Argumente deklarieren eine Variable, die in der Funktion verwendet werden kann.
+Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion übergeben werden, sodass die Funktion den Wert der Variable modifizieren kann, welche sich dann auch auf den Wert in dem Kontext des Aufrufers auswirkt.\\
+
+\begin{lstlisting}
+<func_def> ::= "func" <wso> (<type> | "void") <wso> <id> <wso> "(" <wso> <func_args_def> <wso> ")" <wso> <block>
+
+<func_args_def> ::= <func_arg_def>
+                  | <func_arg_def> <wso> "," <wso> <func_args_def>
+
+<func_arg_def> ::= <type> <wso> <id>
+                  | "ref" <wso> <type> <wso> <id> <wso>
+\end{lstlisting}
+
+Damit wir die Typen und Variablen in den Funktionsdefinitionen definieren können, müssen wir auch ein paar Hilfsregeln definieren:\\
+
+\begin{lstlisting}
+/* Typen und Variablen */
+<type> ::= "int" | <intarray>
+
+<intarray> ::= "int[" <intliteral> "]"
+
+/* Zahlen */
+<intliteral> ::= <digit>+
+\end{lstlisting}
+
+Damit sind alle Bausteine mit Blöcken definiert.
+Um die Programme und Funktionen sinnvoll benutzen zu können, brauchen wir nun die Regeln für die Anweisungen und Ausdrücke, die in diesen Blöcken stehen können.
+
+\textbf{Spezial: Was wenn keine Referenz und modifizert? (Call by Value)}\\
+\textbf{Spezial: Was wenn Referenz und Referenz wird zurückgegeben?}\\
+\\
+
+\subsection{Variablendeklarationen}
+
+\begin{lstlisting}
+program my_calculations {
+    int i = 1;
+    int foo;
+    int[5] bar;
+}
+
+func void invalid(int val) {
+  int x = val;
+}
+\end{lstlisting}
+
+Die Blöcke der Programme und Funktionen beginnen mit einer Liste an Variablen, die deklariert werden.
+Slang unterstützt momentan zwei Datentypen: Integer \texttt{int} und eine Liste von Integer \texttt{int[x]}.
+Die Werte dieser Variablen werden standardmäßig auf 0 gesetzt.
+Eine Integer kann auch direkt mit einem Wert initialisiert werden, was aber bei den Arrays nicht implementiert ist.\\
+
+\begin{lstlisting}
 <block_body> ::= <variable_list> <wso> <statement_list>
                | <statement_list>
 
-<variable_list> ::= <variable_declaration>
-                  | <variable_declaration> <wso> <variable_list>
+<variable_list> ::= <variable_declaration_stmt>
+                  | <variable_declaration_stmt> <wso> <variable_list>
 
-/* Eine Variable kann deklariert oder mit einem Wert initialisiert werden */
-<variable_declaration> ::= ((<type> <wso> <id> <wso> "=" <wso> <intliteral> <wso>) | (<type> <wso> <id> <wso>)) ";"
+<variable_declaration_stmt> ::= (<variable_declaration> | <variable_initialization>) ";"
 
+<variable_declaration> ::= <type> <wso> <id> <wso>
+
+<variable_initialization> ::= <type> <wso> <id> <wso> "=" <wso> <intliteral> <wso>
+\end{lstlisting}
+
+Wir erlauben mit dieser Grammatik nur die Zuweisung von Integerwerten, nicht die Referenz von anderen Werten.
+In dem Beispielcode wird der lexikalische Parser in der Funktion \texttt{invalid} einen Fehler erzeugen, da Referenzen auf Variablen wie \texttt{val} nicht in der Deklarationsliste erlaubt sind.\\
+
+Der lexikalische und syntaktische Parser kann mit dieser Grammatik aber nicht alle ungültigen Regeln abfangen;
+So erzeugt der folgende Code keinen Fehler, obwohl die Initalisierung von einem Array mit einer Integer nicht definiert ist:\\
+
+\begin{lstlisting}
+program my_mistake {
+    int[5] bar = 10;
+}
+\end{lstlisting}
+
+Hier wird eine semantische Regel ausserhalb der Grammatikdefinition benötigt, die sicherstellt, dass die deklarierten Typen zu den initialen Werten passen.\\
+
+\subsection{Ausdrücke}
+
+Für Kontrollstrukturen oder mathematische Operationen benötigen wir Regeln für Ausdrücke, die an verschiedenen Stellen im Programmcode verwendet werden können.\\
+Ein Ausdruck in Slang kann eine Integer Konstante, eine Variable, ein Funktionsaufruf, eine mathematische Operation oder eine vergleichende Operation sein.\\
+
+\begin{lstlisting}
+<expression> ::= <intliteral>
+               | <id>
+               | <func_call>
+               | <expression> <wso> "+" <wso> <expression>
+               | <expression> <wso> "-" <wso> <expression>
+               | <expression> <wso> "*" <wso> <expression>
+               | <expression> <wso> "/" <wso> <expression>
+               | <expression> <wso> "%" <wso> <expression>
+               | <compare_expression>
+\end{lstlisting}
+
+Da die Vergleichsoperation wahrscheinlich vermehrt in Kontrollstrukturen verwendet wird, ist diese Regel ausgelagert und vereinfacht.\\
+Statt das generische \texttt{<expression> <comparison\_operator> <expression>} zu erlauben, definiert die Regel \texttt{<compare\_expression>} nur einfache Vergleiche zwischen zwei Werten, die Variablen  oder Konstanten sein könnnen.\\
+Damit wird die Komplexität von Vorbedingungen etwas ausgelagert.\\
+
+\begin{lstlisting}
+<comparison_operator> ::= "=="
+                        | "!="
+                        | "<"
+                        | "<="
+                        | ">"
+                        | ">="
+
+<compare_expression> ::= <id> <wso> <comparison_operator> <wso> <id>
+                       | <id> <wso> <comparison_operator> <wso> <intliteral>
+                       | <intliteral> <wso> <comparison_operator> <wso> <id>
+                       | <intliteral> <wso> <comparison_operator> <wso> <intliteral>
+\end{lstlisting}
+
+\textbf{Reihenfolge mathematische OPs}
+\textbf{Comparison OP ohne booleans}\\
+
+\subsection{Zuweisungen}
+
+\begin{lstlisting}
+program my_assignments {
+    int i = 1;
+    int foo;
+
+    i = 5;
+    foo = i + 5;
+}
+\end{lstlisting}
+
+Die zweite Gruppe in einem Block sind die Anweisungen, die in Slang aus Variablenzuweisungen, Kontrollstrukturen, Schleifen, Funktionsaufrufen und \texttt{return} Anweisungen bestehen können.\\
+
+In dem Block dürfen keine neuen Variablen deklariert werden; Dadurch wird sichergestellt dass die Symboltabelle alle in dem Block definierten Symbole enthält sobald diese referenziert werden können.
+Fälle wie Kontrollstruktur-lokale Variablendeklarationen, die nur in bestimmten Fällen deklariert sind und eine eigene Lebensdauer haben, müssen
+daher nicht durch den Compiler behandelt werden.\\
+
+\begin{lstlisting}
 <statement_list> ::= <statement>
                    | <statement> <wso> <statement_list>
 
-/* Ein Statement ist eine Variablenzuweisung, eine Kontrollstruktur, */
-/* eine for-Schleife, ein Funktionsaufruf oder ein `return` */
 <statement> ::= <statement_assignment> <wso> ";"
               | <if_statement>
               | <for_loop>
@@ -94,70 +216,148 @@ Eine EBNF Grammatik für die Programmiersprache Slang könnte wie folgt aussehen
 
 <statement_assignment> ::= <assigment_left> <wso> "=" <wso> <expression> <wso>
 
-/* Eine Variablenzuweisung kann auch einen Array-Eintrag referenzieren */
-/* z.B. `foo[x] = 1' */
 <assigment_left> ::= (<id>) | (<id> "[" <wso> (<intliteral> | <id>) <wso> "]")
+\end{lstlisting}
 
-/* Ein Ausdruck ist eine mathematische Operation, ein Funktionsaufruf oder ein Vergleich */
-<expression> ::= <intliteral>
-               | <id>
-               | <func_call>
-               | <expression> <wso> "+" <wso> <expression>
-               | <expression> <wso> "-" <wso> <expression>
-               | <expression> <wso> "*" <wso> <expression>
-               | <expression> <wso> "/" <wso> <expression>
-               | <compare_expression>
-               | "(" <wso> <expression> <wso> ")"
+Einfache Anweisungen in der \texttt{<statement\_list>} sind durch Semikolons getrennt.
+Das \texttt{<if\_statement>} und \texttt{<for\_loop>} sind spezielle Anweisungen mit ihren eigenen Anweisungsblöcken, die durch geschweifte Klammern von den restlichen Anweisungen getrennt sind.\\
+Als besondere Anweisung ist das \texttt{return <expression> ";"} definiert, das die Ausführung der Funktion oder des Programmes beendet und das Ergebnis des Ausdrucks zurückgibt.\\
 
-<comparison_operator> ::= "=="
-                        | "!="
-                        | "<"
-                        | "<="
-                        | ">"
-                        | ">="
+\textbf{Return: Stack popping}\\
 
-/* Erlaube erstmal nur leichte Ausdruecke im Vergleich */
-<compare_expression> ::= <id> <wso> <comparison_operator> <wso> <id>
-                       | <id> <wso> <comparison_operator> <wso> <intliteral>
-                       | <intliteral> <wso> <comparison_operator> <wso> <id>
-                       | <intliteral> <wso> <comparison_operator> <wso> <intliteral>
+\subsection{Die for-Schleife}
 
-/* Eine if-Kontrollstruktur mit optionalem else */
-<if_statement> ::= "if" <wso> "(" <wso> <compare_expression> <wso> ")" <wso> <block>
-                 | "if" <wso> "(" <wso> <compare_expression> <wso> ")"  <wso> <block> <wso> "else" <wso> <block>
+\begin{lstlisting}
+program my_loop {
+    int y;
+    int i = 5;
+    
+    for (y < 5; y = y + 1) {
+      bar[y] = x + y;
+    }
+    if (i == 5) {
+      return 1;
+    }
 
-/* Eine for-Schleife ohne Variablendeklaration; diese ist im ersten */
-/* Teil des blocks zu definieren */
-<for_loop> ::= "for" <wso> "(" <wso> <compare_expression> ";"  <wso> <statement_assignment> <wso> ")" <wso> <block>
+    return 0;
+}
+\end{lstlisting}
 
-/* Ein Funktionsaufruf mit Argumenten */
+Slang unterstützt die \texttt{for}-Schleife, mit der ein Anweisungsblock wiederholt wird, solange eine Bedingung erfüllt ist.
+Im Gegensatz zu der for-Schleife in \texttt{C} gibt es keine Mögklichkeit, eine Variable im Kopf zu deklarieren.\\
+Stattdessen muss diese Variable bereits in der Gruppe der Variablendeklarationen, die am Anfang eines Funktions- oder Programmblocks stehen, deklariert werden.\\
+
+\begin{lstlisting}
+<control_block> ::= <wso> "{" <wso> <statement_list>  <wso> "}" <wso>
+
+<for_loop> ::= "for" <wso> "(" <wso> <compare_expression> ";"  <wso> <statement_assignment> <wso> ")" <wso> <control_block>
+\end{lstlisting}
+
+Die \texttt{for}-Schleife beginnt mit dem Token \texttt{for}, gefolgt von einem Kopf, in dem ein Vergleichsausdruck und eine Zuweisung definiert werden.
+Auf den Kopf folgt ein Block mit den zu wiederholenden Anweisungen.\\
+
+Da Variablendeklarationen nicht in Kontrollstrukturen erlaubt sind, führen wir eine weitere Regel \texttt{<control\_block>} ein, die wie der \texttt{<block>} definiert ist, aber nur eine \texttt{statement\_list} erlaubt.
+
+\subsection{Die if-Bedingung}
+
+\begin{lstlisting}
+program my_control {
+    int i = 5;
+    
+    if (i == 5) {
+      return 1;
+    } else {
+      return 0;
+    }
+}
+\end{lstlisting}
+
+Die \texttt{if}-Bedingung ist eine Kontrollstruktur, die einen Anweisungsblock ausführt, wenn eine Bedingung erfüllt ist.
+Optional folgt darauf ein \texttt{else}-Block, der ausgeführt wird, wenn die Bedingung nicht erfüllt ist.\\
+
+\begin{lstlisting}
+<if_statement> ::= "if" <wso> "(" <wso> <compare_expression> <wso> ")" <wso> <control_block>
+                 | "if" <wso> "(" <wso> <compare_expression> <wso> ")"  <wso> <control_block> <wso> "else" <wso> <control_block>
+\end{lstlisting}
+
+Ähnlich der \texttt{for}-Schleife beginnt die mit dem namensgebenden Token \texttt{if}, gefolgt von einer Bedingung in Klammern und einem Anweisungsblock.
+Auf diesem kann mit dem Token \texttt{else} und einem weiteren Anweisungsblock alternative Anweisungen ausgeführt werden.
+
+\subsection{Funktionsaufrufe}
+
+\begin{lstlisting}
+program my_calls {
+    int foo = 1;
+    int y = 5;
+    
+    call_by_value(foo);
+    call_by_reference(y);
+    foo = call_with_return(y);
+}
+
+func void call_by_value(int val) {
+  
+}
+
+func void call_by_reference(ref int val) {
+  val = 2;
+}
+
+func int call_with_return(int val) {
+  return val + 1;
+}
+\end{lstlisting}
+
+Ein Funktionsaufruf in Slang besteht aus dem Funktionsnamen und einer Liste von Ausdrücken als Argumenten, die in Klammern stehen und durch Kommata getrennt sind.\\
+Um den Rückgabewert einer Funktion zu speichern, kann der Funktionsaufruf auch als Ausdruck in einer Zuweisung verwendet werden.\\
+
+\begin{lstlisting}
 <func_call> ::= <id> <wso> "(" <wso> <func_args> <wso> ")" <wso>
+
 <func_args> ::= <expression>
               | <expression> <wso> "," <wso> <func_args>
-
-/* Eine Funktionsdefinition */
-<func_def> ::= "func" <wso> (<type> | "void") <wso> <id> <wso> "(" <wso> <func_args_def> <wso> ")" <wso> <block>
-<func_args_def> ::= <func_arg_def>
-                  | <func_arg_def> <wso> "," <wso> <func_args_def>
-<func_arg_def> ::= <type> <wso> <id>
-                  | "ref" <wso> <type> <wso> <id> <wso>
-
-/* Typen und Variablen */
-<type> ::= "int" | <intarray>
-<intarray> ::= "int[" <intliteral> "]"
-
-/* Andere Zeichen */
-<digit> ::= [0-9]
-<intliteral> ::= <digit>+
-<alphachar> ::= [a-z]
-<id> ::= <alphachar> (<alphachar> | <digit> | "_")*
-<ws> ::= " " | "\t" | "\n"
-
-/* Optionale Leerzeichen oder newlines */
-<wso> ::= <ws>*
-
 \end{lstlisting}
-\hfil\textit{Validiert mit BNF Playground\cite{paulklineBNFPlayground}}\\
+
+Der Compiler überprüft mit semantischen Regeln dass die Anzahl der Argumente und deren Typen mit der refernzierten Funktionsdefinition übereinstimmen.\\
+Der Wert eines Arguments, dass per Call-by-Value an eine Funktion übergeben wird, wird für diesen Ausführungsblock kopiert.
+Wird dieses Argument nochmals per Call-by-Reference an eine andere Funktion übergeben, wird der Wert nur in der ersten Funktion verändert, nicht in deren Aufruf:\\
+
+\begin{lstlisting}
+program my_calls {
+    int y = 5;
+    call_by_value(y);
+    // y = 5
+}
+
+func void call_by_value(int val) {
+  edit_by_reference(val);
+  // val = 2
+}
+
+func void edit_by_reference(ref int val) {
+  val = 2;
+}
+\end{lstlisting}
+
+\subsection{Spezialfunktionen}
+
+\begin{lstlisting}
+program my_io {
+  int y;
+  read(y);
+  write(y);
+}
+\end{lstlisting}
+
+Für I/O bietet Slang zwei spezielle Funktionen, \texttt{read(x)} und \texttt{write(x)}, an, die in der Standardbibliothek implementiert sind.\\
+\texttt{read} liest einen Wert von der Standardeingabe und speichert diesen in der übergebenen Variable, während \texttt{write} den Wert einer Variablen auf die Standardausgabe schreibt.\\
+
+Da diese auf der Grammatik der Funktionsaufrufe basieren, sind diese nicht speziell in der EBNF Grammatikdefinition aufgelistet.\\
+Stattdessen werden sie als Symbole in der Symboltabelle vorgeladen, sodass sie in der semantischen Analyse als Funktionen erkannt werden können und im Drei-Adress-Code referenziert werden können.\\
+
+Damit ist die Grammatikdefinition und Auflistung der Funktoinen für die Programmiersprache Slang komplett.
+Ein umfassenderes Beispiel für ein Slang-Programm ist in Anhang \ref{fig:slicc:slang} zu finden. \\
+Die komplette EBNF Definition kann in Anhang \ref{fig:slicc:slang:ebnf} nachgeschlagen werden. 
 
 \section{Parserdefinition von GNU Bison}
 
