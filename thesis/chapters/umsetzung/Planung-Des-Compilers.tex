@@ -1,18 +1,18 @@
 \part{Umsetzung des Compilers}
-\chapter{Planung Des Compilers}
+\chapter{Planung des Compilers}
 
-Die Implementierung des Compilers soll folgende Ziele erfuellen:
+Die Implementierung des Compilers soll folgende Ziele erfüllen
 
 \begin{itemize}
-\item Verstaendlichkeit und Inspizierbarkeit: Der Compiler soll inspizierbar und verstaendlich aufgebaut sein. Zusaetzlich soll die Arbeitsweise des Compilers transparent sein, indem die einzelnen Teile des Compilers gut debugbar oder inspizierbar sind.
+\item Verständlichkeit und Inspizierbarkeit: Der Compiler soll inspizierbar und verständlich aufgebaut sein. Zusätzlich soll die Arbeitsweise des Compilers transparent sein, indem die einzelnen Teile des Compilers gut debugbar oder inspizierbar sind.
 \item Flexibles Backend: Der Compiler soll in der Lage sein, auf verschiedene Zielplattformen wie RISC Assembly und RISC Binary zu kompilieren.
 \end{itemize}
 
-Der in dieser Arbeit erstellte Compiler \acfi{SLICC} wird hauptsächlich in C++ geschrieben, da die Werkzeuge wie die Parsergeneratoren, die benutzt werden, gut darauf aufbauen.
-Damit der Compiler selbst möglichst interoperabel auf verschiedenen Plattformen kompiliert werden kann, wird das robuste und weit verbreitete ``CMake'' zum bauen der Binärdatei benutzt.\\
-Da der Compiler ein Zweipass-Compiler ist, benötigen wird die Auftrennung des Compilers in Frontend und Backend durch eine Zwischensprache.
-Die Zwischensprache wird in diesem Fall ein - in dem Theorie-Teil bereits erwähnter - Drei-Adressen Code sein, der die Operationen des Programmcodes in einfache Operationen mit drei Adressen aufteilt.
-Diese Zwischensprache trennt ein Frontend, dass eine simple, Pascal-ähnliche Programmiersprache namens \acfi{SLang} parst, von einem Backend, dass den Drei-Adressen Code in lesbaren RISC Assembly oder RISC Binary übersetzt und in eine Datei speichert.\\
+Der in dieser Arbeit erstellte Compiler \acfi{SLICC} wird hauptsächlich in C++ geschrieben, da die Werkzeuge wie die Parser-Generatoren, die benutzt werden, gut darauf aufbauen.
+Damit der Compiler selbst auf verschiedenen Plattformen möglichst interoperabel kompiliert werden kann, wird das robuste und weit verbreitete ``CMake'' zum Bauen der Binärdatei benutzt.\\
+Da der Compiler ein Zweipass-Compiler ist, benötigen wir die Auftrennung des Compilers in Frontend und Backend mittels einer Zwischensprache.
+Die Zwischensprache wird in diesem Fall ein - im Theorie-Teil bereits erwähnter - Drei-Adressen Code sein, der die Operationen des Programmcodes in elementare Operationen mit drei Adressen aufteilt.
+Diese Zwischensprache trennt ein Frontend, das eine simple, Pascal-ähnliche Programmiersprache namens \acfi{SLang} parst, von einem Backend, dass den Drei-Adressen Code in lesbaren RISC Assembly oder RISC Binary übersetzt und in eine Datei speichert.\\
 
 \begin{figure}[H]
   \begin{tikzpicture}
@@ -41,8 +41,8 @@ Diese Zwischensprache trennt ein Frontend, dass eine simple, Pascal-ähnliche Pr
   \label{fig:slicc:compiler}
 \end{figure}
 
-Da hier erstmal nur ein Frontend und ein Backend implementiert werden, muss die Entkopplung in der Implementierung des Compilers sichergestellt werden um die Flexibilität des Projektes zu wahren.\\
-Um dies durchzusetzen wird das Submodul-Feature von CMake benutzt um das Frontend und Backend zu Bibliotheken zu kapseln, die dann vom Hauptprogramm, dem ``Driver'', eingebunden werden können.
+Da hier zunächst nur ein Frontend und ein Backend implementiert werden, muss die Entkopplung in der Implementierung des Compilers sichergestellt werden um die Flexibilität des Projektes zu wahren.\\
+Um dies durchzusetzen, wird das Submodul-Feature von CMake benutzt, um das Frontend und Backend zu Bibliotheken zu kapseln, die dann vom Hauptprogramm, dem ``Driver'', eingebunden werden können.
 Als Ordnerstruktur wird folgendes gewählt:
 
 \begin{figure}[H]

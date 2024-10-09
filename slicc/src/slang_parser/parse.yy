@@ -21,8 +21,8 @@
 {
   namespace slang_parser
   {
-    // Forward declaration of the Driver class
-    class Driver;
+    // Forward declaration of the FrontendDriver class
+    class FrontendDriver;
 
     inline void
     yyerror (const char* msg)
@@ -41,7 +41,7 @@
 %debug
 %define api.namespace {slang_parser}
 %define api.parser.class {Parser}
-%param {Driver &driver}
+%param {FrontendDriver &driver}
 %define parse.error verbose
 
 /**

@@ -148,7 +148,7 @@ namespace slang_parser {
 #line 149 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
   /// Build a parser object.
-  Parser::Parser (Driver &driver_yyarg)
+  Parser::Parser (FrontendDriver &driver_yyarg)
 #if YYDEBUG
     : yydebug_ (false),
       yycdebug_ (&std::cerr),

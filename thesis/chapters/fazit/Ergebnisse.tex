@@ -5,16 +5,16 @@
 \section{Aspekt der Generalität}
 
 Der Compiler \texttt{SLICC} trennt als Zweiphasen-Compiler den Programmcode von Compilerfrontends und Compilerbackends, was es leicht macht neue Sprachen zu parsen und Maschinencode für neue Prozessorarchitekturen zu generieren.\\
-Allerdings heisst es nicht, das Frontend von Backend komplett unabhängig sind; 
+Allerdings heißt es nicht, dass Frontend von Backend komplett unabhängig sind; 
 Die Zwischensprache spielt eine größere Rolle als erwartet.
-Ist sie zu einfach, müssen Frontends viele \acp{TAC} generieren und werden durch Limitationen der Symboltabelle in der Generalität des Quelltextes beschränkt. Man verliert potentiell an Semantik in der Zwischensprache und es ist schwerer, generische Optimierungen zu sichten und einzubauen.\\
-Dies gilt auch für die Backends, die, um die Operationen der Zielprozessorarchitektur ausnutzen zu können, mittels Optimierung die einfachen Operationen in den \acp{TAC} gruppieren müssen statt für jede Operation eine Vorlage an Maschinencode definieren zu können.\\
+Ist sie zu einfach, müssen Frontends viele \acp{TAC} generieren und werden durch Limitationen der Symboltabelle in der Generalität des Quelltextes beschränkt. Man verliert potenziell an Semantik in der Zwischensprache und es ist schwieriger, generische Optimierungen zu sichten und einzubauen.\\
+Dies gilt auch für die Backends, die, um die Operationen der Zielprozessorarchitektur ausnutzen zu können, mittels Optimierung die einfachen Operationen in den \acp{TAC} gruppieren müssen anstatt für jede Operation eine Vorlage an Maschinencode definieren zu können.\\
 
 Ist die Zwischensprache zu komplex, wird die Rolle der Optimierung verschoben. 
 Die Frontends müssen dann, beim parsen des Quelltextes, syntaktisch ähnliche Konstrukte unterscheiden um die korrekten \acp{TAC} zu generieren statt nur einen Teil der Operationen der Zwischensprache zu nutzen.\\
 
 Scheinbar ist es von Vorteil für die Implementationskomplexität der Frontends eine simple Zwischensprache zu haben.
-Für Optimierungen der Ausgabe scheint es aber wiederrum besser, die Zwischensprache komplexer zu gestalten.
+Für Optimierungen der Ausgabe scheint es aber wiederum besser, die Zwischensprache komplexer zu gestalten.
 Hier muss man einen Kompromiss finden, der die Implementierung der Frontends nicht zu komplex macht, aber auch genug Informationen für die Optimierung der Ausgabe bereitstellt.\\
 Eine Alternative zum Kompromiss wäre, die Zwischensprache in mehrere Schichten aufzuteilen, die aufeinander aufbauen.\\
 Ein Frontend kann so in simple Konstrukte der Zwischensprache 1 parsen, die vom Hauptteil des Compilers in eine komplexere und optimierte Zwischensprache 2 umgewandelt wird.
@@ -40,7 +40,7 @@ Allerdings muss in der Praxis genauer untersucht werden, ob die Zielarchitekture
 
 Die Definition des Drei-Adressen Codes ist momentan passend auf die Zielarchitektur \ac{RISC} zugeschnitten;
 der Teil der Funktionsparameterübergabe mit hart definierten Symbolen und der Übergabe dieser an die aufgerufenen Funktionen scheint mir aber umständlich und könnte vereinfacht werden.\\
-Hier währe es sinnvoll genauer auf die Anforderungen der Zielarchitektur einzugehen und die entsprechenden Operationen anzupassen, bevor weitere Backends gebaut werden.
+Hier wäre es sinnvoll genauer auf die Anforderungen der Zielarchitektur einzugehen und die entsprechenden Operationen anzupassen, bevor weitere Backends gebaut werden.
 
 \section{Das RISC-V Backend}
 
@@ -52,7 +52,7 @@ Hier würde ich definitiv die Variablen im Stack halten und die Register nur fü
 \section{Fazit}
 
 Einen simplen, unoptimierten Zweiphasen-Compiler für eine simple Programmiersprache von Grund auf zu implementieren ist algorithmisch weniger anspruchsvoll als ich erwartet habe.
-Der Weg von hoher Programmiersprache zu gültigem Maschinencode und die Umformung der Operationen ist nicht, wie anfangs erwartet, eine ``Black-Box'' die schwierig zu durchschauen ist.\\
+Der Weg von hoher Programmiersprache zu gültigem Maschinencode und die Umformung der Operationen ist nicht, wie anfangs erwartet, eine ``BlackBox'' die schwierig zu durchschauen ist.\\
 Stattdessen sind die scheinbar kleinen Entscheidungen, wie Datenstruktur der Zwischensprache, ein entscheidender Teil der
 Komplexität und Interoperabilität der Compilerkomponenten.
 Da hier für generische Compiler in vielen Entscheidungen Kompromisse gefunden werden müssen, ist Praxiserfahrung ein entscheidender für die Lesbarkeit, Nutzbarkeit und Erweiterbarkeit des Compilers.\\

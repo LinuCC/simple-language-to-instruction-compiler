@@ -1,9 +1,9 @@
-\chapter{Der Compiler im Zweipass Verfahren}
+\chapter{Der Compiler im Zweipass-Verfahren}
 \label{chap:theory:zweipassCompiler}
 
-Historisch wurde der Mehrpass-Compiler dem Einpass-Compiler vorgezogen, da das Unterteilen der Einzelschritte in mehreren Programmteilen die Nutzung von Arbeitsspeicher verringerte und das Compilieren von komplexen Programmiersprachen ermöglichte.
+Historisch wurde der Mehrpass-Compiler dem Einpass-Compiler vorgezogen, da das Unterteilen der Einzelschritte in mehrere Programmteilen die Nutzung von Arbeitsspeicher verringerte und das Compilieren von komplexen Programmiersprachen ermöglichte.
 Mit den Verbesserungen an Hard- und Software ist beides kein Problem mehr.
-Deswegen wird dem Mehrpass-Compiler entweder der Einpass-Compiler oder eine spezielle Variante des Mehrpass-Compilers, der Zweipass-Compiler, heutzutage präferiert\cite{mossenbock:2024}.\\
+Deswegen werden dem Mehrpass-Compiler entweder der Einpass-Compiler oder eine spezielle Variante des Mehrpass-Compilers, der Zweipass-Compiler, heutzutage bevorzugt \cite{mossenbock:2024}.\\
 Im Zweipass-Compiler werden die Phasen des Compilers in zwei Programmteile gruppiert.
 Der erste Teil, das Frontend des Compilers, überprüft den Programmcode auf Syntax und Semantik;
 Aus diesen Informationen wird eine Zwischensprache generiert, die den Programmcode in einer internen Darstellung abbildet.
@@ -44,11 +44,11 @@ Der zweite Teil, das Backend, liest die Zwischensprache ein und generiert daraus
 \end{figure}
 
 Dieser Aufbau bietet einige Vorteile gegenüber dem Einpass-Compiler:\\
-Zum einen können bei gleicher Zwischensprache mehrere Varianten von Frontend und Backend gebaut und benutzt werden;
+Zum einen können bei gleicher Zwischensprache mehrere Varianten von Frontends und Backends gebaut und benutzt werden;
 So kann man zum Beispiel eine andere Variante des Backends schreiben, um eine Programmiersprache in zwei unterschiedliche Prozessorarchitekturen zu übersetzen, ohne das Parsen nochmals zu schreiben.
-Das gleiche gilt auch für die einzulesenden Programmiersprachen, die mit unterschiedlichen Frontends geparst und mit dem gleichen Backend zu Maschinencode verarbeitet werden.\\
-Zum anderen ist die Zwischensprache ein guter Punkt um Optimierungen an der Struktur, Speichernutzung und so weiter vorzunehmen.
-Diese generellen Optimierungen können dann noch von Backends um Optimierungen, die für die Prozessorarchitektur spezifisch sind, erweitert werden.\\
-Da die Optimierung von Programmcode ein wichtiger Teil von modernen Compilern ist, sind diese überwiegend Zweipass-Compiler\cite{mossenbock:2024}.\\
+Das Gleiche gilt auch für die einzulesenden Programmiersprachen, die mit unterschiedlichen Frontends geparst und mit dem gleichen Backend zu Maschinencode verarbeitet werden.\\
+Zum anderen ist die Zwischensprache ein guter Punkt, um Optimierungen an der Struktur, Speichernutzung und so weiter vorzunehmen.
+Diese generellen Optimierungen können dann noch von den Backends um Optimierungen, die für die Prozessorarchitektur spezifisch sind, erweitert werden.\\
+Da die Optimierung von Programmcode ein wichtiger Teil moderner Compilern ist, sind diese überwiegend Zweipass-Compiler \cite{mossenbock:2024}.\\
 
-Der in dieser Arbeit behandelte Compiler SLICC verwendet das Zweipass-Verfahren um mehrere Ausgaben zu unterstützen und zukünftige Optimierungen zu ermöglichen.
+Der in dieser Arbeit behandelte Compiler \ac{SLICC} verwendet das Zweipass-Verfahren, um mehrere Ausgaben zu unterstützen und zukünftige Optimierungen zu ermöglichen.

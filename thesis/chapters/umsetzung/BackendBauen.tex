@@ -4,15 +4,15 @@
 Damit das Backend gültigen RISC-V Maschinencode generieren kann, muss es dem Drei-Adressen Code und der Symboltabelle der Zwischensprache folgende Dinge entnehmen:
 
 \begin{itemize}
-  \item{Register und Speicheradressen, zugeschnitten auf die RISC-V Prozessarchitektur}
+  \item{Register und Speicheradressen, zugeschnitten auf die RISC-V Prozessorarchitektur}
   \item{Die RISC Befehle, die die Operationen der Drei-Adressen Operationen abbilden}
   \item{Optimierungen, zum Beispiel die Lebensdauer der temporären Variablen, um Register freizugeben}
 \end{itemize}
 
-RISC-V hat 31 generelle Register, mit denen gearbeitet werden kann.
+RISC-V hat 31 Allzweckregister, mit denen gearbeitet werden kann.
 Solange die Anzahl der Variablen und temporären Variablen in einem Programm nicht die Anzahl der Register übersteigt, können diese einfach auf die Register verteilt werden.\\
 Werden mehr Variablen benötigt, kann man zum einen Optimierungen einbauen, die die Lebensdauer der Variablen analysieren und Register für andere Variablen freigeben; 
-Zum anderen kann man mit Methoden in der Registerzuteilung arbeiten um die Variablen in Adressen im Stack zu speichern und, wenn wieder benötigt, in ein Register zu laden.\\
+zum anderen kann man mit Methoden in der Registerzuteilung arbeiten, um die Variablen in Adressen im Stack zu speichern und, wenn wieder benötigt, in ein Register zu laden.\\
 Da dies das Compiler-Backend deutlich verkompliziert, werden hier nur die Register benutzt, um die Werte der Variablen der Drei-Adressen Operationen zu speichern.\\
 
 \section{Register und Speicheradressen}
@@ -96,7 +96,7 @@ add x2, x1, 0
 \subsection{Sprünge}
 
 Bedingte Sprünge können in RISC-V direkt mit dem Befehl \texttt{beq} (Branch if Equal) und \texttt{bne} (Branch if Not Equal) umgesetzt werden.\\
-Unbedingte Sprünge können mit dem Befehl \texttt{jal} (Jump and Link) umgesetzt werden, wo die von \texttt{jal} zurückgegebene \textit{Return Address} in \texttt{x0} reingegeben und somit ignoriert wird.
+Unbedingte Sprünge können mit dem Befehl \texttt{jal} (Jump and Link) umgesetzt werden, wobei von \texttt{jal} zurückgegebene \textit{Return Address} in \texttt{x0} gespeichert und somit ignoriert wird.
 
 \subsubsection{Beispiel Drei-Adressen Code}
 
@@ -144,8 +144,8 @@ jal x0, LABEL_S:
 \subsection{Vergleichsoperationen}
 
 Vergleichsoperationen sind durch die geringe Anzahl der Befehlsoperationen etwas interessanter.
-Der Befehl \texttt{slt} (Set Less Than) can für den \texttt{<} (und mit umgedrehten Argumenten für den \texttt{>}) Operator benutzt werden.
-RISC-V implementiert kein Befehl für \texttt{<=} und \texttt{>=}, dies wird gelöst indem der \texttt{slt} Operator benutzt wird und das Ergebnis mit dem Operator \texttt{xori} negiert wird.
+Der Befehl \texttt{slt} (Set Less Than) kann für den \texttt{<} (und mit umgedrehten Argumenten für den \texttt{>}) Operator benutzt werden.
+RISC-V implementiert kein Befehl für \texttt{<=} und \texttt{>=}, dies wird gelöst, indem der \texttt{slt} Operator benutzt wird und das Ergebnis mit dem Operator \texttt{xori} negiert wird.
 
 \begin{figure}[H]
   \begin{align*}
@@ -153,7 +153,7 @@ RISC-V implementiert kein Befehl für \texttt{<=} und \texttt{>=}, dies wird gel
     More\ Or\ Equal\ Than\ &\texttt{=\ !(y < x) = x <= y}
   \end{align*}
 \end{figure}
-Ansonsten werden im allgemeinen die Befehle \texttt{beq} (Branch if Equal) für \texttt{==} und \texttt{bne} (Branch if Not Equal) für \texttt{!=} empfohlen um Werte zu vergleichen.
+Ansonsten werden im Allgemeinen die Befehle \texttt{beq} (Branch if Equal) für \texttt{==} und \texttt{bne} (Branch if Not Equal) für \texttt{!=} empfohlen, um Werte zu vergleichen.
 Will man dabei einen Wert setzen, kann man dies nach dem entsprechenden Sprungbefehl machen.\\
 
 \subsubsection{Beispiel Drei-Adressen Code}
@@ -222,7 +222,7 @@ LABEL_NE_NOT_TRUE:
 LABEL_NE_END:
 \end{lstlisting}
 
-RISC-V bietet ausserdem einige Pseudo-Operationen an, die zur Lesbarkeit in der Maschinensprache benutzt werden können.
+RISC-V bietet außerdem einige Pseudo-Operationen an, die zur Lesbarkeit in der Maschinensprache benutzt werden können.
 Statt \texttt{xori x5, x5, -1} kann man die Pseudo-Operation \texttt{not x5, x5} benutzen, die zu \texttt{xori} expandiert wird, aber etwas lesbarer ist.\\
 
 
@@ -230,7 +230,7 @@ Statt \texttt{xori x5, x5, -1} kann man die Pseudo-Operation \texttt{not x5, x5}
 
 Funktionsaufrufe können wieder mit dem Befehl \texttt{jal} umgesetzt werden, allerdings muss hierbei die \textit{Return Address} in einem Register gespeichert werden, um nach dem Funktionsaufruf wieder zurückzuspringen.\\
 Das macht allerdings verschachtelte Funktionsaufrufe schwierig, da die \textit{Return Address} bei mehreren Funktionsaufrufen ineinander überschrieben wird.\\
-Die Lösung hierfür währe, die Variablen sauber im Stack zu speichern und die Funktionsdefinition mittels eines Funktionsprologs korrekt aufzusetzen.
+Die Lösung hierfür wäre, die Variablen sauber auf Stack-Adressen zu speichern und die Funktionsdefinition mittels eines Funktionsprologs korrekt aufzusetzen.
 Dies ist im Rahmen dieser Arbeit zu aufwändig und wird daher nicht implementiert.\\
 Stattdessen wird als temporäre Maßnahme die Kompilierung mit einem Fehler abgebrochen, wenn ein Funktionsaufruf in einem Funktionsaufruf auftritt.\\
 Die \textit{Return Address} wird in \texttt{x31} gespeichert, das Register wird dabei als belegt aufgenommen.\\
@@ -284,11 +284,13 @@ add x3, x30, 0
 
 \end{lstlisting}
 
+\pagebreak
+
 \subsection{Funktionsdefinitionen}
 
-Um die Rücksprünge von Funktionsaufrufen zu ermöglichen ohne Funktionsprolog und -epilog zu implementieren, wird das Register \texttt{x31} für die Rücksprungadresse benutzt und verhindert, dass der Quellcode Funktionsaufrufe verschachtelt.\\
+Um die Rücksprünge von Funktionsaufrufen zu ermöglichen, ohne Funktionsprolog und -epilog zu implementieren, wird das Register \texttt{x31} für die Rücksprungadresse benutzt, wobei verhinder wird, dass der Quellcode Funktionsaufrufe verschachtelt.\\
 Um zu der Adresse zurückzuspringen, die vor dem Funktionsaufruf gespeichert wurde, wird der Befehl \texttt{jr} (Jump Return) mit dem Register \texttt{x31} benutzt\cite{waterman:2017}.\\
-Diese simple RISC Funktionsdefinition ist strukturell ähnlich zu dem Drei-Adressen Code, aus der sie generiert wurde.
+Diese simple RISC Funktionsdefinition ist strukturell ähnlich zu dem Drei-Adressen Code, aus dem sie generiert wurde.
 
 \subsubsection{Beispiel Drei-Adressen Code}
 
@@ -309,7 +311,7 @@ RET, arg1: {var_ref: ":t1"}, arg2: NULL, result_ref: NULL
 LABEL, arg1: NULL, arg2: NULL, result_ref: "L1"
 
 // Standard Return falls nichts zurückgegeben wird
-RET, arg1: {var_ref: 0}, arg2: NULL, result_ref: NULL
+RET, arg1: {int_val 0}, arg2: NULL, result_ref: NULL
 
 LABEL, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC_END"
 \end{lstlisting}
@@ -341,11 +343,10 @@ add x6, x4, 0
 
 li x6, 20
 li x5, 10
-eq x8, x6, 20
 
-bne x8, 0, L1
+beq x6, 20, L1
 
-ad x30, x6, 0
+add x30, x6, 0
 jr x31
 
 L1:

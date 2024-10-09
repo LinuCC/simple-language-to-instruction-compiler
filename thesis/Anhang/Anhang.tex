@@ -136,13 +136,13 @@ return x / 2 + val * 2;
 <wso> ::= <ws>*
 
 \end{lstlisting}
-\hfil\textit{Validiert mit Anhang \ref{fig:slicc:slang} auf BNF Playground\cite{paulklineBNFPlayground}}\\
+\hfil\textit{Validiert mit Anhang \ref{fig:slicc:slang} auf BNF Playground \cite{paulklineBNFPlayground}}\\
 
 \chapter{SLICC Compiler Handbuch}
 
 \section{Installation}
 
-Der aktuelle Programmcode des Compilers ist auf GitHub verfügbar\cite{pascalernstSLICC2024}.
+Der aktuelle Programmcode des Compilers ist auf GitHub verfügbar \cite{pascalernstSLICC2024}.
 
 Um den Compiler zu bauen, wird CMake benötigt. CMake ist ein weit verbreitetes Build-System, das auf vielen Plattformen verfügbar ist.
 Zusätzlich dazu wird der Kompiler \texttt{clang} benötigt sowie die Source Files zu den Bibliotheken \texttt{GNU Bison} und \texttt{Flex}.
@@ -192,39 +192,43 @@ cat examples/simple\_test.slang | ./slicc
 \begin{tikzpicture}
 
 % Main container
-\begin{umlpackage}{Main}
-  \begin{umlpackage}[y=-5]{tac}
+\begin{umlpackage}{Hauptprogramm}
+  \begin{umlpackage}[x=-3, y=0]{tac}
         \umlclass[x=0,y=0]{TacEntry}{}{}
         \umlclass[x=5,y=0]{SymbolTableEntry}{}{}
     \end{umlpackage}
-  	\umlclass[x=0,y=0]{main}{}{}
 \end{umlpackage}
 
 % Frontend container
-\begin{umlpackage}[x=5, y=-10]{Frontend}
-    \umlclass[x=0, y=-1]{Scanner}{}{}
-    \umlclass[x=0, y=1]{Parser}{}{}
-    \umlclass[x=5, y=0]{Driver}{scanner : Scanner \\ parser : Parser}{parse\(\)}{}
+\begin{umlpackage}[x=5, y=-6]{slangparser}
+    \umlclass[x=0, y=-2]{Scanner}{}{}
+    \umlclass[x=0, y=2]{Parser}{}{}
+    \umlclass[x=5, y=0]{FrontendDriver}{scanner : Scanner \\ parser : Parser}{parse(string)}{}
 \end{umlpackage}
 
 % Backend container
-\begin{umlpackage}[x=0, y=-15]{Backend}
-    \umlclass[x=0, y=0]{BackendDriver}{generator : CodeGen}{generate\(SymbolTable, TAC\) : String}{}
-    \umlclass[x=5, y=0]{CodeGen}{}{}
+\begin{umlpackage}[x=0, y=-12]{riscgen}
+    \umlclass[x=0, y=0]{BackendDriver}{generator : CodeGen}{generate(list<SymbolTableEntry>, list<TAC>) : string}{}
+    \umlclass[x=7, y=0]{CodeGen}{}{}
 \end{umlpackage}
 
 % Relations
-\umlunicompo{Driver}{Scanner}
-\umlunicompo{Driver}{Parser}
+\umlunicompo{FrontendDriver}{Scanner}
+\umlunicompo{FrontendDriver}{Parser}
 \umlunicompo{BackendDriver}{CodeGen}
+\umlunicompo{tac}{riscgen}
+\umlunicompo{tac}{slangparser}
 
-% Calls
-\umlnote[x=-2, y=-2]{note1}{SymbolTable and TAC}
-\umlnote[x=11, y=-3]{note2}{Returns: String}
-
-\umlassoc[geometry=-|-, arm1=2, arm2=3]{main()}{Driver.parse}
-\umlVHdash[geometry=-|-, arm1=3, arm2=3]{Driver.parse}{note1}
+\umlassoc[geometry=-|-, arm1=2, arm2=3]{main()}{FrontendDriver.parse}
 \umlassoc[geometry=|-|-, arm1=3, arm2=2]{main()}{BackendDriver.generate}
-\umlVHdash[geometry=-|-, arm1=3, arm2=3]{BackendDriver.generate}{note2}
 
 \end{tikzpicture}
+
+Der Compiler besteht aus drei Komponentenarten: dem Frontend, dem Backend und dem Hauptprogramm.
+Es können mehrere Frontends und Backends existieren, die von dem Hauptprogramm importiert und benutzt werden können.\\
+Der \texttt{*Driver} in der jeweiligen Komponente ist die Klasse, die von \texttt{main()} benutzt wird, um die Funktionalität der Komponente zu nutzen.\\
+
+Beim Kompilieren wird der Quelltext von \texttt{main()} eingelesen und an den \texttt{FrontendDriver} in der \texttt{slang\_parser} Komponente übergeben.
+Diese parst den Quelltext mittels der von Flex und GNU Bison autogenerierten Klassen \texttt{Scanner} und \texttt{Parser}.
+Die Zwischensprache, bestehen aus den Symboltabelleneinträgen und TACs, wird dann von \texttt{main()} an den \texttt{BackendDriver} in der \texttt{risc\_gen} Komponente übergeben.
+Die Klasse \texttt{CodeGen} generiert dann den Maschinencode als String aus den Symboltabelleneinträgen und TACs und gibt sie an \texttt{main()} zurück, welche sie dann ausgibt.

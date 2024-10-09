@@ -7,7 +7,7 @@
 using namespace slang_parser;
 
 namespace slang_parser {
-Driver::Driver() {
+FrontendDriver::FrontendDriver() {
   this->scanner = new Scanner();
   this->parser = new Parser(*this);
   this->error = 0;
@@ -15,21 +15,21 @@ Driver::Driver() {
   this->parent_unknown_symbol_table = list<SymbolTableEntry>();
 }
 
-Driver::~Driver() {
+FrontendDriver::~FrontendDriver() {
   delete parser;
   delete scanner;
 }
 
-void Driver::reset() { error = 0; }
+void FrontendDriver::reset() { error = 0; }
 
-int Driver::parse() {
+int FrontendDriver::parse() {
   std::cout << "\n\nStarting parsing stdin" << std::endl << std::endl;
   scanner->switch_streams(&std::cin, &std::cerr);
   parser->parse();
   return error;
 }
 
-int Driver::parse_file(std::string &path) {
+int FrontendDriver::parse_file(std::string &path) {
   std::cout << "\n\nStarting parsing file " << path << std::endl << std::endl;
   std::ifstream s(path.c_str(), std::ifstream::in);
   scanner->switch_streams(&s, &std::cerr);
@@ -43,10 +43,9 @@ int Driver::parse_file(std::string &path) {
   return error;
 }
 
-int Driver::add_symbol_table_entry(char *name, SymbolType type,
-                                   unsigned int line, unsigned int elementCount,
-                                   char *parent, unsigned int funcArgPosition,
-                                   bool isRef) {
+int FrontendDriver::add_symbol_table_entry(
+    char *name, SymbolType type, unsigned int line, unsigned int elementCount,
+    char *parent, unsigned int funcArgPosition, bool isRef) {
   SymbolTableEntry entry = {
       name, type, line, elementCount, parent, funcArgPosition, isRef};
 
@@ -59,13 +58,14 @@ int Driver::add_symbol_table_entry(char *name, SymbolType type,
   return 0;
 }
 
-int Driver::add_tac_entry(slicc_tac::TacOperation op, slicc_tac::TacArg arg1,
-                          slicc_tac::TacArg arg2, char *res_ref) {
+int FrontendDriver::add_tac_entry(slicc_tac::TacOperation op,
+                                  slicc_tac::TacArg arg1,
+                                  slicc_tac::TacArg arg2, char *res_ref) {
   slicc_tac::TacEntry entry = {op, arg1, arg2, res_ref};
   tac_entries.push_back(entry);
 }
 
-void Driver::identify_parent(char *parent_name) {
+void FrontendDriver::identify_parent(char *parent_name) {
   for (auto &entry : parent_unknown_symbol_table) {
     entry.parent = parent_name;
     symbol_table.push_back(entry);
@@ -114,7 +114,7 @@ std::string tacOperationToString(TacOperation op) {
   }
 }
 
-void Driver::print_symbol_table() {
+void FrontendDriver::print_symbol_table() {
   std::cout << "\n\n==== Symbol Table" << std::endl;
 
   std::cout << std::right << std::setw(30) << "Name" << "  " << std::left
@@ -157,7 +157,7 @@ void Driver::print_symbol_table() {
   }
 }
 
-void Driver::print_tac_entries() {
+void FrontendDriver::print_tac_entries() {
   std::cout << "\n\n==== TAC Entries" << std::endl;
 
   // typedef struct _TacArg {

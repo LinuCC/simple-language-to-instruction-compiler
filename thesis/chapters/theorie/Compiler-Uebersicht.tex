@@ -1,4 +1,4 @@
-\part{Compiler Theorie}
+\part{Compiler-Theorie}
 \chapter{Der Compilerbau}
 \label{chap:theory:compilerHistory}
 
@@ -7,53 +7,49 @@
 Die ersten Computer wurden direkt in Maschinensprache programmiert.
 Mithilfe von handgeschriebenen Notationen und Tabellen haben die Programmierer die Übersicht über
 die Programme behalten.\\
-Mit der Zeit wurden die Aufgaben, die die Maschinen Computer erledigen sollten, immer komplexer und größer.
-Über die binären Instruktionen den Überblick zu behalten, wurde damit auch schwieriger.
+Mit der Zeit wurden die Aufgaben, die die Computer erledigen sollten, immer komplexer und größer.
+Den Überblick über die binären Instruktionen zu behalten, wurde damit auch schwieriger.
 Statt direkt in Binärcode zu arbeiten, war es leichter, die Operationen in Symbole wie ``LOAD'' und ``ADD'' zu schreiben und zu lesen.
-Diese Symbole wurden dann in einem Zwischenschritt durch einen symbolbasierten Assembler in die computer-verständliche Maschinensprache übersetzt.\\
+Diese Symbole wurden dann in einem Zwischenschritt durch einen symbolbasierten Assembler in die computerverständliche Maschinensprache übersetzt.\\
 Zusätzlich dazu veränderte sich die Technik; 
-Mit der Einführung der Magnettrommelspeicher zum Beispiel kamen Herausforderungen in der Optimierung des Speicherzugriffs auf.
+mit der Einführung der Magnettrommelspeicher zum Beispiel kamen Herausforderungen in der Optimierung des Speicherzugriffs auf.
 Je nach Ort der Daten konnte die Dauer, auf die Daten mit Direktzugriff zuzugreifen, um einen Faktor von 50 variieren \cite{calingaert:1979}.
 Mithilfe eines optimierenden Assemblers wurden die Adresszuweisungen der Daten optimiert, sodass die Zugriffsdauer auf diese Daten verringert wurde.\\
 Die Instruktionstypen, die eine damalige Prozessorarchitektur der Computer lesen und bearbeiten konnte, waren sehr limitiert.
-Oftmals waren mehrere kleine Instruktionen nötig, um Schritte im Programm darzustellen, die mit einem größeren, expliziteren Instruktionstypen
+Oftmals waren mehrere kleine Instruktionen nötig, um Schritte im Programm darzustellen, die mit einem größeren, expliziteren Instruktionstyp
 zusammengefasst werden könnten.
-Diese fehlenden Instruktionstypen wurden anfangs mit einem Interpreter hinzugefügt; Ein Programm, das die Übersetzung der programmierten, komplexeren Befehle
+Diese fehlenden Instruktionstypen wurden anfangs mit einem Interpreter hinzugefügt; ein Programm, das die Übersetzung der programmierten, komplexeren Befehle
 in für die Prozessorarchitektur lesbare Befehle übernahm.
 Da ein Interpreter selbst auf dem Computer ausgeführt werden muss, führt dies zu deutlichem Mehraufwand in der Ausführung der Programme.
 Die ersten Compiler wurden geschrieben, um dieses Problem zu lösen.
 Sie übersetzten die vom Programmierer geschriebenen Befehlslisten in für die Prozessorarchitektur des Computers verständliche Instruktionen.
 Die Compiler übernahmen mit der Zeit weitere Aufgaben wie Speicherzugriffsoptimierungen und dynamische Speicherallokation.
 Verschiedene Programmiersprachen abstrahierten die Prozessorarchitektur weiter.
-Sie vereinfachten die Implementierung von Programmen in domänenspezifischen Problemen wie Handel und Forschung und verbreiteten sich später mit dem Aufkommen von Allzweck-Programmiersprachen auch darüber hinaus\cite{calingaert:1979}.
+Sie vereinfachten die Implementierung von Programmen in domänenspezifischen Problemen wie Handel und Forschung und verbreiteten sich später mit dem Aufkommen von Allzweck-Programmiersprachen auch darüber hinaus \cite{calingaert:1979}.
 
 \section{Aufbau eines Compilers}
 
 Heutzutage gibt es eine große Bandbreite an Programmen, die Compiler genannt werden.
 Der Compiler im klassischen Sinne übersetzt in Programmiersprachen geschriebenen Programmcode in Maschinencode.
 Die ``Cross-Compiler'' hingegen übersetzen von einer Programmiersprache in eine andere Programmiersprache.
-Zusätzlich dazu gibt es Compiler (oder auch ``compiler-ähnliche Werkzeuge'') die auf ganz anderen Datenstrukturen arbeiten und zum Beispiel Logdateien in Tabellen kompilieren.
+Zusätzlich dazu gibt es Compiler (oder auch ``compiler-ähnliche Werkzeuge''), die auf ganz anderen Datenstrukturen arbeiten und zum Beispiel Logdateien in Tabellen kompilieren.
 Im Rahmen dieser Arbeit wird der klassische Compiler behandelt, mit dem eine Programmiersprache zu einer Maschinensprache kompiliert wird.\\
 Generell gibt es zwei Möglichkeiten, wie diese Compiler aufgebaut werden.
-In dem Einpass-Compiler wird der Programmcode, der Eingabesatz, in Zeichen für Zeichen eingelesen, welche in Lexeme, lexikalische Gruppen, eingeordnet werden.
+In dem Einpass-Compiler wird der Programmcode, der Eingabesatz, Zeichen für Zeichen eingelesen, welche in Lexeme, lexikalische Gruppen, eingeordnet werden.
 Ein Lexem wird eingelesen, geparst und der entsprechende Maschinencode wird generiert.
 Dann fährt der Einpass-Compiler mit den nächsten Eingabezeichen fort, bis das Ende des Programmcodes erreicht ist.\\
-Der Mehrpass-Compiler hingegen liest anfangs den gesamten Programmcode ein und parst ihn mithilfe von mehreren Programmteilen, wo der letzte den Maschinencode ausgibt\cite{mossenbock:2024}.\\
+Der Mehrpass-Compiler hingegen liest anfangs den gesamten Programmcode ein und parst ihn mithilfe von mehreren Programmteilen, wobei der letzte den Maschinencode ausgibt\cite{mossenbock:2024}.\\
 Diese Compiler haben generell 6 Phasen, in denen sie arbeiten.\\
-Die erste, die lexikalische Analyse, unterteilt das Programm in Lexeme, die Einheiten wie Variablennamen oder Operationszeichen gruppieren.\\
+Die erste, die lexikalische Analyse, unterteilt das Programm in Lexeme, also Einheiten wie Variablennamen oder Operationszeichen.\\
 Als nächstes überprüft die Syntaxanalyse die Struktur des Programmcodes mithilfe von grammatikalischen Regeln.
 Sie generiert mit den Lexemen zusätzliche Daten und ordnet die resultierenden Tokens in eine Baumstruktur, den Syntaxbaum, ein.\\
-
-\textsf{TODO: Besser!}
 
 \subsection{Der Parser}
 
 Es gibt zwei grundlegende Arten von Parsern im Compilerbau, den Top-Down und den Bottom-Up Parser.\\
-Der Top-Down Parser baut den Syntax Baum aus der Wurzel heraus und bricht dann die Tokens immer mehr im Detail runter.\\
+Der Top-Down Parser baut den Syntaxbaum aus der Wurzel heraus und bricht dann die Tokens immer weiter im Detail runter.\\
 Für den Quellcode ``\textit{int myVar = x + 2;}'' liest der Parser zuerst den ganzen Ausdruck ein und teilt diesen dann auf;
-Nachdem er diesen Ausdruck in die einzelnen Tokens runtergebrochen und ebenfalls geparst hat wird geschlussfolgert dass der gesamte Ausdruck eine Variablenzuweisung ist.
-
-\textsf{Check ditt hier nochmal}
+nachdem er diesen Ausdruck in die einzelnen Tokens heruntergebrochen und ebenfalls geparst hat, wird geschlussfolgert, dass der gesamte Ausdruck eine Variablenzuweisung ist.
 
 \begin{figure}[H]
   \centering
@@ -91,7 +87,7 @@ Nachdem er diesen Ausdruck in die einzelnen Tokens runtergebrochen und ebenfalls
     ]
     ]
   \end{forest}
-  \caption{Top Down Syntax Parsung}
+  \caption{Top-Down-Syntaxanalyse}
 \end{figure}
 
 Der Bottom-Up Parser fängt mit einzelnen Tokens aus dem Quellcode an und fügt diese zusammen\cite{meduna2007elements}.
@@ -153,19 +149,19 @@ Erst mit dem Zusammenfügen und Parsen des gesamten  Ausdrucks wird klar, dass `
 
 Nach dem Parsen der Tokens wird eine semantische Analyse auf dem Syntaxbaum ausgeführt. 
 Hier werden unter anderem die Tokens als Symbole miteinander verknüpft und die Typen von Variablen überprüft.
-Wird zum Beispiel einer Variable von Typ ``\textit{int}'' inkorrekterweise ein Wert vom Type ``\textit{string}'' zugewiesen, wird das in der semantischen Analyse als Fehler aufgezeigt.
+Wird zum Beispiel einer Variable von Typ ``\textit{int}'' inkorrekterweise ein Wert vom Typ ``\textit{string}'' zugewiesen, wird das in der semantischen Analyse als Fehler aufgezeigt.
 Nach diesen Schritten ist das grundlegende Parsen erfolgreich abgeschlossen.\\
 
 Die Aufteilung des Quellprogramm-Einlesens in die lexikalische Analyse und Syntaxanalyse ist vor allem der Praktikalität der Implementierung komplexerer Programmiersprachen geschuldet.
-Ohne die Aufteilung müsste der Parser auch Zeichen für Formatierung und Lesbarkeit (z.B. Leerzeichen, Newline, Kommentarstart und -ende) einlesen, was die Implementierung der Syntaxanalyse deutlich verkomplizieren würde.
+Ohne die Aufteilung müsste der Parser auch Zeichen für Formatierung und Lesbarkeit (z.B. Leerzeichen, Zeilenumbrüche, Kommentarstart und -ende) einlesen, was die Implementierung der Syntaxanalyse deutlich verkomplizieren würde.
 
 \subsection{Der Codegenerator}
 
 Einfache Compiler generieren aus den Symbolen direkt Ausgaben wie Maschinencode mit dem Codegenerator.
-In modernen Compilern werden vor diesem abschliessenden Schritt noch Optimierungen vorgenommen, die den Maschinencode in Nutzung von Ressourcen wie Arbeitsspeicher, Effizienz von Befehlen in der Zielprozessorarchitektur und Größe der Binärdatei verbessert.\\
+In modernen Compilern werden vor diesem abschließenden Schritt noch Optimierungen vorgenommen, die den Maschinencode in Nutzung von Ressourcen wie Arbeitsspeicher, Effizienz von Befehlen in der Zielprozessorarchitektur und Größe der Binärdatei verbessern.\\
 
-Der Codegenerator hat hauptsächlich die folgenden Aufgaben zu erfüllen\cite{mossenbock:2024}:\\
-Zum einen müssen die geparsten Ausdrücke in Maschinencode lesbar für die angezielte Prozessorarchitektur generiert und als Maschinenprogramm in einer Datei gespeichert werden.
+Der Codegenerator hat hauptsächlich die folgenden Aufgaben zu erfüllen \cite{mossenbock:2024}:\\
+Zum einen müssen die geparsten Ausdrücke in für die angezielte Prozessorarchitektur lesbaren Maschinencode generiert und als Maschinenprogramm in einer Datei gespeichert werden.
 Weiterhin müssen Konstrukte wie Schleifen und Verzweigungen in Sprungbefehle übersetzt werden.
 Der Codegenerator muss sich auch um lokale Variablen von Methoden kümmern, die im richtigen Kontext initialisiert und dann wieder freigegeben werden müssen.\\
 Während der Generierung ist auch Fehlerbehandlung wichtig, die verhindert, dass ein unlesbares oder inkorrektes Maschinenprogramm erzeugt wird.\\
@@ -173,4 +169,4 @@ Während der Generierung ist auch Fehlerbehandlung wichtig, die verhindert, dass
 Der Codegenerator ist stark von der angezielten Prozessorarchitektur und ihren Instruktionstypen abhängig.
 Die \acfi{RISC} Architektur mit wenigen einfachen Instruktionstypen benötigt wenige Spezialfallbehandlungen und ist damit relativ simpel in einem Codegenerator umzusetzen.
 Im Gegensatz dazu steht die Architektur \acfi{CISC}, zum Beispiel der x86 Architektur-Familie. 
-Mit einer Unmenge an Instruktionstypen, deren Funktionsweise sich teilweise überschneiden oder mehrere kleine Instruktionstypen zur Optimierung der Ausführung gruppiert werden, ist ein vollständiger, korrekter und optimierter Codegenerator für einer dieser Prozessorarchitekturen extrem groß und komplex.
+Mit einer Unmenge an Instruktionstypen, deren Funktionsweise sich teilweise überschneiden oder mehrere kleine Instruktionstypen zur Optimierung der Ausführung gruppiert werden, ist ein vollständiger, korrekter und optimierter Codegenerator für eine dieser Prozessorarchitekturen extrem groß und komplex.

@@ -17,10 +17,10 @@ class Parser;
 class Scanner;
 class location;
 
-class Driver {
+class FrontendDriver {
 public:
-  Driver();
-  ~Driver();
+  FrontendDriver();
+  ~FrontendDriver();
 
   int parse();
   int parse_file(std::string &path);

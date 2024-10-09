@@ -1,10 +1,10 @@
 #include "slang_parser/driver.hh"
 
 int main() {
-  slang_parser::Driver driver;
+  slang_parser::FrontendDriver driver;
   // return driver.parse();
   std::string input_file = "./input.slang";
-  int parse_ret = driver.parse_file(input_file);
+  int parse_ret = driver.parse();
   if (parse_ret != 0) {
     return parse_ret;
   }

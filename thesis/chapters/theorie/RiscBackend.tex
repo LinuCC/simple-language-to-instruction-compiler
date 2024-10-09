@@ -3,8 +3,8 @@
 
 Das Backend im Zweiphasen-Compiler generiert aus der Zwischensprache und der Symboltabelle den Maschinencode, der am Ende von der Zielplattform ausgeführt wird.
 Die Zwischensprache kann bereits durch einen Optimierungsschritt gelaufen sein, aber diese sind nicht unbedingt auf den Maschinencode zugeschnitten, der generiert wird.
-Das Backend kann demnach seine eigenen Optimierungen, speziell für die angezielte Prozessorarchitektur, mit einbringen.
-Ein Zweiphasen-Compiler hat somit nicht zwangsweise nur Zwischensprachen zwischen dem Frontend und dem Backend; Backends können ihre eigenen Zwischensprachen zu Optimierungszwecken implementieren\cite{aho:2006}:
+Das Backend kann demnach seine eigenen Optimierungen, speziell für die angezielte Prozessorarchitektur, einbringen.
+Ein Zweiphasen-Compiler hat somit nicht zwangsweise nur Zwischensprachen zwischen dem Frontend und dem Backend; Backends können ihre eigenen Zwischensprachen zu Optimierungszwecken implementieren \cite{aho:2006}:
 
 \begin{figure}[H]
   \begin{tikzpicture}
@@ -25,7 +25,7 @@ Ein Zweiphasen-Compiler hat somit nicht zwangsweise nur Zwischensprachen zwische
   \end{tikzpicture}
 \end{figure}
 
-Im Gegensatz zu den generischen Zwischensprachen eines Compilers werden backendspezifische Zwischensprachen nicht zwischen Backends geteilt.
+Im Gegensatz zu den generischen Zwischensprachen eines Compilers werden Backendspezifische Zwischensprachen nicht zwischen Backends geteilt.
 Deswegen muss abgewägt werden, ob Optimierungen in der generischen Zwischensprache eingebaut werden können oder
 ob sie speziell für bestimmte Backends implementiert werden müssen und somit nur einzelne Backends von dieser Implementation profitieren.
 
@@ -34,13 +34,13 @@ ob sie speziell für bestimmte Backends implementiert werden müssen und somit n
 Die Zielarchitektur des in dieser Arbeit behandelten Compilers ist \acs{RISC}.
 RISC ist ein Designprinzip für Prozessoren, das auf wenige, einfache und schnelle Instruktionen setzt.
 In den letzten Jahren hat die Architekturdefinition ``RISC-V'' immer mehr an Bedeutung gewonnen.
-Es ist ein offener Standard, der von der \textit{RISC-V Foundation} entwickelt wird und eine verhältnismäßig simple Zielplattform bietet\cite{RISCV}.\\
+Es ist ein offener Standard, der von der \textit{RISC-V Foundation} entwickelt wird und eine verhältnismäßig simple Zielplattform bietet \cite{RISCV}.\\
 
 RISC-V besteht grundlegend aus einer Integer Befehlssatzarchitektur mit optionalen Erweiterungen dazu.
 Prozessoren müssen damit mindestens eine der beiden Varianten dieser Befehlssatzarchitektur, ``RV32I'' mit 32-bit Adressierung oder ``RV64I'' mit 64-bit Adressierung, implementieren.
-Eine spezielle Alternative für kleine Prozessoren, ``RV32E'', implementiert nur einen Teil der ``RV32I'' um Kosten dieser gering zu halten\cite{waterman:2017}.\\
+Eine spezielle Alternative für kleine Prozessoren, ``RV32E'', implementiert nur einen Teil der ``RV32I'', um Kosten dieser gering zu halten \cite{waterman:2017}.\\
 Eine interessante Erweiterung ist die ``C'' Erweiterung (zum Beispiel in ``RV32C'').
 Sie erlaubt es, komprimierte 16-bit Befehle gemischt mit den Standard 32-bit Befehlen zu benutzen und dadurch die Programmgröße zu verringern.
 Nur Befehle, die auf eine bestimmte Art auf Register zugreifen, können so komprimiert werden.
-Ein Compiler, dass diese Erweiterung unterstützt, benötigt somit einen Optimierungsschritt, der für die RISC-V Zielarchitektur spezifisch ist.
+Ein Compiler, welcher diese Erweiterung unterstützt, benötigt somit einen Optimierungsschritt, der für die RISC-V Zielarchitektur spezifisch ist.
 Diese Optimierung kann daher nur in dem speziellen Backend implementiert werden und nicht in der generischen Zwischensprache des Compilers.

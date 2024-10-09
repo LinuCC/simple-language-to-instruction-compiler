@@ -1,14 +1,14 @@
 \chapter{Umsetzung des Parsers}
 \label{chap:building:parser}
 
-Der angezielte Parser ist ein Bottom-Up Parser generiert durch einen Parsergenerator.
+Der angestrebte Parser ist ein Bottom-Up Parser generiert durch einen Parsergenerator.
 Die lexikalische Analyse wird von ``Flex'', einer erweiterten Alternative zum klassischen ``Lex'', übernommen.
-Flex parst eine Datei mit einer zu diesem Werkzeug spezifischen Syntax und schreibt den Lexer als autogenerierten C oder C++ Code in eine Datei.
-Mit der Schnittstelle dieses Lexers kann dann gearbeitet werden, um die Tokens während des Parsens weiterzuverarbeiten.\\
-Flex bringt eine spezielle Schnittstelle mit, mit der Syntaxparsergeneratoren wie ``Yacc'' oder kompatible Derivate wie ``GNU Bison'' direkt integriert werden können ohne in handgeschriebenen Programmcode verbindet werden zu müssen\cite{flex:1995}.\\
-Bison bietet sich auch direkt an da es noch weiterentwickelt wird und ebenfalls das Yacc-kompatible Interface implementiert.
-Der Parser von Bison implementiert interessante Möglichkeiten, wie zum Beispiel die Erweiterung des Parsers von \textit{LR(1)} Grammatiken zu \textit{GLR} (Generalized LR) Grammatiken.
-Dadurch kann der Parser auch mit Shift-Reduce Konflikten umgehen, indem der Parser mehrere Parse-Stränge gleichzeitig verfolgt und bei Fehlern diese wieder schliesst, bis nur der eine gültige Strang (bei korrekter Grammatikdefinition) weiterverfolgt wird\cite{bisonmanual}.\\
+Flex parst eine Datei mit einer zu diesem Werkzeug spezifischen Syntax und schreibt den Lexer als automatisch generierten C- oder C++-Code in eine Datei.
+Die Schnittstelle dieses Lexers kann genutzt werden, um die Token während des Parsens weiterzuverarbeiten.\\
+Flex bietet eine spezielle Schnittstelle, mit der Syntaxparsergeneratoren wie ``Yacc'' oder kompatible Derivate wie ``GNU Bison'' direkt integriert werden können, ohne in handgeschriebenen Programmcode verbunden werden zu müssen \cite{flex:1995}.\\
+Bison bietet sich ebenfalls an, da es noch weiterentwickelt wird und das Yacc-kompatible Interface implementiert.
+Der Parsergenerator Bison implementiert interessante Möglichkeiten, wie zum Beispiel die Erweiterung des Parsers von \textit{LR(1)}-Grammatiken zu \textit{GLR} (Generalized LR) Grammatiken.
+Dadurch kann der Parser auch mit Shift-Reduce Konflikten umgehen, indem der Parser mehrere Parse-Stränge gleichzeitig verfolgt und bei Fehlern diese wieder schließt, bis nur der eine gültige Strang (bei korrekter Grammatikdefinition) weiterverfolgt wird \cite{bisonmanual}.\\
 
 \section{Der Aufbau der Programmiersprache Slang}
 
@@ -24,8 +24,8 @@ Die Grundbausteine der Programmiersprache sind dabei die Definition von Programm
 
 Wir definieren in unserer Grammatik zuerst eine Regel \texttt{<main>}, die mit einem \texttt{<program>} beginnt und dann eine beliebige Anzahl von Funktionsdefinitionen enthält.\\
 Das Token \texttt{<wso>} steht für Formatierungszeichen, die in der Grammatik ignoriert werden.
-Wir koppeln Anweisungen und Blöcke mit Tokens wie Klammern (\texttt{\{\}}) und Semikolons \texttt{;} voneinander ab, damit die Formatierung des Programmcodes keine Rolle spielt, womit wir Leerzeichen, Tabs und Zeilenumbrüche ignorieren können.\\
-In den nächsten Abschnitten gehen wir den Grammatikbaum von \texttt{<main>} ab, um die Grammatik von Slang komplett zu definieren.\\
+Wir koppeln Anweisungen und Blöcke mit Token wie Klammern (\texttt{\{\}}) und Semikolons \texttt{;} voneinander ab, damit die Formatierung des Programmcodes keine Rolle spielt, womit wir Leerzeichen, Tabs und Zeilenumbrüche ignorieren können.\\
+In den nächsten Abschnitten gehen wir den Grammatikbaum von \texttt{<main>} durch, um die Grammatik von Slang komplett zu definieren.\\
 
 \subsection{Programme}
 
@@ -42,8 +42,8 @@ Dies wird gefolgt von einem \texttt{<block>}, der die Anweisungen des Programms 
 \begin{lstlisting}[caption={Grammatikdefinition Programm und Hilfsregeln]
 <program> ::= "program" <wso> <id> <wso> <block>
 
-<block> ::=  <wso> "{"  <wso> <block_body>  <wso> "}" <wso>
-<id> ::= <alphachar> (<alphachar> | <digit> | "_")*
+<block> ::=  <wso> "{" <wso> <block\_body>  <wso> "}" <wso>
+<id> ::= <alphachar> (<alphachar> | <digit> | "\_")*
 <alphachar> ::= [a-z]
 <digit> ::= [0-9]
 \end{lstlisting}
@@ -66,10 +66,10 @@ func int call_with_return(int val) {
 
 Funktionsdefinitionen in Slang werden mit dem Token \texttt{func} eingeleitet.
 Wenn zukünftig globalen Variablendeklarationen implementiert werden, macht es etwas leichter, diese grammatikalisch von den Funktionsdefinitionen zu unterscheiden.\\
-Auf das \texttt{func} folgt der Typ des Rückgabewertes der Funktion, der entweder ein Datentyp wie \texttt{int} oder \texttt{void} sein kann, sowie eine \texttt{<id>}, die den Namen der Funktion definiert.\\
+Auf das \texttt{func} folgt der Typ des Rückgabewertes der Funktion, der entweder ein Datentyp wie \texttt{int} oder \texttt{void} sein kann, sowie eine \texttt{<id>}, die den Namen der Funktion angibt.\\
 Danach folgt eine optionale Liste von Argumenten, die in Klammern stehen und durch Kommata getrennt sind.
-Diese Argumente deklarieren eine Variable, die in der Funktion verwendet werden kann.
-Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion übergeben werden, sodass die Funktion den Wert der Variable modifizieren kann, welche sich dann auch auf den Wert in dem Kontext des Aufrufers auswirkt.
+Diese Argumente deklarieren Variablen, die in der Funktion verwendet werden können.
+Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion übergeben werden, sodass die Funktion den Wert der Variable modifizieren kann, was sich dann auch auf den Wert im Kontext des Aufrufers auswirkt.
 
 \begin{lstlisting}[caption={Grammatikdefinition Funktionsdefinitionen}]
 <func_def> ::= "func" <wso> (<type> | "void") <wso> <id> <wso> "(" <wso> <func_args_def> <wso> ")" <wso> <block>
@@ -94,11 +94,7 @@ Damit wir die Typen und Variablen in den Funktionsdefinitionen definieren könne
 \end{lstlisting}
 
 Damit sind alle Bausteine mit Blöcken definiert.
-Um die Programme und Funktionen sinnvoll benutzen zu können, brauchen wir nun die Regeln für die Anweisungen und Ausdrücke, die in diesen Blöcken stehen können.
-
-\textbf{Spezial: Was wenn keine Referenz und modifizert? (Call by Value)}\\
-\textbf{Spezial: Was wenn Referenz und Referenz wird zurückgegeben?}\\
-\\
+Um die Programme und Funktionen sinnvoll benutzen zu können, brauchen wir nun die Regeln für die Anweisungen und Ausdrücke, die in diesen Blöcken stehen können.\\
 
 \subsection{Variablendeklarationen}
 
@@ -117,7 +113,7 @@ func void invalid(int val) {
 Die Blöcke der Programme und Funktionen beginnen mit einer Liste an Variablen, die deklariert werden.
 Slang unterstützt momentan zwei Datentypen: Integer \texttt{int} und eine Liste von Integer \texttt{int[x]}.
 Die Werte dieser Variablen werden standardmäßig auf 0 gesetzt.
-Eine Integer kann auch direkt mit einem Wert initialisiert werden, was aber bei den Arrays nicht implementiert ist.
+Ein Integer kann auch direkt mit einem Wert initialisiert werden, was aber bei den Arrays nicht implementiert ist.
 
 \begin{lstlisting}[caption={Grammatikdefinition Variablendeklarationen}]
 <block_body> ::= <variable_list> <wso> <statement_list>
@@ -150,7 +146,7 @@ Hier wird eine semantische Regel ausserhalb der Grammatikdefinition benötigt, d
 \subsection{Ausdrücke}
 
 Für Kontrollstrukturen oder mathematische Operationen benötigen wir Regeln für Ausdrücke, die an verschiedenen Stellen im Programmcode verwendet werden können.\\
-Ein Ausdruck in Slang kann eine Integer Konstante, eine Variable, ein Funktionsaufruf, eine mathematische Operation oder eine vergleichende Operation sein.
+Ein Ausdruck in Slang kann eine Integerkonstante, eine Variable, ein Funktionsaufruf, eine mathematische Operation oder eine vergleichende Operation sein.
 
 \begin{lstlisting}[caption={Grammatikdefinition Ausdrücke}]
 <expression> ::= <intliteral>
@@ -182,8 +178,7 @@ Damit wird die Komplexität von Vorbedingungen etwas ausgelagert.
                        | <intliteral> <wso> <comparison_operator> <wso> <intliteral>
 \end{lstlisting}
 
-\textbf{Reihenfolge mathematische OPs}
-\textbf{Comparison OP ohne booleans}\\
+\pagebreak
 
 \subsection{Zuweisungen}
 
@@ -220,9 +215,7 @@ daher nicht durch den Compiler behandelt werden.
 
 Einfache Anweisungen in der \texttt{<statement\_list>} sind durch Semikolons getrennt.
 Das \texttt{<if\_statement>} und \texttt{<for\_loop>} sind spezielle Anweisungen mit ihren eigenen Anweisungsblöcken, die durch geschweifte Klammern von den restlichen Anweisungen getrennt sind.\\
-Als besondere Anweisung ist das \texttt{return <expression> ";"} definiert, das die Ausführung der Funktion oder des Programmes beendet und das Ergebnis des Ausdrucks zurückgibt.
-
-\textbf{Return: Stack popping}\\
+Als besondere Anweisung ist das \texttt{return <expression> ";"} definiert, das die Ausführung der Funktion oder des Programmes beendet und das Ergebnis des Ausdrucks zurückgibt.\\
 
 \subsection{Die for-Schleife}
 
@@ -255,7 +248,9 @@ Stattdessen muss diese Variable bereits in der Gruppe der Variablendeklarationen
 Die \texttt{for}-Schleife beginnt mit dem Token \texttt{for}, gefolgt von einem Kopf, in dem ein Vergleichsausdruck und eine Zuweisung definiert werden.
 Auf den Kopf folgt ein Block mit den zu wiederholenden Anweisungen.\\
 
-Da Variablendeklarationen nicht in Kontrollstrukturen erlaubt sind, führen wir eine weitere Regel \texttt{<control\_block>} ein, die wie der \texttt{<block>} definiert ist, aber nur eine \texttt{statement\_list} erlaubt.
+Da Variablendeklarationen nicht in Kontrollstrukturen erlaubt sind, führen wir eine weitere Regel \texttt{<control\_block>} ein, die wie der \texttt{<block>} definiert ist, aber nur eine \texttt{statement\_list} erlaubt.\\
+
+\pagebreak
 
 \subsection{Die if-Bedingung}
 
@@ -281,6 +276,8 @@ Optional folgt darauf ein \texttt{else}-Block, der ausgeführt wird, wenn die Be
 
 Ähnlich der \texttt{for}-Schleife beginnt die mit dem namensgebenden Token \texttt{if}, gefolgt von einer Bedingung in Klammern und einem Anweisungsblock.
 Auf diesem kann mit dem Token \texttt{else} und einem weiteren Anweisungsblock alternative Anweisungen ausgeführt werden.
+
+\pagebreak
 
 \subsection{Funktionsaufrufe}
 
@@ -338,6 +335,8 @@ func void edit_by_reference(ref int val) {
 }
 \end{lstlisting}
 
+\pagebreak
+
 \subsection{Spezialfunktionen}
 
 \begin{lstlisting}[caption={Slang Beispiel I/O Funktionen}]
@@ -354,9 +353,11 @@ Für I/O bietet Slang zwei spezielle Funktionen, \texttt{read(x)} und \texttt{wr
 Da diese auf der Grammatik der Funktionsaufrufe basieren, sind diese nicht speziell in der EBNF Grammatikdefinition aufgelistet.\\
 Stattdessen werden sie als Symbole in der Symboltabelle vorgeladen, sodass sie in der semantischen Analyse als Funktionen erkannt werden können und im Drei-Adress-Code referenziert werden können.\\
 
-Damit ist die Grammatikdefinition und Auflistung der Funktoinen für die Programmiersprache Slang komplett.
+Damit ist die Grammatikdefinition und Auflistung der Funktionen für die Programmiersprache Slang komplett.
 Ein umfassenderes Beispiel für ein Slang-Programm ist in Anhang \ref{fig:slicc:slang} zu finden. \\
 Die komplette EBNF Definition kann in Anhang \ref{fig:slicc:slang:ebnf} nachgeschlagen werden. 
+
+\pagebreak
 
 \section{Parserdefinition von GNU Bison}
 
@@ -387,8 +388,8 @@ expr:
 In diesem Beispiel wird ein einfacher Parser für mathematische Ausdrücke definiert, der die Addition oder Subtraktion zweier Integer berechnet.
 Hierbei ist der Ausdruck in den geschweiften Klammern Template-Code, der beim Parsen aufgerufen wird, um aus dem Parser Daten zur Weiterverarbeitung zu bekommen.
 Zum Beispiel wird hier der mathematische Ausdruck, der geparst wird, direkt ausgeführt.
-Dabei bezeichnen \texttt{\$1} und \texttt{\$3} Die Werte der geparsten Tokens an der Stelle 1 und 3.
-Beide lassen sich auf das Terminalsymbol \texttt{TOK\_INTLITERAL} zurückführen, welches vom Lexer bereits in eine Integer übersetzt und als \texttt{<value>} reingegeben wurde. 
+Dabei bezeichnen \texttt{\$1} und \texttt{\$3} Die Werte der geparsten Token an der Stelle 1 und 3.
+Beide lassen sich auf das Terminalsymbol \texttt{TOK\_INTLITERAL} zurückführen, welches vom Lexer bereits in ein Integer übersetzt und als \texttt{<value>} reingegeben wurde. 
 Das Ergebnis der Ausführung des mathematischen Asudrucks wird in \texttt{\$\$} gespeichert, das über eine Schnittstelle auslesbar ist.\\
 Die Behandlung des Syntaxbaums wird somit von Bison komplett übernommen, der Implementierer muss nur noch den Wert, der an dieser Stelle des Baumes steht, definieren.
 

@@ -8,7 +8,7 @@
   slang_parser::Parser::token_type slang_parser::Scanner::yylex(               \
       slang_parser::Parser::semantic_type *yylval,                             \
       slang_parser::Parser::location_type *yylloc,                             \
-      slang_parser::Driver &driver)
+      slang_parser::FrontendDriver &driver)
 #endif
 
 #ifndef __FLEX_LEXER_H
@@ -26,7 +26,7 @@ public:
 
   virtual Parser::token_type yylex(Parser::semantic_type *yylval,
                                    Parser::location_type *yylloc,
-                                   Driver &driver);
+                                   FrontendDriver &driver);
 
   void set_debug(bool b);
 };

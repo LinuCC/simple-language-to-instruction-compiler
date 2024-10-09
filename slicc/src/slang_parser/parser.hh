@@ -500,7 +500,7 @@ namespace slang_parser {
     {};
 
     /// Build a parser object.
-    Parser (Driver &driver_yyarg);
+    Parser (FrontendDriver &driver_yyarg);
     virtual ~Parser ();
 
 #if 201103L <= YY_CPLUSPLUS
@@ -881,7 +881,7 @@ namespace slang_parser {
 
 
     // User arguments.
-    Driver &driver;
+    FrontendDriver &driver;
 
   };
 
@@ -896,8 +896,8 @@ namespace slang_parser {
 
   namespace slang_parser
   {
-    // Forward declaration of the Driver class
-    class Driver;
+    // Forward declaration of the FrontendDriver class
+    class FrontendDriver;
 
     inline void
     yyerror (const char* msg)
