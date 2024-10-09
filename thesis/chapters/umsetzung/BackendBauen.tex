@@ -1,7 +1,271 @@
-\chapter{Umsetzung des RISC Backends}
+\chapter{Umsetzung des RISC-V Backends}
 \label{chap:build:backend}
 
-Wie mappe ich die Zwischensprache auf den Output, wieviel Code kann ich zwischen RISC binary und RISC Assembly sharen
+Damit das Backend gültigen RISC-V Maschinencode generieren kann, muss es dem Drei-Adressen Code und der Symboltabelle der Zwischensprache folgende Dinge entnehmen:
 
-Weitere Details: Speichereffizienz, Geschwindigkeit, Fehlerbehandlung
+\begin{itemize}
+  \item{Register und Speicheradressen, zugeschnitten auf die RISC-V Prozessarchitektur}
+  \item{Die RISC Befehle, die die Operationen der Drei-Adressen Operationen abbilden}
+  \item{Optimierungen, zum Beispiel die Lebensdauer der temporären Variablen, um Register freizugeben}
+\end{itemize}
 
+RISC-V hat 31 generelle Register, mit denen gearbeitet werden kann.
+Solange die Anzahl der Variablen und temporären Variablen in einem Programm nicht die Anzahl der Register übersteigt, können diese einfach auf die Register verteilt werden.\\
+Werden mehr Variablen benötigt, kann man zum einen Optimierungen einbauen, die die Lebensdauer der Variablen analysieren und Register für andere Variablen freigeben; 
+Zum anderen kann man mit Methoden in der Registerzuteilung arbeiten um die Variablen in Adressen im Stack zu speichern und, wenn wieder benötigt, in ein Register zu laden.\\
+Da dies das Compiler-Backend deutlich verkompliziert, werden hier nur die Register benutzt, um die Werte der Variablen der Drei-Adressen Operationen zu speichern.\\
+
+\section{Register und Speicheradressen}
+
+Im ersten Schritt wird also den Variablen in der Symboltabelle Register zugewiesen.\\
+Wenn mehr als 31 temporäre Variablen und Variablen gesetzt sind, brechen wir die Kompilation ab und geben eine Fehlermeldung aus.\\
+Wir verwenden \texttt{x0} nicht, da es immer den Wert 0 hat und somit nicht als Register für Variablen genutzt werden kann.\\
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| r | c |}
+			\hline
+			Variablenname & Register \\
+			\hline
+			x & x1 \\
+			foobar & x2 \\
+			:t1 & x3 \\
+			:t2 & x4 \\
+			y & x5 \\
+			:t3 & x6 \\
+			\hline
+		\end{tabular}
+	\end{center}
+	\caption{Zuweisung von Variablen in einer fiktiven Symboltabelle zu Registern}
+\end{table}
+
+\section{Zuweisung von Drei-Adressen Code zu RISC-V Befehlen}
+
+\subsection{Arithmetische Operationen}
+
+Da die Variablen bereits in Register abgelegt sind, können die arithmetischen Operationen der Drei-Adressen Operationen direkt in RISC-V Befehle umgewandelt werden.\\
+Der Befehl \texttt{li} (Load Immediate) wird benutzt, um Konstanten in Register zu laden und somit die Register unserer Variablen zu initialisieren.\\
+Mit den Befehlen \texttt{add}, \texttt{sub}, \texttt{mul}, \texttt{div} und \texttt{rem} werden die arithmetischen Operationen durchgeführt.\\
+Um den Wert einer Variablen mit einer anderen zu überschreiben, wird der Befehl \texttt{add} benutzt, um \texttt{<reg> + 0} in das zu überschreibende Register zu speichern.\\
+
+\subsubsection{Beispiel Drei-Adressen Code}
+
+\begin{lstlisting}
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "y"
+
+ADD arg1: { var_ref: "x" }, arg2: { int_val: 2 }, result_ref: "x"
+SUB arg1: { var_ref: "x" }, arg2: { int_val: 1 }, result_ref: "x"
+MUL arg1: { var_ref: "x" }, arg2: { int_val: 2 }, result_ref: "x"
+DIV arg1: { var_ref: "x" }, arg2: { int_val: 3 }, result_ref: "x"
+MOD arg1: { var_ref: "x" }, arg2: { int_val: 4 }, result_ref: "x"
+
+ASSIGN, arg1: {int_val: x}, arg2: NULL, result_ref: "y"
+\end{lstlisting}
+
+Mit folgenden Registern:
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| r | c |}
+			\hline
+			Variablenname & Register \\
+			\hline
+			x & x1 \\
+			y & x2 \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Resultierende RISC-V Befehle}
+
+\begin{lstlisting}
+li x1, 5
+li x2, 0
+
+add x1, x1, 2
+sub x1, x1, 1
+mul x1, x1, 2
+div x1, x1, 3
+rem x1, x1, 4
+
+add x2, x1, 0
+\end{lstlisting}
+
+\subsection{Sprünge}
+
+Bedingte Sprünge können in RISC-V direkt mit dem Befehl \texttt{beq} (Branch if Equal) und \texttt{bne} (Branch if Not Equal) umgesetzt werden.\\
+Unbedingte Sprünge können mit dem Befehl \texttt{jal} (Jump and Link) umgesetzt werden, wo die von \texttt{jal} zurückgegebene \textit{Return Address} in \texttt{x0} reingegeben und somit ignoriert wird.
+
+\subsubsection{Beispiel Drei-Adressen Code}
+
+\begin{lstlisting}
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+ASSIGN, arg1: {int_val: 10}, arg2: NULL, result_ref: "y"
+
+LABEL, label: "LABEL_S"
+COND_GOTO arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, target: "LABEL_T"
+COND_NOT_GOTO arg1: { var_ref: "x" }, arg2: { int_val: 5 }, target: "LABEL_T"
+
+LABEL, label: "LABEL_T"
+GOTO target: "LABEL_S"
+\end{lstlisting}
+
+Mit folgenden Registern:
+
+\begin{table}[H]
+  \begin{center}
+    \begin{tabular}{| r | c |}
+      \hline
+      Variablenname & Register \\
+      \hline
+      x & x1 \\
+      y & x2 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsubsection{Resultierende RISC-V Befehle}
+
+\begin{lstlisting}
+li x1, 5
+li x2, 10
+
+LABEL_S:
+beq x1, x2, LABEL_T
+bne x1, 5, LABEL_T
+
+LABEL_T:
+jal x0, LABEL_S:
+\end{lstlisting}
+
+\subsection{Funktionsaufrufe}
+
+Funktionsaufrufe können wieder mit dem Befehl \texttt{jal} umgesetzt werden, allerdings muss hierbei die \textit{Return Address} in einem Register gespeichert werden, um nach dem Funktionsaufruf wieder zurückzuspringen.\\
+Das macht allerdings verschachtelte Funktionsaufrufe schwierig, da die \textit{Return Address} bei mehreren Funktionsaufrufen ineinander überschrieben wird.\\
+Die Lösung hierfür währe, die Variablen sauber im Stack zu speichern und die Funktionsdefinition mittels eines Funktionsprologs korrekt aufzusetzen.
+Dies ist im Rahmen dieser Arbeit zu aufwändig und wird daher nicht implementiert.\\
+Stattdessen wird als temporäre Maßnahme die Kompilierung mit einem Fehler abgebrochen, wenn ein Funktionsaufruf in einem Funktionsaufruf auftritt.\\
+Die \textit{Return Address} wird in \texttt{x31} gespeichert, das Register wird dabei als belegt aufgenommen.\\
+Der Wert, der von der Funktion zurückgegeben wird, wird in dem Register \texttt{x30} gespeichert.\\
+
+\subsubsection{Beispiel Drei-Adressen Code}
+
+\begin{lstlisting}[caption={Drei-Adressen Code Funktionsaufruf}]
+
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+ASSIGN, arg1: {int_val: 3}, arg2: NULL, result_ref: "y"
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "z"
+
+ASSIGN, arg1: {var_ref: "x"}, arg2: NULL, result_ref: ":args_0"
+REF, arg1: {var_ref: "y"}, arg2: NULL, result_ref: ":args_1"
+CALL, arg1: {var_ref: "LABEL_MY_FUNC"}, arg2: NULL, result_ref: "z"
+
+\end{lstlisting}
+
+Mit folgenden Registern:
+
+\begin{table}[H]
+  \begin{center}
+    \begin{tabular}{| r | c |}
+      \hline
+      Variablenname & Register \\
+      \hline
+      x & x1 \\
+      y & x2 \\
+      z & x3 \\
+      :args\_0 & x4 \\
+      :args\_1 & x5 \\
+      \textit{Return Value} & x30 \\
+      \textit{Return Address} & x31 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsubsection{Resultierende RISC-V Befehle}
+
+\begin{lstlisting}
+li x1, 5
+li x2, 3
+li x3, 0
+
+add x4, x1, 0
+add x5, x2, 0
+jal x31, LABEL_MY_FUNC
+add x3, x30, 0
+
+\end{lstlisting}
+
+\subsection{Funktionsdefinitionen}
+
+Um die Rücksprünge von Funktionsaufrufen zu ermöglichen ohne Funktionsprolog und -epilog zu implementieren, wird das Register \texttt{x31} für die Rücksprungadresse benutzt und verhindert, dass der Quellcode Funktionsaufrufe verschachtelt.\\
+Um zu der Adresse zurückzuspringen, die vor dem Funktionsaufruf gespeichert wurde, wird der Befehl \texttt{jr} (Jump Return) mit dem Register \texttt{x31} benutzt\cite{waterman:2017}.\\
+Diese simple RISC Funktionsdefinition ist strukturell ähnlich zu dem Drei-Adressen Code, aus der sie generiert wurde.
+
+\subsubsection{Beispiel Drei-Adressen Code}
+
+\begin{lstlisting}[caption={Drei-Adressen Code Funktionsdeklaration}]
+GOTO, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC_END"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC"
+ASSIGN, arg1: {var_ref: ":args_0"}, arg2: NULL, result_ref: ":t1"
+REF, arg1: {var_ref: ":args_1"}, arg2: NULL, result_ref: ":t2"
+
+ASSIGN, arg1: {int_val: 20}, arg2: NULL, result_ref: ":t1"
+ASSIGN, arg1: {int_val: 10}, arg2: NULL, result_ref: ":t2"
+
+// if-Bedingung
+EQ, arg1: {var_ref: ":t1"}, arg2: {int_val: 20}, result_ref: ":t3"
+COND_NOT_GOTO, arg1: {var_ref: ":t3"}, arg2: {int_val: 0}, result_ref: "L1"
+RET, arg1: {var_ref: ":t1"}, arg2: NULL, result_ref: NULL
+LABEL, arg1: NULL, arg2: NULL, result_ref: "L1"
+
+// Standard Return falls nichts zurückgegeben wird
+RET, arg1: {var_ref: 0}, arg2: NULL, result_ref: NULL
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC_END"
+\end{lstlisting}
+
+\begin{table}[H]
+  \begin{center}
+    \begin{tabular}{| r | c |}
+      \hline
+      Variablenname & Register \\
+      \hline
+      :args\_0 & x4 \\
+      :args\_1 & x5 \\
+      :t1 & x6 \\
+      :t2 & x7 \\
+      :t3 & x8 \\
+      \textit{Return Address} & x31 \\
+      \hline
+    \end{tabular}
+  \end{center}
+\end{table}
+
+\subsubsection{Resultierende RISC-V Befehle}
+
+\begin{lstlisting}
+jal x0, LABEL_MY_FUNC_END
+
+LABEL_MY_FUNC:
+add x6, x4, 0
+
+li x6, 20
+li x5, 10
+eq x8, x6, 20
+
+bne x8, 0, L1
+
+ad x30, x6, 0
+jr x31
+
+L1:
+li x30, 0
+jr x31
+
+LABEL_MY_FUNC_END:
+\end{lstlisting}

@@ -14,9 +14,8 @@ Dadurch kann der Parser auch mit Shift-Reduce Konflikten umgehen, indem der Pars
 
 Die Programmiersprache Slang ist eine Pascal- und C-ähnliche Sprache, die in einer einzelnen Datei ein volles Programm repräsentiert.
 Sie unterstützt Funktionalitäten wie Variablendeklarationen, Zuweisungen, Kontrollstrukturen wie Schleifen und Verzweigungen sowie Funktionsaufrufe.
-Die Grundbausteine der Programmiersprache sind dabei die Definition von Programmen und Funktionen, in denen Anweisungsblöcke den Programmcode enthalten.\\
-
-\begin{lstlisting}
+Die Grundbausteine der Programmiersprache sind dabei die Definition von Programmen und Funktionen, in denen Anweisungsblöcke den Programmcode enthalten.
+\begin{lstlisting}[caption={Grammatikdefinition Einsprungspunkt}]
 <main> ::= <program> <wso> <func_def>* <wso>
 
 <ws> ::= " " | "\t" | "\n"
@@ -30,7 +29,7 @@ In den nächsten Abschnitten gehen wir den Grammatikbaum von \texttt{<main>} ab,
 
 \subsection{Programme}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel Programmdeklaration}]
 program my_calculations {
 
 }
@@ -38,9 +37,9 @@ program my_calculations {
 
 Ein ``Programm'' in Slang ist ein Anweisungsblock, der mit dem Token \texttt{program} gekennzeichnet wird.
 Ein Programm wird mit \texttt{<id>} benannt, was momentan aber nur der Lesbarkeit dient und keine praktische Funktion hat.
-Dies wird gefolgt von einem \texttt{<block>}, der die Anweisungen des Programms enthält.\\
+Dies wird gefolgt von einem \texttt{<block>}, der die Anweisungen des Programms enthält.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Programm und Hilfsregeln]
 <program> ::= "program" <wso> <id> <wso> <block>
 
 <block> ::=  <wso> "{"  <wso> <block_body>  <wso> "}" <wso>
@@ -51,7 +50,7 @@ Dies wird gefolgt von einem \texttt{<block>}, der die Anweisungen des Programms 
 
 \subsection{Funktionen}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel Funktionsdefinitionen}]
 func void call_by_value(int val) {
 
 }
@@ -70,9 +69,9 @@ Wenn zukünftig globalen Variablendeklarationen implementiert werden, macht es e
 Auf das \texttt{func} folgt der Typ des Rückgabewertes der Funktion, der entweder ein Datentyp wie \texttt{int} oder \texttt{void} sein kann, sowie eine \texttt{<id>}, die den Namen der Funktion definiert.\\
 Danach folgt eine optionale Liste von Argumenten, die in Klammern stehen und durch Kommata getrennt sind.
 Diese Argumente deklarieren eine Variable, die in der Funktion verwendet werden kann.
-Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion übergeben werden, sodass die Funktion den Wert der Variable modifizieren kann, welche sich dann auch auf den Wert in dem Kontext des Aufrufers auswirkt.\\
+Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion übergeben werden, sodass die Funktion den Wert der Variable modifizieren kann, welche sich dann auch auf den Wert in dem Kontext des Aufrufers auswirkt.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Funktionsdefinitionen}]
 <func_def> ::= "func" <wso> (<type> | "void") <wso> <id> <wso> "(" <wso> <func_args_def> <wso> ")" <wso> <block>
 
 <func_args_def> ::= <func_arg_def>
@@ -82,9 +81,9 @@ Mit dem Token \texttt{ref} kann die Variable als Referenz in die Funktion überg
                   | "ref" <wso> <type> <wso> <id> <wso>
 \end{lstlisting}
 
-Damit wir die Typen und Variablen in den Funktionsdefinitionen definieren können, müssen wir auch ein paar Hilfsregeln definieren:\\
+Damit wir die Typen und Variablen in den Funktionsdefinitionen definieren können, müssen wir auch ein paar Hilfsregeln definieren:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Hilfsregeln}]
 /* Typen und Variablen */
 <type> ::= "int" | <intarray>
 
@@ -103,7 +102,7 @@ Um die Programme und Funktionen sinnvoll benutzen zu können, brauchen wir nun d
 
 \subsection{Variablendeklarationen}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel Variablendeklarationen}]
 program my_calculations {
     int i = 1;
     int foo;
@@ -118,9 +117,9 @@ func void invalid(int val) {
 Die Blöcke der Programme und Funktionen beginnen mit einer Liste an Variablen, die deklariert werden.
 Slang unterstützt momentan zwei Datentypen: Integer \texttt{int} und eine Liste von Integer \texttt{int[x]}.
 Die Werte dieser Variablen werden standardmäßig auf 0 gesetzt.
-Eine Integer kann auch direkt mit einem Wert initialisiert werden, was aber bei den Arrays nicht implementiert ist.\\
+Eine Integer kann auch direkt mit einem Wert initialisiert werden, was aber bei den Arrays nicht implementiert ist.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Variablendeklarationen}]
 <block_body> ::= <variable_list> <wso> <statement_list>
                | <statement_list>
 
@@ -138,9 +137,9 @@ Wir erlauben mit dieser Grammatik nur die Zuweisung von Integerwerten, nicht die
 In dem Beispielcode wird der lexikalische Parser in der Funktion \texttt{invalid} einen Fehler erzeugen, da Referenzen auf Variablen wie \texttt{val} nicht in der Deklarationsliste erlaubt sind.\\
 
 Der lexikalische und syntaktische Parser kann mit dieser Grammatik aber nicht alle ungültigen Regeln abfangen;
-So erzeugt der folgende Code keinen Fehler, obwohl die Initalisierung von einem Array mit einer Integer nicht definiert ist:\\
+So erzeugt der folgende Code keinen Fehler, obwohl die Initalisierung von einem Array mit einer Integer nicht definiert ist:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel: fehlerhafter Wert in der Initialisierung}]
 program my_mistake {
     int[5] bar = 10;
 }
@@ -151,9 +150,9 @@ Hier wird eine semantische Regel ausserhalb der Grammatikdefinition benötigt, d
 \subsection{Ausdrücke}
 
 Für Kontrollstrukturen oder mathematische Operationen benötigen wir Regeln für Ausdrücke, die an verschiedenen Stellen im Programmcode verwendet werden können.\\
-Ein Ausdruck in Slang kann eine Integer Konstante, eine Variable, ein Funktionsaufruf, eine mathematische Operation oder eine vergleichende Operation sein.\\
+Ein Ausdruck in Slang kann eine Integer Konstante, eine Variable, ein Funktionsaufruf, eine mathematische Operation oder eine vergleichende Operation sein.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Ausdrücke}]
 <expression> ::= <intliteral>
                | <id>
                | <func_call>
@@ -167,9 +166,9 @@ Ein Ausdruck in Slang kann eine Integer Konstante, eine Variable, ein Funktionsa
 
 Da die Vergleichsoperation wahrscheinlich vermehrt in Kontrollstrukturen verwendet wird, ist diese Regel ausgelagert und vereinfacht.\\
 Statt das generische \texttt{<expression> <comparison\_operator> <expression>} zu erlauben, definiert die Regel \texttt{<compare\_expression>} nur einfache Vergleiche zwischen zwei Werten, die Variablen  oder Konstanten sein könnnen.\\
-Damit wird die Komplexität von Vorbedingungen etwas ausgelagert.\\
+Damit wird die Komplexität von Vorbedingungen etwas ausgelagert.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Vergleichsausdrücke}]
 <comparison_operator> ::= "=="
                         | "!="
                         | "<"
@@ -188,7 +187,7 @@ Damit wird die Komplexität von Vorbedingungen etwas ausgelagert.\\
 
 \subsection{Zuweisungen}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel Zuweisungen}]
 program my_assignments {
     int i = 1;
     int foo;
@@ -202,9 +201,9 @@ Die zweite Gruppe in einem Block sind die Anweisungen, die in Slang aus Variable
 
 In dem Block dürfen keine neuen Variablen deklariert werden; Dadurch wird sichergestellt dass die Symboltabelle alle in dem Block definierten Symbole enthält sobald diese referenziert werden können.
 Fälle wie Kontrollstruktur-lokale Variablendeklarationen, die nur in bestimmten Fällen deklariert sind und eine eigene Lebensdauer haben, müssen
-daher nicht durch den Compiler behandelt werden.\\
+daher nicht durch den Compiler behandelt werden.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Zuweisungen}]
 <statement_list> ::= <statement>
                    | <statement> <wso> <statement_list>
 
@@ -221,13 +220,13 @@ daher nicht durch den Compiler behandelt werden.\\
 
 Einfache Anweisungen in der \texttt{<statement\_list>} sind durch Semikolons getrennt.
 Das \texttt{<if\_statement>} und \texttt{<for\_loop>} sind spezielle Anweisungen mit ihren eigenen Anweisungsblöcken, die durch geschweifte Klammern von den restlichen Anweisungen getrennt sind.\\
-Als besondere Anweisung ist das \texttt{return <expression> ";"} definiert, das die Ausführung der Funktion oder des Programmes beendet und das Ergebnis des Ausdrucks zurückgibt.\\
+Als besondere Anweisung ist das \texttt{return <expression> ";"} definiert, das die Ausführung der Funktion oder des Programmes beendet und das Ergebnis des Ausdrucks zurückgibt.
 
 \textbf{Return: Stack popping}\\
 
 \subsection{Die for-Schleife}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel for-Schleife}]
 program my_loop {
     int y;
     int i = 5;
@@ -245,9 +244,9 @@ program my_loop {
 
 Slang unterstützt die \texttt{for}-Schleife, mit der ein Anweisungsblock wiederholt wird, solange eine Bedingung erfüllt ist.
 Im Gegensatz zu der for-Schleife in \texttt{C} gibt es keine Mögklichkeit, eine Variable im Kopf zu deklarieren.\\
-Stattdessen muss diese Variable bereits in der Gruppe der Variablendeklarationen, die am Anfang eines Funktions- oder Programmblocks stehen, deklariert werden.\\
+Stattdessen muss diese Variable bereits in der Gruppe der Variablendeklarationen, die am Anfang eines Funktions- oder Programmblocks stehen, deklariert werden.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition for-Schleife}]
 <control_block> ::= <wso> "{" <wso> <statement_list>  <wso> "}" <wso>
 
 <for_loop> ::= "for" <wso> "(" <wso> <compare_expression> ";"  <wso> <statement_assignment> <wso> ")" <wso> <control_block>
@@ -260,7 +259,7 @@ Da Variablendeklarationen nicht in Kontrollstrukturen erlaubt sind, führen wir 
 
 \subsection{Die if-Bedingung}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel if-Bedingung}]
 program my_control {
     int i = 5;
     
@@ -273,9 +272,9 @@ program my_control {
 \end{lstlisting}
 
 Die \texttt{if}-Bedingung ist eine Kontrollstruktur, die einen Anweisungsblock ausführt, wenn eine Bedingung erfüllt ist.
-Optional folgt darauf ein \texttt{else}-Block, der ausgeführt wird, wenn die Bedingung nicht erfüllt ist.\\
+Optional folgt darauf ein \texttt{else}-Block, der ausgeführt wird, wenn die Bedingung nicht erfüllt ist.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition if-Bedingung}]
 <if_statement> ::= "if" <wso> "(" <wso> <compare_expression> <wso> ")" <wso> <control_block>
                  | "if" <wso> "(" <wso> <compare_expression> <wso> ")"  <wso> <control_block> <wso> "else" <wso> <control_block>
 \end{lstlisting}
@@ -285,7 +284,7 @@ Auf diesem kann mit dem Token \texttt{else} und einem weiteren Anweisungsblock a
 
 \subsection{Funktionsaufrufe}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel Funktionsaufrufe}]
 program my_calls {
     int foo = 1;
     int y = 5;
@@ -309,9 +308,9 @@ func int call_with_return(int val) {
 \end{lstlisting}
 
 Ein Funktionsaufruf in Slang besteht aus dem Funktionsnamen und einer Liste von Ausdrücken als Argumenten, die in Klammern stehen und durch Kommata getrennt sind.\\
-Um den Rückgabewert einer Funktion zu speichern, kann der Funktionsaufruf auch als Ausdruck in einer Zuweisung verwendet werden.\\
+Um den Rückgabewert einer Funktion zu speichern, kann der Funktionsaufruf auch als Ausdruck in einer Zuweisung verwendet werden.
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Grammatikdefinition Funktionsaufrufe}]
 <func_call> ::= <id> <wso> "(" <wso> <func_args> <wso> ")" <wso>
 
 <func_args> ::= <expression>
@@ -320,9 +319,9 @@ Um den Rückgabewert einer Funktion zu speichern, kann der Funktionsaufruf auch 
 
 Der Compiler überprüft mit semantischen Regeln dass die Anzahl der Argumente und deren Typen mit der refernzierten Funktionsdefinition übereinstimmen.\\
 Der Wert eines Arguments, dass per Call-by-Value an eine Funktion übergeben wird, wird für diesen Ausführungsblock kopiert.
-Wird dieses Argument nochmals per Call-by-Reference an eine andere Funktion übergeben, wird der Wert nur in der ersten Funktion verändert, nicht in deren Aufruf:\\
+Wird dieses Argument nochmals per Call-by-Reference an eine andere Funktion übergeben, wird der Wert nur in der ersten Funktion verändert, nicht in deren Aufruf:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Call-by-Value und Call-by-Reference}]
 program my_calls {
     int y = 5;
     call_by_value(y);
@@ -341,7 +340,7 @@ func void edit_by_reference(ref int val) {
 
 \subsection{Spezialfunktionen}
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Slang Beispiel I/O Funktionen}]
 program my_io {
   int y;
   read(y);
@@ -365,7 +364,7 @@ Während einige Parsergeneratoren mit EBNF oder BNF Grammatiken arbeiten, arbeit
 Diese ist daran angelehnt, beim Parsen direkt C oder C++ Code auszuführen, der den einzelnen Grammatikregeln zugewiesen wurde.\\
 Eine typische Regel in einer Bison \texttt{.y}-Datei definiert also nicht nur die Grammatikregel, sondern was mit den Werten, die aus dieser herausgelesen werden können, passieren soll:
 
-\begin{lstlisting}
+\begin{lstlisting}[caption={Bison Beispiel}]
 /* parser.yy */
 
 ...

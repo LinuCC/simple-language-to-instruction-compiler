@@ -29,7 +29,7 @@ Hier ist es auch möglich andere Typen, wie zwischenzeitlich generierte Optimier
 
 Drei-Adressen codes sind nicht nur auf mathematische Operationen beschränkt;
 Sie können viele andere Operationen wie Kontrollstrukturen oder Funktionsaufrufe abbilden.
-Ein konditionaler Sprung kann mit einem Operator und drei Adressen abgebildet werden.
+Ein bedingter Sprung kann mit einem Operator und drei Adressen abgebildet werden.
 Operator und zwei Adressen werden für die Bedingung genutzt, die dritte Adresse zeigt auf den Ort, wohin gesprungen wird:
 
 \begin{figure}[H]
@@ -76,7 +76,7 @@ dann kann dieser in Drei-Adressen Code umgewandelt werden:
 
 Hier fällt auf, dass diese Repräsentation nicht allzu weit entfernt von Assemblercode tatsächlicher Prozessorarchitekturen ist, aber noch unabhängig von Hardware-spezifischen Konzepten wie Register.\\
 Dieser Code hat bereits Optimierungspotential, so können Zeile 7 und 8 kombiniert werden indem der Vergleichsoperator von \texttt{t2 == 0} direkt negiert wird statt das Ergebnis \texttt{t3} zwischenzuspeichern und dann zu negieren.\\
-Das Sprungziel von Zeile 8 ist eine Zeile die auch einen nicht-konditionalen Sprung initiiert, daher ist das umschreiben von
+Das Sprungziel von Zeile 8 ist eine Zeile die auch einen nicht-bedingten Sprung initiiert, daher ist das umschreiben von
 \begin{figure}[H]
   \centering
   \texttt{\text{if} \text{not}\ t3 \text{goto} 11}

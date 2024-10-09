@@ -14,7 +14,7 @@ Die Attribute sind:
 
 \begin{itemize}
   \item \textbf{name}: Der Name des Symbols, z.B. der Variablenname, Funktionsname oder Programmname
-  \item \textbf{type}: Der Typ des Symbols aus einem enum, z.B. eine Variable vom Typ \texttt{SymbolType::INT} eine Funktion vom Typ \texttt{SymbolType::FUNC} oder ein Funktionsargument vom Typ \texttt{SymbolType::FUNC_ARG}
+  \item \textbf{type}: Der Typ des Symbols aus einem enum, z.B. eine Variable vom Typ \texttt{SymbolType::INT}, eine Funktion vom Typ \texttt{SymbolType::FUNC} oder ein Funktionsargument vom Typ \texttt{SymbolType::FUNC_ARG}
   \item \textbf{line}: Die Zeile, in der das Symbol definiert wurde
   \item \textbf{col}: Das Zeichen in der Zeile, in der das Symbol definiert wurde
   \item \textbf{element\_count}: Die Größe eines Arrays, wenn das Symbol ein Array ist
@@ -30,15 +30,274 @@ Theoretisch könnten sie die Hierarchie manuell abbilden (z.B. durch \texttt{myS
 \section{Der Drei-Adressen Code}
 
 Der Drei-Adressen Code ist eine Liste \texttt{std::list} von mit \texttt{struct} repräsentierten Operationen, die in der Listen-Reihenfolge ausgeführt werden.
-Die Struct besteht aus dem Operationstypen \texttt{op\_type}, zwei Typen-gemischte Argumente \texttt{arg1} und \texttt{arg2} und einer Referenz für das Ergebnis \texttt{result\_ref}.
+
+\begin{lstlisting}[language=C++, caption={Drei-Adressen Code Eintrag}]
+typedef struct _TacEntry {
+  TacOperation op;
+  TacArg* arg1;
+  TacArg* arg2;
+  char *res_ref;
+} TacEntry;
+\end{lstlisting}
+
+Die Struct besteht aus dem Operationstypen \texttt{op}, dargestellt durch den enum \texttt{TacOperation}, zwei Argumenten \texttt{arg1} und \texttt{arg2} und einer Referenz für das Ergebnis \texttt{result\_ref}.
 Je nach Operationstyp werden nur bestimmte Teile der Argumente verwendet, um die Operation auszuführen:
 
 \begin{itemize}
-  \item \textbf{ADD, SUB, MUL, DIV, MOD} arithmetische Operationen \texttt{result\_ref := arg1 op arg2}
-  \item \textbf{LT, GT, LE, GE, EQ, NE} Vergleichsoperationen \texttt{result\_ref := arg1 op arg2}, die 0 als \texttt{false} und 1 als \texttt{true} zurückgeben
-  \item \textbf{ASSIGN} Zuweisung eines Wertszu einem Symbol \texttt{result\_ref := arg1}
-  \item \textbf{GOTO} Sprung zu einem Label \texttt{goto result\_ref}
-  \item \textbf{COND\_GOTO} Konditionaler Sprung zu einem Label \texttt{if arg1 == arg2 goto result\_ref}
+  \item \textbf{ADD, SUB, MUL, DIV, MOD} arithmetische Operationen: \\ \texttt{result\_ref := arg1 op arg2}
+  \item \textbf{LT, GT, LE, GE, EQ, NE} Vergleichsoperationen: \\ \texttt{result\_ref := arg1 op arg2}\\ 0 wird für \texttt{true} und 1 für \texttt{false} zurückgeben
+  \item \textbf{ASSIGN} Zuweisung eines Werts zu einem Symbol: \\ \texttt{result\_ref := arg1}
+  \item \textbf{GOTO} Sprung zu einem Label: \\ \texttt{goto result\_ref}
+  \item \textbf{LABEL} Sprungziel: \\ \texttt{label result\_ref}
+  \item \textbf{COND\_GOTO} Bedingter Sprung zu einem Label: \\ \texttt{if arg1 == arg2 goto result\_ref}
+  \item \textbf{COND\_NOT\_GOTO} Bedingter Sprung zu einem Label:\\ \texttt{if arg1 != arg2 goto result\_ref}\\ 
+    Diese Negation des \texttt{COND\_GOTO} generiert für manche Kontrollstrukturen verständlicheren Drei-Adressen Code als direkt \texttt{COND\_GOTO} zu nutzen.
+    Sonst müsste die die vorherige Vergleichsoperation, die bei diesen Kontrollstrukturen mitgeneriert wird, immer negiert werden.
+  \item \textbf{CALL} Ruft eine Funktion auf, indem es zu diesem Label springt: \\ \texttt{result\_ref := arg1.var\_ref}
+  \item \textbf{RET} Beendet den ausgeführten Funktionsaufruf, gibt einen Wert zum \textbf{CALL} zurück wenn gesetzt: \\ \texttt{return valueof result\_ref}
+  \item \textbf{REF} Verlinkt ein neues Symbol zu einem existierenden Symbol, sodass beide auf die gleiche Adresse zeigen: \\ \texttt{result\_ref := same\_value\_as arg1.var\_ref}
 \end{itemize}
 
 Die beiden Argumente \texttt{arg1} und \texttt{arg2} werden durch ein \texttt{union} abgebildet, die entweder eine Referenz auf ein Symbol \texttt{sym\_ref} oder einen Integer-Wert \texttt{int\_val} speichert.
+
+\begin{lstlisting}[language=C++, caption={Drei-Adressen Code Argument}]
+typedef union _TacArg {
+  char *var_ref;
+  int int_val;
+} TacArg;
+\end{lstlisting}
+
+\subsection{Generierung des Drei-Adressen Codes}
+
+Um die höheren Konzepte des Slang Quelltextes in den Drei-Adressen Code zu übersetzen, müssen die Frontends aus den Deklarationen und Statements des Quelltextes die passenden Operationen generieren.
+
+\subsubsection{Variablendeklaration}
+
+\begin{lstlisting}[caption={Beispielzuweisungen}]
+int x = 5;
+int y;
+int[3] z;
+\end{lstlisting}
+
+Alle Variablen, die deklariert werden, benötigen nur eine \ac{TAC} Operation, die die Zuweisung eines Wertes zu einem Symbol darstellt.
+Da die Werte der \texttt{int} Variablen auf den angegebenen Wert initialisiert oder bei Deklaration auf 0 gesetzt werden, wird für jede Deklaration eine \texttt{ASSIGN} Operation generiert.\\
+Bei der Deklaration eines Arrays wird jedem Element des Arrays der Wert 0 zugewiesen.\\
+
+\begin{lstlisting}[caption={Drei-Adressen Code für Variablendeklaration}]
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "y"
+
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "z[0]"
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "z[1]"
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "z[2]"
+\end{lstlisting}
+
+\subsubsection{Zuweisungen}
+
+\begin{lstlisting}[caption={Beispielzuweisungen}]
+x = 5;
+y = x + 2 * 3;
+z[1] = 3;
+\end{lstlisting}
+
+Zuweisungen funktionieren ähnlich wie Variablendeklarationen, aber anstatt den Wert \texttt{0} zu initialisieren, wird der Wert des Ausdrucks auf der rechten Seite der Zuweisung berechnet und zugewiesen.\\
+Die Variable \texttt{y} hat eine nicht-triviale Berechnung, die in mehrere Operationen aufgeteilt wird.\\
+Slang definiert keine Operationsreihenfolgenpräferenz, daher wird die Reihenfolge der Operationen durch die Reihenfolge der Argumente bestimmt.\\
+
+\begin{lstlisting}[caption={Drei-Adressen Code für Zuweisungen}]
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+
+ADD, arg1: {var_ref: "x"}, arg2: {int_val: 2}, result_ref: ":t1"
+MUL, arg1: {var_ref: ":t1"}, arg2: {int_val: 3}, result_ref: "y"
+
+ASSIGN, arg1: {int_val: 3}, arg2: NULL, result_ref: "z[1]"
+\end{lstlisting}
+
+Sobald Operationen in mehrere Operationen aufgeteilt werden, müssen temporäre Symbole Zwischenzustände speichern.
+Hier wird ein temporäres Symbol \texttt{:t1} verwendet, dass in die Symboltabelle eingetragen wird, um für das nächste \texttt{MUL} wieder benutzt werden zu können.
+
+\subsubsection{if-Bedingungen}
+
+\begin{lstlisting}[caption={Slang Vorlage if-Bedingung}]
+if (<comp_expr>) {
+  <body>
+} else {
+  <else_body>
+}
+\end{lstlisting}
+
+Die Blöcke von \texttt{if}-Bedingungen werden mithilfe von \texttt{GOTO}s und \texttt{LABEL}s auseinandergehalten.
+
+\begin{lstlisting}[caption={Drei-Adressen Code Vorlage für if-Bedingung}]
+<comp_expr>, result_ref: ":t1"
+COND_NOT_GOTO, arg1: {var_ref: ":t1"}, arg2: {int_val: 0}, result_ref: "ELSE_LABEL"
+
+<body>
+
+GOTO, arg1: NULL, arg2: NULL, result_ref: "ELSE_END_LABEL"
+LABEL, arg1: NULL, arg2: NULL, result_ref: "ELSE_LABEL"
+
+<else_body>
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "ELSE_END_LABEL"
+
+\end{lstlisting}
+
+Für \texttt{if}-Bedingungen wird ein bedingter Sprung zu \texttt{ELSE\_LABEL} generiert, der ausgeführt wird, wenn der Vergleich nicht \texttt{0} zurückgibt.
+Ist dies nicht der Fall, wird der \texttt{<body>} ausgeführt und am Ende des \texttt{<body>} mit einem \texttt{GOTO ELSE\_END\_LABEL}  der \texttt{<else\_body>} übersprungen.\\
+Wird der bedingte Sprung ausgeführt, wird der \texttt{<else\_body>} ausgeführt.
+Am Ende des \texttt{<else\_body>} wird ein \texttt{ELSE\_END\_LABEL} eingefügt, damit bei Ausführung des \texttt{<body>} der \texttt{<else\_body>} übersprungen werden kann.\\
+
+\subsubsubsection{Beispiel:}
+
+\begin{lstlisting}[caption={Beispiel if-Bedingung}]
+if (x < 5) {
+  y = 5;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[caption={Drei-Adressen Code für die if-Bedingung}]
+LT, arg1: {var_ref: "x"}, arg2: {int_val: 5}, result_ref: ":t1"
+COND_NOT_GOTO, arg1: {var_ref: ":t1"}, arg2: {int_val: 0}, result_ref: "L1"
+
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "y"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "L1"
+\end{lstlisting}
+
+\subsubsection{for-Schleifen}
+
+\begin{lstlisting}[caption={Beispielschleife}, label={lst:forloop}]
+for (<comp_expr>; <assign_expr>) {
+  <body>
+}
+\end{lstlisting}
+
+Das Vorlage für die For-Schleife mit den Platzhaltern aus \autoref{lst:forloop} hat die folgende Struktur:
+
+\begin{lstlisting}[caption={Drei-Adressen Code für for-Schleifen}]
+LABEL, arg1: NULL, arg2: NULL, result_ref: "START_LABEL"
+<comp_expr>, result_ref: ":t1"
+COND_NOT_GOTO, arg1: {var_ref: ":t1"}, arg2: {int_val: 0}, result_ref: "END_LABEL"
+
+<body>
+<assign_expr>
+
+GOTO, arg1: NULL, arg2: NULL, result_ref: "START_LABEL"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "END_LABEL"
+\end{lstlisting}
+
+Die Bedingung der \texttt{for}-Schleife wird in einem bedingten Sprung abgebildet, der, erst wenn die Bedingung  \texttt{<comp\_expr>} nicht mehr erfüllt ist, zu dem Label \texttt{END\_LABEL} springt, das die Schleife beendet.
+Passiert der bedingte Sprung nicht, wird zuerst der Block der Schleife ausgeführt und danach die Zuweisung \texttt{assign\_expr} aus dem Schleifenkopf.
+Dann wird zurückgesprungen zum \texttt{START\_LABEL} und die \texttt{<comp\_expr>} sowie der bedingte Sprung erneut ausgeführt.\\
+
+Zum Beispiel wird aus folgender Schleife
+
+\begin{lstlisting}[caption={Beispielschleife}]
+int i;
+
+for (i < 5; i = i + 1) {
+  x = x + 1;
+}
+\end{lstlisting}
+
+der folgende Drei-Adressen Code generiert:
+
+\begin{lstlisting}[caption={Drei-Adressen Code für for-Schleifen}]
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "i"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "L1"
+LT, arg1: {var_ref: "i"}, arg2: {int_val: 5}, result_ref: ":t1"
+COND_NOT_GOTO, arg1: {var_ref: ":t1"}, arg2: {int_val: 0}, result_ref: "L2"
+
+ADD, arg1: {var_ref: "x"}, arg2: {int_val: 1}, result_ref: ":t2"
+ASSIGN, arg1: {var_ref: ":t2"}, arg2: NULL, result_ref: "x"
+
+ADD, arg1: {var_ref: "i"}, arg2: {int_val: 1}, result_ref: "i"
+GOTO, arg1: NULL, arg2: NULL, result_ref: "L1"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "L2"
+\end{lstlisting}
+
+\subsection{Funktionsdeklaration und Funktionsaufruf}
+
+\begin{lstlisting}[caption={Vorlage Funktionsdeklaration und Funktionsaufruf}]
+myFunc(<args>);
+
+func <type> myFunc(<arg_types>) {
+  <func_body>
+
+  return <type_val>
+}
+\end{lstlisting}
+
+
+Funktionsdeklarationen erwarten, dass vordefinierte Funktionsargumente namens \texttt{:args\_x} (mit \texttt{x} als Position des Arguments) in der Symboltabelle vorhanden sind.
+Bei einem Funktionsaufruf werden zuerst \acp{TAC} generiert die diese \texttt{:args\_x} auf die Symbole, die als Argumente in den Funktionsaufruf gegeben werden, setzen.
+Für Argumente, die nicht per Referenz übergeben werden, wird eine \texttt{ASSIGN} Operation generiert, die den Wert des Funktionsarguments in ein temporäres Symbol speichert, der dann weiter genutzt wird.\\
+Für Argumente, die per Referenz übergeben werden, wird eine \texttt{REF} Operation generiert, die ein neues temporäres Symbol generiert, welches auf die gleiche Adresse wie das verlinkte Symbol zeigt.\\
+Dann wird mit einem \texttt{CALL} zum \texttt{<func\_body>} gesprungen und dieser weiter ausgeführt.\\
+Am Ende des Funktionsaufrufs wird ein \texttt{RET} generiert, der den Wert des \texttt{<type\_val>} (wenn gegeben) zurückgibt.\\
+Es kann auch vorher ein \texttt{RET} durch einen frühen \texttt{return} Befehl ausgeführt werden, dann wird die Ausführung des \texttt{<func\_body>} abgebrochen und der Wert dieses \texttt{return} Befehls zurückgegeben.\\
+
+Nehmen wir die folgende Funktionsdeklaration und den Funktionsaufruf als Beispiel:
+
+\begin{lstlisting}[caption={Beispiel Funktionsdeklaration und Funktionsaufruf}]
+int x = 5;
+int y = 3;
+int z = 0;
+
+z = myFunc(x, y);
+
+func int myFunc(int xa, ref int yb) {
+  xa = 20;
+  yb = 10;
+  if (xa == 20) {
+    return xa;
+  }
+}
+\end{lstlisting}
+
+Es wird zuerst eine Funktionsdefinition generiert, die den Wert des Arguments \texttt{xa} dupliziert und die Adresse des Arguments \texttt{yb} referenziert.
+
+\begin{lstlisting}[caption={Drei-Adressen Code Funktionsdeklaration}]
+GOTO, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC_END"
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC"
+ASSIGN, arg1: {var_ref: ":args_0"}, arg2: NULL, result_ref: ":t1"
+REF, arg1: {var_ref: ":args_1"}, arg2: NULL, result_ref: ":t2"
+
+ASSIGN, arg1: {int_val: 20}, arg2: NULL, result_ref: ":t1"
+ASSIGN, arg1: {int_val: 10}, arg2: NULL, result_ref: ":t2"
+
+// if-Bedingung
+EQ, arg1: {var_ref: ":t1"}, arg2: {int_val: 20}, result_ref: ":t3"
+COND_NOT_GOTO, arg1: {var_ref: ":t3"}, arg2: {int_val: 0}, result_ref: "L1"
+RET, arg1: {var_ref: ":t1"}, arg2: NULL, result_ref: NULL
+LABEL, arg1: NULL, arg2: NULL, result_ref: "L1"
+
+// Standard Return falls nichts zurückgegeben wird
+RET, arg1: {var_ref: 0}, arg2: NULL, result_ref: NULL
+
+LABEL, arg1: NULL, arg2: NULL, result_ref: "LABEL_MY_FUNC_END"
+\end{lstlisting}
+
+Nach der Funktionsdefinition werden die Variablen des Hauptteils deklariert und der Funktionsaufruf generiert, der die Werte der Variablen \texttt{x} und \texttt{y} in die Funktionsargumente \texttt{xa} und \texttt{yb} setzt.
+Dabei muss hier schon auf die Argumenttypen, die in der Symboltabelle gespeichert sind, geachtet werden.
+\texttt{:args\_1} muss die Adresse für \texttt{y} bereits referenzieren, damit spätere Zuweisungen in der Funktion auch die Variable \texttt{y} verändern.\\
+
+\begin{lstlisting}[caption={Drei-Adressen Code Funktionsaufruf}]
+
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+ASSIGN, arg1: {int_val: 3}, arg2: NULL, result_ref: "y"
+ASSIGN, arg1: {int_val: 0}, arg2: NULL, result_ref: "z"
+
+ASSIGN, arg1: {var_ref: "x"}, arg2: NULL, result_ref: ":args_0"
+REF, arg1: {var_ref: "y"}, arg2: NULL, result_ref: ":args_1"
+CALL, arg1: {var_ref: "LABEL_MY_FUNC"}, arg2: NULL, result_ref: "z"
+
+\end{lstlisting}
+
+Mit diesem Vorlagen können wir nun für alle Konzepte des Slang Quelltextes den Drei-Adressen Code generieren, der optimiert oder direkt weiter an das Compiler-Backend gegeben werden kann.
