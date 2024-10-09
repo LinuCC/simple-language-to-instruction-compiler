@@ -137,3 +137,94 @@ return x / 2 + val * 2;
 
 \end{lstlisting}
 \hfil\textit{Validiert mit Anhang \ref{fig:slicc:slang} auf BNF Playground\cite{paulklineBNFPlayground}}\\
+
+\chapter{SLICC Compiler Handbuch}
+
+\section{Installation}
+
+Der aktuelle Programmcode des Compilers ist auf GitHub verfügbar\cite{pascalernstSLICC2024}.
+
+Um den Compiler zu bauen, wird CMake benötigt. CMake ist ein weit verbreitetes Build-System, das auf vielen Plattformen verfügbar ist.
+Zusätzlich dazu wird der Kompiler \texttt{clang} benötigt sowie die Source Files zu den Bibliotheken \texttt{GNU Bison} und \texttt{Flex}.
+
+\subsection{Linux}
+
+Die Abhängigkeiten können auf den meisten Linuxdistributionen mit dem Paketmanager installiert werden.
+Für Debian-basierte Distributionen wie Ubuntu kann dies mit folgendem Befehl getan werden:
+
+\begin{lstlisting}
+sudo apt install cmake clang bison flex
+\end{lstlisting}
+
+\subsection{MacOS}
+
+Auf MacOS reicht es, XCode über den App Store zu installieren.
+XCode kommt mit allen benötigten Tools, um den Compiler zu bauen.
+
+\section{Bauen des Compilers}
+
+Zum Bauen des Binärkompilates führt folgender Befehl:
+
+\begin{lstlisting}
+cmake .; make;
+\end{lstlisting}
+
+Mit dem Flag \texttt{DCMAKE\_BUILD\_TYPE=Debug} wird der Compiler im Debug-Modus gebaut:
+
+\begin{lstlisting}
+cmake -DCMAKE\_BUILD\_TYPE=Debug .; make;
+\end{lstlisting}
+
+Bei erfolgreicher Kompilierung wird ein ausführbares Programm namens \texttt{slicc} im Projektverzeichnis erstellt.
+
+\section{Benutzung des Compilers}
+
+Der Compiler liest den zu kompilierenden Quelltext aus Standard Input und schreibt den generierten Maschinencode in den Standard Output.
+
+Um die Datei \texttt{examples/simple\_test.slang} mit SLICC zu kompilieren kann man diese in den Compiler pipen:
+
+\begin{lstlisting}
+cat examples/simple\_test.slang | ./slicc
+\end{lstlisting}
+
+\section{Strukturübersicht}
+
+\begin{tikzpicture}
+
+% Main container
+\begin{umlpackage}{Main}
+  \begin{umlpackage}[y=-5]{tac}
+        \umlclass[x=0,y=0]{TacEntry}{}{}
+        \umlclass[x=5,y=0]{SymbolTableEntry}{}{}
+    \end{umlpackage}
+  	\umlclass[x=0,y=0]{main}{}{}
+\end{umlpackage}
+
+% Frontend container
+\begin{umlpackage}[x=5, y=-10]{Frontend}
+    \umlclass[x=0, y=-1]{Scanner}{}{}
+    \umlclass[x=0, y=1]{Parser}{}{}
+    \umlclass[x=5, y=0]{Driver}{scanner : Scanner \\ parser : Parser}{parse\(\)}{}
+\end{umlpackage}
+
+% Backend container
+\begin{umlpackage}[x=0, y=-15]{Backend}
+    \umlclass[x=0, y=0]{BackendDriver}{generator : CodeGen}{generate\(SymbolTable, TAC\) : String}{}
+    \umlclass[x=5, y=0]{CodeGen}{}{}
+\end{umlpackage}
+
+% Relations
+\umlunicompo{Driver}{Scanner}
+\umlunicompo{Driver}{Parser}
+\umlunicompo{BackendDriver}{CodeGen}
+
+% Calls
+\umlnote[x=-2, y=-2]{note1}{SymbolTable and TAC}
+\umlnote[x=11, y=-3]{note2}{Returns: String}
+
+\umlassoc[geometry=-|-, arm1=2, arm2=3]{main()}{Driver.parse}
+\umlVHdash[geometry=-|-, arm1=3, arm2=3]{Driver.parse}{note1}
+\umlassoc[geometry=|-|-, arm1=3, arm2=2]{main()}{BackendDriver.generate}
+\umlVHdash[geometry=-|-, arm1=3, arm2=3]{BackendDriver.generate}{note2}
+
+\end{tikzpicture}

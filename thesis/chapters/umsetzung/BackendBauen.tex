@@ -141,6 +141,91 @@ LABEL_T:
 jal x0, LABEL_S:
 \end{lstlisting}
 
+\subsection{Vergleichsoperationen}
+
+Vergleichsoperationen sind durch die geringe Anzahl der Befehlsoperationen etwas interessanter.
+Der Befehl \texttt{slt} (Set Less Than) can für den \texttt{<} (und mit umgedrehten Argumenten für den \texttt{>}) Operator benutzt werden.
+RISC-V implementiert kein Befehl für \texttt{<=} und \texttt{>=}, dies wird gelöst indem der \texttt{slt} Operator benutzt wird und das Ergebnis mit dem Operator \texttt{xori} negiert wird.
+
+\begin{figure}[H]
+  \begin{align*}
+    Less\ Or\ Equal\ Than\ &\texttt{=\ !(x < y) = x >= y}\\
+    More\ Or\ Equal\ Than\ &\texttt{=\ !(y < x) = x <= y}
+  \end{align*}
+\end{figure}
+Ansonsten werden im allgemeinen die Befehle \texttt{beq} (Branch if Equal) für \texttt{==} und \texttt{bne} (Branch if Not Equal) für \texttt{!=} empfohlen um Werte zu vergleichen.
+Will man dabei einen Wert setzen, kann man dies nach dem entsprechenden Sprungbefehl machen.\\
+
+\subsubsection{Beispiel Drei-Adressen Code}
+
+\begin{lstlisting}
+ASSIGN, arg1: {int_val: 5}, arg2: NULL, result_ref: "x"
+ASSIGN, arg1: {int_val: 10}, arg2: NULL, result_ref: "y"
+
+LT arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t1"
+GT arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t2"
+LE arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t3"
+GE arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t4"
+EQ arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t5"
+NE arg1: { var_ref: "x" }, arg2: { var_ref: "y" }, result_ref: "t6"
+\end{lstlisting}
+
+Mit folgenden Registern:
+
+\begin{table}[H]
+	\begin{center}
+		\begin{tabular}{| r | c |}
+			\hline
+			Variablenname & Register \\
+			\hline
+			x & x1 \\
+			y & x2 \\
+			t1 & x3 \\
+			t2 & x4 \\
+			t3 & x5 \\
+			t4 & x6 \\
+			t5 & x7 \\
+			t6 & x8 \\
+			\hline
+		\end{tabular}
+	\end{center}
+\end{table}
+
+\subsubsection{Resultierende RISC-V Befehle}
+
+\begin{lstlisting}
+li x1, 5
+li x2, 10
+
+slt x3, x1, x2
+
+slt x4, x2, x1
+
+slt x5, x2, x1
+xori x5, x5, -1
+
+slt x6, x1, x2
+xori x6, x6, -1
+
+beq x1, x2, LABEL_EQ_NOT_TRUE
+  li x7, 0
+  j LABEL_EQ_END
+LABEL_EQ_NOT_TRUE:
+  li x7, 1
+LABEL_EQ_END:
+
+bne x1, x2, LABEL_NE_NOT_TRUE
+  li x8, 0
+  j LABEL_NE_END
+LABEL_NE_NOT_TRUE:
+  li x8, 1
+LABEL_NE_END:
+\end{lstlisting}
+
+RISC-V bietet ausserdem einige Pseudo-Operationen an, die zur Lesbarkeit in der Maschinensprache benutzt werden können.
+Statt \texttt{xori x5, x5, -1} kann man die Pseudo-Operation \texttt{not x5, x5} benutzen, die zu \texttt{xori} expandiert wird, aber etwas lesbarer ist.\\
+
+
 \subsection{Funktionsaufrufe}
 
 Funktionsaufrufe können wieder mit dem Befehl \texttt{jal} umgesetzt werden, allerdings muss hierbei die \textit{Return Address} in einem Register gespeichert werden, um nach dem Funktionsaufruf wieder zurückzuspringen.\\

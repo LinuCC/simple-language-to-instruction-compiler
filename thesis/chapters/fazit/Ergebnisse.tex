@@ -1,5 +1,61 @@
 \part{Auswertungen und Fazit}
-\chapter{Inspektion des Compilers}
+\chapter{Ergebnisse}
 \label{chap:fazit:results}
 
-Performance des Compilers, Bugs?, Debuggability
+\section{Aspekt der Generalität}
+
+Der Compiler \texttt{SLICC} trennt als Zweiphasen-Compiler den Programmcode von Compilerfrontends und Compilerbackends, was es leicht macht neue Sprachen zu parsen und Maschinencode für neue Prozessorarchitekturen zu generieren.\\
+Allerdings heisst es nicht, das Frontend von Backend komplett unabhängig sind; 
+Die Zwischensprache spielt eine größere Rolle als erwartet.
+Ist sie zu einfach, müssen Frontends viele \acp{TAC} generieren und werden durch Limitationen der Symboltabelle in der Generalität des Quelltextes beschränkt. Man verliert potentiell an Semantik in der Zwischensprache und es ist schwerer, generische Optimierungen zu sichten und einzubauen.\\
+Dies gilt auch für die Backends, die, um die Operationen der Zielprozessorarchitektur ausnutzen zu können, mittels Optimierung die einfachen Operationen in den \acp{TAC} gruppieren müssen statt für jede Operation eine Vorlage an Maschinencode definieren zu können.\\
+
+Ist die Zwischensprache zu komplex, wird die Rolle der Optimierung verschoben. 
+Die Frontends müssen dann, beim parsen des Quelltextes, syntaktisch ähnliche Konstrukte unterscheiden um die korrekten \acp{TAC} zu generieren statt nur einen Teil der Operationen der Zwischensprache zu nutzen.\\
+
+Scheinbar ist es von Vorteil für die Implementationskomplexität der Frontends eine simple Zwischensprache zu haben.
+Für Optimierungen der Ausgabe scheint es aber wiederrum besser, die Zwischensprache komplexer zu gestalten.
+Hier muss man einen Kompromiss finden, der die Implementierung der Frontends nicht zu komplex macht, aber auch genug Informationen für die Optimierung der Ausgabe bereitstellt.\\
+Eine Alternative zum Kompromiss wäre, die Zwischensprache in mehrere Schichten aufzuteilen, die aufeinander aufbauen.\\
+Ein Frontend kann so in simple Konstrukte der Zwischensprache 1 parsen, die vom Hauptteil des Compilers in eine komplexere und optimierte Zwischensprache 2 umgewandelt wird.
+Die Backends können dann auf dieser Zwischensprache 2 arbeiten und die Operationen direkt in komplexeren Maschinencode umwandeln.\\
+Damit vermeidet man zumindest, Optimierungen für viele Backends zu duplizieren, erhöht aber wiederrum die Komplexität der Schnittstelle.\\
+
+Der \ac{TAC} für den \texttt{SLICC} Compiler ist simpel gehalten, was zu der \ac{RISC} Zielarchitektur passt.
+Neue Frontends und Backends können durch die kleine Schnittstelle leicht hinzugefügt werden, Optimierungen für die Zielarchitektur sind aber schwerer zu implementieren.\\
+Diese Abwägung passt meiner Meinung nach zum Ziel des Compilers, eine Grundlage für diese Arbeit zu sein und als Lernbasis für den Compilerbau darzustellen.\\
+
+\section{Das Slang Frontend}
+
+Mithilfe der Bibliotheken \texttt{Flex} und \texttt{Bison} gelang es, ein einfaches und erweiterbares Frontend für die Programmiersprache \texttt{Slang} zu implementieren.\\
+Verständliche Fehler im Bottom-Up Parser anzuzeigen ist trivial.
+Regelübergreifende Semantik aus dem Syntaxparser abzuleiten ist dagegen mit mehr Aufwand verbunden.
+Da das Frontend aber zu einer simplen Zwischensprache parst, können viele der theoretisch notwendigen Semantiken (wie zum Beispiel die Lebenszeit von Variablen) auf spätere Optimierungsschritte an der Zwischensprache ausgelagert werden.\\
+
+\section{Die Zwischensprache}
+
+Die Implementation der Symboltabelle benötigt noch eine genauere Definition, wie verschachtelte Funktionsaufrufe dargestellt werden können.\\
+Unter Umständen ist eine einzelne \texttt{parent} Referenz genug, um die Verschachtelung zu repräsentieren.
+Allerdings muss in der Praxis genauer untersucht werden, ob die Zielarchitekturen damit umgehen können oder mehr Informationen benötigen.\\
+
+Die Definition des Drei-Adressen Codes ist momentan passend auf die Zielarchitektur \ac{RISC} zugeschnitten;
+der Teil der Funktionsparameterübergabe mit hart definierten Symbolen und der Übergabe dieser an die aufgerufenen Funktionen scheint mir aber umständlich und könnte vereinfacht werden.\\
+Hier währe es sinnvoll genauer auf die Anforderungen der Zielarchitektur einzugehen und die entsprechenden Operationen anzupassen, bevor weitere Backends gebaut werden.
+
+\section{Das RISC-V Backend}
+
+Die Entscheidung, auf Variablen im Stack zu verzichten, nur Register zu benutzen und somit das Backend zu ``vereinfachen'', hat zu mehr Problemen als erwartet geführt.
+Nicht nur, das Programme dadurch in der Anzahl der Variablen begrenzt sind, es kann auch nicht mehr als eine Ebene des Funktionsaufrufs behandeln.\\
+Dadurch wird das Backend relativ nutzlos und kann nur triviale Programme umsetzen.
+Hier würde ich definitiv die Variablen im Stack halten und die Register nur für die Optimierung der Operationen benutzen.\\
+
+\section{Fazit}
+
+Einen simplen, unoptimierten Zweiphasen-Compiler für eine simple Programmiersprache von Grund auf zu implementieren ist algorithmisch weniger anspruchsvoll als ich erwartet habe.
+Der Weg von hoher Programmiersprache zu gültigem Maschinencode und die Umformung der Operationen ist nicht, wie anfangs erwartet, eine ``Black-Box'' die schwierig zu durchschauen ist.\\
+Stattdessen sind die scheinbar kleinen Entscheidungen, wie Datenstruktur der Zwischensprache, ein entscheidender Teil der
+Komplexität und Interoperabilität der Compilerkomponenten.
+Da hier für generische Compiler in vielen Entscheidungen Kompromisse gefunden werden müssen, ist Praxiserfahrung ein entscheidender für die Lesbarkeit, Nutzbarkeit und Erweiterbarkeit des Compilers.\\
+
+Mir hat die Arbeit an dem Compiler das Interesse an der Arbeit und Optimierung von Maschinencode geweckt.
+Ich werde mich in Zukunft weiter mit dem Compiler \texttt{SLICC} beschäftigen und die aufgelisteten Probleme zu beheben sowie Optimierungen an der Generierung des Maschinencodes vorzunehmen.\\
