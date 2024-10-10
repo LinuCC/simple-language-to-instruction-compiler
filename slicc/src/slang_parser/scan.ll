@@ -3,6 +3,7 @@
 #include "parser.hh"
 #include "scanner.hh"
 #include "driver.hh"
+#include "strdup.hh"
 
 /*  Defines some macros to update locations */
 #define STEP()                                      \

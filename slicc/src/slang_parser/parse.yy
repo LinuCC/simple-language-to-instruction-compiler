@@ -3,6 +3,7 @@
 #include "parser.hh"
 #include "scanner.hh"
 #include "../tac.hh"
+#include "strdup.hh"
 
 // Verlinke den C++ Flex Scanner mit dem Bison Parser mit diesem Alias
 #define yylex driver.scanner->yylex
