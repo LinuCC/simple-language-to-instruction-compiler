@@ -2,6 +2,7 @@
 #include "../tac.hh"
 #include "parser.hh"
 #include "scanner.hh"
+#include <iomanip>
 #include <list>
 
 using namespace slang_parser;
