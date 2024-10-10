@@ -1064,7 +1064,7 @@ case 32:
 YY_RULE_SETUP
 #line 113 "scan.ll"
 { 
-  yylval->str_val = strdup(yytext); /* Don't forget to `strdup`! */
+  yylval->str_val = strdup2(yytext);
   return token::TOK_ID; 
 }
 	YY_BREAK

@@ -48,7 +48,7 @@
 /**
  * Der Typ, mit dem wir Daten durch den Syntaxbaum reichen
  *
- *  NOTE: Bei Übergabe von Zeigern direkt aus den union Daten nicht `strdup` vergessen! 
+ *  NOTE: Bei Übergabe von Zeigern direkt aus den union Daten nicht `strdup2` vergessen! 
  */
 %union
 {
@@ -109,13 +109,13 @@ program:
   TOK_PROGRAM TOK_ID[prog_name] block
     {
       /* Setze für alle Symboltabelleneinträge, die in dem Block definiert wurden, den Programmnamen als parent */
-      char* parent = strdup($prog_name);
+      char* parent = strdup2($prog_name);
       driver.add_symbol_table_entry(
         parent,
         slicc_tac::SymbolType::PROGRAM,
         0,
         0,
-        strdup("main"),
+        strdup2("main"),
         0,
         false
       );
@@ -149,7 +149,7 @@ variable_declaration:
  
   type TOK_ID[name] TOK_SEMICOLON {
       std::cout << "PARSER: Variable declaration: " << $name << " Type: " << $type.symbol_type << std::endl;
-      char* name = strdup($name);
+      char* name = strdup2($name);
       driver.add_symbol_table_entry(
         name,
         $type.symbol_type,
@@ -173,7 +173,7 @@ variable_declaration:
     }
   | type TOK_ID[name] TOK_ASSIGN TOK_INT_LITERAL[value] TOK_SEMICOLON {
       std::cout << "PARSER: Variable declaration: " << $name << " Type: " << $type.symbol_type << std::endl;
-      char* name = strdup($name);
+      char* name = strdup2($name);
       driver.add_symbol_table_entry(
         name,
         $type.symbol_type,
@@ -298,28 +298,28 @@ func_def:
     TOK_FUNC type     TOK_ID[func_name] TOK_LPAREN func_args_def TOK_RPAREN block
       {
         driver.add_symbol_table_entry(
-          strdup($func_name),
+          strdup2($func_name),
           slicc_tac::SymbolType::FUNCTION,
           0,
           0,
-          strdup("main"),
+          strdup2("main"),
           0,
           false
         );
-        driver.identify_parent(strdup($func_name));
+        driver.identify_parent(strdup2($func_name));
       }
   | TOK_FUNC TOK_VOID TOK_ID[func_name] TOK_LPAREN func_args_def TOK_RPAREN block
       {
         driver.add_symbol_table_entry(
-          strdup($func_name),
+          strdup2($func_name),
           slicc_tac::SymbolType::FUNCTION,
           0,
           0,
-          strdup("main"),
+          strdup2("main"),
           0,
           false
         );
-        driver.identify_parent(strdup($func_name));
+        driver.identify_parent(strdup2($func_name));
       }
   ;
 

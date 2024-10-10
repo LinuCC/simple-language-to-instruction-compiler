@@ -620,13 +620,13 @@ namespace slang_parser {
 #line 110 "parse.yy"
     {
       /* Setze für alle Symboltabelleneinträge, die in dem Block definiert wurden, den Programmnamen als parent */
-      char* parent = strdup((yystack_[1].value.str_val));
+      char* parent = strdup2((yystack_[1].value.str_val));
       driver.add_symbol_table_entry(
         parent,
         slicc_tac::SymbolType::PROGRAM,
         0,
         0,
-        strdup("main"),
+        strdup2("main"),
         0,
         false
       );
@@ -639,7 +639,7 @@ namespace slang_parser {
 #line 150 "parse.yy"
                                   {
       std::cout << "PARSER: Variable declaration: " << (yystack_[1].value.str_val) << " Type: " << (yystack_[2].value.type_val).symbol_type << std::endl;
-      char* name = strdup((yystack_[1].value.str_val));
+      char* name = strdup2((yystack_[1].value.str_val));
       driver.add_symbol_table_entry(
         name,
         (yystack_[2].value.type_val).symbol_type,
@@ -668,7 +668,7 @@ namespace slang_parser {
 #line 174 "parse.yy"
                                                                       {
       std::cout << "PARSER: Variable declaration: " << (yystack_[3].value.str_val) << " Type: " << (yystack_[4].value.type_val).symbol_type << std::endl;
-      char* name = strdup((yystack_[3].value.str_val));
+      char* name = strdup2((yystack_[3].value.str_val));
       driver.add_symbol_table_entry(
         name,
         (yystack_[4].value.type_val).symbol_type,
@@ -710,15 +710,15 @@ namespace slang_parser {
 #line 299 "parse.yy"
       {
         driver.add_symbol_table_entry(
-          strdup((yystack_[4].value.str_val)),
+          strdup2((yystack_[4].value.str_val)),
           slicc_tac::SymbolType::FUNCTION,
           0,
           0,
-          strdup("main"),
+          strdup2("main"),
           0,
           false
         );
-        driver.identify_parent(strdup((yystack_[4].value.str_val)));
+        driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
 #line 724 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
@@ -727,15 +727,15 @@ namespace slang_parser {
 #line 312 "parse.yy"
       {
         driver.add_symbol_table_entry(
-          strdup((yystack_[4].value.str_val)),
+          strdup2((yystack_[4].value.str_val)),
           slicc_tac::SymbolType::FUNCTION,
           0,
           0,
-          strdup("main"),
+          strdup2("main"),
           0,
           false
         );
-        driver.identify_parent(strdup((yystack_[4].value.str_val)));
+        driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
 #line 741 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;

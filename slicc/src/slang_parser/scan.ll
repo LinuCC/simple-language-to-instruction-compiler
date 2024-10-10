@@ -110,7 +110,7 @@ id      [a-z][a-z0-9_]*
 "//".*     { }
 
 {id}         { 
-  yylval->str_val = strdup(yytext); /* Don't forget to `strdup`! */
+  yylval->str_val = strdup2(yytext);
   return token::TOK_ID; 
 }
 
