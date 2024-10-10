@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.30.2)
+cmake_minimum_required(VERSION 3.10.0)
 project(slicc)
 
 set(CXX "clang++")

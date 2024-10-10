@@ -45,7 +45,7 @@
 #ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 # define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 // "%code requires" blocks.
-#line 12 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 12 "parse.yy"
 
   #include <iostream>
   #include "driver.hh"
@@ -187,7 +187,7 @@
 # define YYDEBUG 1
 #endif
 
-#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "parse.yy"
 namespace slang_parser {
 #line 193 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
@@ -207,7 +207,7 @@ namespace slang_parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 53 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 53 "parse.yy"
 
   /* Ein Integer-Wert für Nummer-Konstanten */
   int int_val;
@@ -886,13 +886,13 @@ namespace slang_parser {
   };
 
 
-#line 42 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 42 "parse.yy"
 } // slang_parser
 #line 892 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 // "%code provides" blocks.
-#line 21 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parse.yy"
+#line 21 "parse.yy"
 
   namespace slang_parser
   {

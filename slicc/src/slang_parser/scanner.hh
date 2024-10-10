@@ -24,6 +24,9 @@ public:
 
   virtual ~Scanner();
 
+  // get rid of override virtual function warning
+  using ParserGenFlexLexer::yylex;
+
   virtual Parser::token_type yylex(Parser::semantic_type *yylval,
                                    Parser::location_type *yylloc,
                                    FrontendDriver &driver);

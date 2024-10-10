@@ -565,8 +565,8 @@ static const flex_int16_t yy_rule_linenum[36] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
-#line 2 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 1 "scan.ll"
+#line 2 "scan.ll"
 
 #include "parser.hh"
 #include "scanner.hh"
@@ -797,10 +797,10 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 57 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 57 "scan.ll"
 
 
-#line 60 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 60 "scan.ll"
  /* The rules.  */
 
   STEP();
@@ -894,59 +894,59 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 66 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 66 "scan.ll"
 { return token::TOK_PROGRAM; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 67 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 67 "scan.ll"
 { return token::TOK_IF; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 68 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 68 "scan.ll"
 { return token::TOK_ELSE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 69 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 69 "scan.ll"
 { return token::TOK_FOR; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 70 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 70 "scan.ll"
 { return token::TOK_FUNC; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 71 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 71 "scan.ll"
 {return  token::TOK_RETURN; }
 	YY_BREAK
 /* Tokens für Typen */
 case 7:
 YY_RULE_SETUP
-#line 73 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 73 "scan.ll"
 { return token::TOK_VOID; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 74 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 74 "scan.ll"
 { return token::TOK_INT; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 75 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 75 "scan.ll"
 { return token::TOK_REF; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 76 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 76 "scan.ll"
 { return token::TOK_INT_ARRAY; }
 	YY_BREAK
 /* Tokens für Konstanten */
 case 11:
 YY_RULE_SETUP
-#line 78 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 78 "scan.ll"
 { 
   /* Übersetzt die gelesenen Zeichen zu einer Nummer und speichert sie in das Objekt dass an Bison übergeben wird */
   yylval->int_val = atoi(yytext); 
@@ -956,112 +956,112 @@ YY_RULE_SETUP
 /* Umschliessende Klammern */
 case 12:
 YY_RULE_SETUP
-#line 84 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 84 "scan.ll"
 { return token::TOK_LBRACE; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 85 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 85 "scan.ll"
 { return token::TOK_RBRACE; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 86 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 86 "scan.ll"
 { return token::TOK_LPAREN; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 87 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 87 "scan.ll"
 { return token::TOK_RPAREN; }
 	YY_BREAK
 /* Momentan nur für Arrays benutzt */
 case 16:
 YY_RULE_SETUP
-#line 89 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 89 "scan.ll"
 { return token::TOK_LBRACKET; } 
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 90 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 90 "scan.ll"
 { return token::TOK_RBRACKET; }
 	YY_BREAK
 /* Mehr Zeichen */
 case 18:
 YY_RULE_SETUP
-#line 92 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 92 "scan.ll"
 { return token::TOK_SEMICOLON; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 93 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 93 "scan.ll"
 { return token::TOK_COMMA; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 94 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 94 "scan.ll"
 { return token::TOK_ASSIGN; }
 	YY_BREAK
 /* Operatoren */
 case 21:
 YY_RULE_SETUP
-#line 96 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 96 "scan.ll"
 { return token::TOK_PLUS; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 97 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 97 "scan.ll"
 { return token::TOK_MINUS; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 98 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 98 "scan.ll"
 { return token::TOK_MUL; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 99 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 99 "scan.ll"
 { return token::TOK_DIV; }
 	YY_BREAK
 /* Vergleiche */
 case 25:
 YY_RULE_SETUP
-#line 102 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 102 "scan.ll"
 { return token::TOK_EQ; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 103 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 103 "scan.ll"
 { return token::TOK_NEQ; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 104 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 104 "scan.ll"
 { return token::TOK_LEQ; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 105 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 105 "scan.ll"
 { return token::TOK_GEQ; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 106 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 106 "scan.ll"
 { return token::TOK_LT; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 107 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 107 "scan.ll"
 { return token::TOK_GT; }
 	YY_BREAK
 /* Jede Zeile die mit "/" und "*" beginnt wird ignoriert, wir überspringen diese einfach */
 case 31:
 YY_RULE_SETUP
-#line 110 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 110 "scan.ll"
 { }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 112 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 112 "scan.ll"
 { 
   yylval->str_val = strdup(yytext); /* Don't forget to `strdup`! */
   return token::TOK_ID; 
@@ -1070,18 +1070,18 @@ YY_RULE_SETUP
 /* Leerzeichen */
 case 33:
 YY_RULE_SETUP
-#line 118 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 118 "scan.ll"
 STEP();
 	YY_BREAK
 case 34:
 /* rule 34 can match eol */
 YY_RULE_SETUP
-#line 119 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 119 "scan.ll"
 LINE(yyleng);
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 122 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 122 "scan.ll"
 {
                 std::cerr << *yylloc << " Unerwartetes Token : "
                                               << *yytext << std::endl;
@@ -1093,7 +1093,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 131 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 131 "scan.ll"
 ECHO;
 	YY_BREAK
 #line 1099 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
@@ -2223,7 +2223,7 @@ void yyfree (void * ptr )
 
 /* %ok-for-header */
 
-#line 131 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scan.ll"
+#line 131 "scan.ll"
 
 
 
