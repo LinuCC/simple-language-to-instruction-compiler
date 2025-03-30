@@ -22,6 +22,7 @@ typedef enum {
   NE,
   ASSIGN,
   GOTO,
+  NOT_GOTO,
   LABEL,
 } TacOperation;
 

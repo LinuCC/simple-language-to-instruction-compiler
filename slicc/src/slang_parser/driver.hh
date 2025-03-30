@@ -3,6 +3,7 @@
 
 #include "../tac.hh"
 #include <list>
+#include <stack>
 #include <string>
 
 using namespace slicc_tac;
@@ -13,6 +14,7 @@ namespace slang_parser {
 /// Forward declarations of classes
 class Parser;
 class Scanner;
+class ParserHelper;
 class location;
 
 class FrontendDriver {
@@ -40,6 +42,29 @@ public:
                     slicc_tac::TacArg arg2, char *res_ref);
 
   /**
+   * Gibt eine eindeutige ID für Zwischenvariablen zurück
+   */
+  string get_unique_var_name();
+
+  /**
+   * Gibt eine eindeutige ID für Symbole oder GOTO-Labels zurück
+   */
+  int get_unique_symbol_id();
+
+  /**
+   * Fügt einen neuen Blockkontext hinzu.
+   *
+   * Dieser kann spaeter gepopt werden, um bei dem Blockende z.b.
+   * ein Goto-Label zu referenzieren.
+   */
+  void push_block_context(string block_name);
+
+  /**
+   * Entfernt den letzten Blockkontext.
+   */
+  string pop_block_context();
+
+  /**
    * Weist alle momentan noch unbekannten Symboleinträge diesem Parent hinzu
    */
   void identify_parent(char *name);
@@ -50,6 +75,7 @@ public:
 
   Scanner *scanner;
   Parser *parser;
+  ParserHelper *helper;
 
   /**
    * Die Zwischensprache des geparsten Codes
@@ -62,11 +88,24 @@ public:
   list<slicc_tac::SymbolTableEntry> symbol_table;
 
   /**
-   * Die Symbole die beim parsen noch nicht ihren parent gefunden haben weil der
-   * Bottom-Up Parser diese noch nicht reduzieren konnte.
+   * Die Symbole die beim parsen noch nicht ihren parent gefunden haben weil
+   * der Bottom-Up Parser diese noch nicht reduzieren konnte.
    */
   list<slicc_tac::SymbolTableEntry> parent_unknown_symbol_table;
   int error;
+
+private:
+  /**
+   * Eindeutige ID für Symbole oder GOTO-Labels
+   */
+  int unique_symbol_id = 0;
+
+  /**
+   * Eindeutige ID für Zwischenvariablen
+   */
+  int unique_var_id = 0;
+
+  stack<string> block_context;
 };
 
 } // namespace slang_parser

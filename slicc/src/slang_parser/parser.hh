@@ -45,15 +45,17 @@
 #ifndef YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 # define YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
 // "%code requires" blocks.
-#line 13 "parse.yy"
+#line 15 "parse.yy"
 
   #include <iostream>
   #include "driver.hh"
   #include "location.hh"
   #include "position.hh"
   #include "../tac.hh"
+  #include "parser_types.hh"
+  #include "parser_helper.hh"
 
-#line 57 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 59 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 # include <cstdlib> // std::abort
@@ -187,9 +189,9 @@
 # define YYDEBUG 1
 #endif
 
-#line 43 "parse.yy"
+#line 47 "parse.yy"
 namespace slang_parser {
-#line 193 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 195 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 
@@ -207,20 +209,12 @@ namespace slang_parser {
     /// Symbol semantic values.
     union value_type
     {
-#line 54 "parse.yy"
+#line 58 "parse.yy"
 
   /* Ein Integer-Wert für Nummer-Konstanten */
   int int_val;
   /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
   char* str_val;
-
-  // /* Ein Integer-Wert für Nummer-Konstanten an zweiter Stelle, z.B. fuer Vergleichsoperationen */
-  // int right_int_val;
-  // /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen an zweiter Stelle, z.B. fuer Vergleichsoperationen */
-  // char* right_str_val;
-
-  // /* Ein Vergleichsoperator */
-  // TacOperation op;
 
   /* Speichert Werte von Typen */
   struct {
@@ -229,20 +223,13 @@ namespace slang_parser {
     int arr_element_amount;
   } type_val;
 
+  /* Ein Vergleichsoperator */
   TacOperation op;
 
-  /* Speichert Werte von Vergleichen */
-  struct {
-    bool left_is_int_literal;
-    char* left_str_val;
-    int left_int_val;
-    bool right_is_int_literal;
-    char* right_str_val;
-    int right_int_val;
-    TacOperation op;
-  } compare_val;
+  /* Speichert Werte von Operationen oder Vergleichen */
+  ParsedExpression expression_val;
 
-#line 246 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 233 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
     };
 #endif
@@ -304,12 +291,13 @@ namespace slang_parser {
     TOK_MINUS = 280,               // TOK_MINUS
     TOK_MUL = 281,                 // TOK_MUL
     TOK_DIV = 282,                 // TOK_DIV
-    TOK_EQ = 283,                  // TOK_EQ
-    TOK_NEQ = 284,                 // TOK_NEQ
-    TOK_LT = 285,                  // TOK_LT
-    TOK_LEQ = 286,                 // TOK_LEQ
-    TOK_GT = 287,                  // TOK_GT
-    TOK_GEQ = 288                  // TOK_GEQ
+    TOK_MOD = 283,                 // TOK_MOD
+    TOK_EQ = 284,                  // TOK_EQ
+    TOK_NEQ = 285,                 // TOK_NEQ
+    TOK_LT = 286,                  // TOK_LT
+    TOK_LEQ = 287,                 // TOK_LEQ
+    TOK_GT = 288,                  // TOK_GT
+    TOK_GEQ = 289                  // TOK_GEQ
       };
       /// Backward compatibility alias (Bison 3.6).
       typedef token_kind_type yytokentype;
@@ -326,7 +314,7 @@ namespace slang_parser {
     {
       enum symbol_kind_type
       {
-        YYNTOKENS = 34, ///< Number of tokens.
+        YYNTOKENS = 35, ///< Number of tokens.
         S_YYEMPTY = -2,
         S_YYEOF = 0,                             // TOK_EOF
         S_YYerror = 1,                           // error
@@ -356,34 +344,37 @@ namespace slang_parser {
         S_TOK_MINUS = 25,                        // TOK_MINUS
         S_TOK_MUL = 26,                          // TOK_MUL
         S_TOK_DIV = 27,                          // TOK_DIV
-        S_TOK_EQ = 28,                           // TOK_EQ
-        S_TOK_NEQ = 29,                          // TOK_NEQ
-        S_TOK_LT = 30,                           // TOK_LT
-        S_TOK_LEQ = 31,                          // TOK_LEQ
-        S_TOK_GT = 32,                           // TOK_GT
-        S_TOK_GEQ = 33,                          // TOK_GEQ
-        S_YYACCEPT = 34,                         // $accept
-        S_main = 35,                             // main
-        S_program = 36,                          // program
-        S_block = 37,                            // block
-        S_block_body = 38,                       // block_body
-        S_variable_list = 39,                    // variable_list
-        S_variable_declaration = 40,             // variable_declaration
-        S_statement_list = 41,                   // statement_list
-        S_statement = 42,                        // statement
-        S_statement_assignment = 43,             // statement_assignment
-        S_expression = 44,                       // expression
-        S_comparison_operator = 45,              // comparison_operator
-        S_compare_expression = 46,               // compare_expression
-        S_if = 47,                               // if
-        S_for = 48,                              // for
-        S_type = 49,                             // type
-        S_func_call = 50,                        // func_call
-        S_func_args = 51,                        // func_args
-        S_func_def_list = 52,                    // func_def_list
-        S_func_def = 53,                         // func_def
-        S_func_args_def = 54,                    // func_args_def
-        S_func_arg_def = 55                      // func_arg_def
+        S_TOK_MOD = 28,                          // TOK_MOD
+        S_TOK_EQ = 29,                           // TOK_EQ
+        S_TOK_NEQ = 30,                          // TOK_NEQ
+        S_TOK_LT = 31,                           // TOK_LT
+        S_TOK_LEQ = 32,                          // TOK_LEQ
+        S_TOK_GT = 33,                           // TOK_GT
+        S_TOK_GEQ = 34,                          // TOK_GEQ
+        S_YYACCEPT = 35,                         // $accept
+        S_main = 36,                             // main
+        S_program = 37,                          // program
+        S_block = 38,                            // block
+        S_block_body = 39,                       // block_body
+        S_variable_list = 40,                    // variable_list
+        S_variable_declaration = 41,             // variable_declaration
+        S_statement_list = 42,                   // statement_list
+        S_statement = 43,                        // statement
+        S_statement_assignment = 44,             // statement_assignment
+        S_expression = 45,                       // expression
+        S_comparison_operator = 46,              // comparison_operator
+        S_compare_expression = 47,               // compare_expression
+        S_if = 48,                               // if
+        S_49_1 = 49,                             // $@1
+        S_if_head = 50,                          // if_head
+        S_for = 51,                              // for
+        S_type = 52,                             // type
+        S_func_call = 53,                        // func_call
+        S_func_args = 54,                        // func_args
+        S_func_def_list = 55,                    // func_def_list
+        S_func_def = 56,                         // func_def
+        S_func_args_def = 57,                    // func_args_def
+        S_func_arg_def = 58                      // func_arg_def
       };
     };
 
@@ -595,7 +586,7 @@ namespace slang_parser {
 
 
     /// Stored state numbers (used for stacks).
-    typedef unsigned char state_type;
+    typedef signed char state_type;
 
     /// The arguments of the error message.
     int yy_syntax_error_arguments_ (const context& yyctx,
@@ -635,7 +626,7 @@ namespace slang_parser {
     // Tables.
     // YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
     // STATE-NUM.
-    static const short yypact_[];
+    static const signed char yypact_[];
 
     // YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
     // Performed when YYTABLE does not specify something else to do.  Zero
@@ -643,7 +634,7 @@ namespace slang_parser {
     static const signed char yydefact_[];
 
     // YYPGOTO[NTERM-NUM].
-    static const short yypgoto_[];
+    static const signed char yypgoto_[];
 
     // YYDEFGOTO[NTERM-NUM].
     static const signed char yydefgoto_[];
@@ -651,9 +642,9 @@ namespace slang_parser {
     // YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
     // positive, shift that token.  If negative, reduce the rule whose
     // number is the opposite.  If YYTABLE_NINF, syntax error.
-    static const unsigned char yytable_[];
+    static const signed char yytable_[];
 
-    static const short yycheck_[];
+    static const signed char yycheck_[];
 
     // YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
     // state STATE-NUM.
@@ -895,8 +886,8 @@ namespace slang_parser {
     /// Constants.
     enum
     {
-      yylast_ = 157,     ///< Last index in yytable_.
-      yynnts_ = 22,  ///< Number of nonterminal symbols.
+      yylast_ = 133,     ///< Last index in yytable_.
+      yynnts_ = 24,  ///< Number of nonterminal symbols.
       yyfinal_ = 5 ///< Termination state number.
     };
 
@@ -907,13 +898,13 @@ namespace slang_parser {
   };
 
 
-#line 43 "parse.yy"
+#line 47 "parse.yy"
 } // slang_parser
-#line 913 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 904 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 // "%code provides" blocks.
-#line 22 "parse.yy"
+#line 26 "parse.yy"
 
   namespace slang_parser
   {
@@ -929,7 +920,7 @@ namespace slang_parser {
 
   
 
-#line 933 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 924 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 #endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED

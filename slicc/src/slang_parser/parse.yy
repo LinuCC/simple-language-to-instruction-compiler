@@ -4,6 +4,8 @@
 #include "scanner.hh"
 #include "../tac.hh"
 #include "strdup.hh"
+#include "parser_types.hh"
+#include "parser_helper.hh"
 
 // Verlinke den C++ Flex Scanner mit dem Bison Parser mit diesem Alias
 #define yylex driver.scanner->yylex
@@ -16,6 +18,8 @@
   #include "location.hh"
   #include "position.hh"
   #include "../tac.hh"
+  #include "parser_types.hh"
+  #include "parser_helper.hh"
 }
 
 %code provides
@@ -48,7 +52,7 @@
 /**
  * Der Typ, mit dem wir Daten durch den Syntaxbaum reichen
  *
- *  NOTE: Bei Übergabe von Zeigern direkt aus den union Daten nicht `strdup2` vergessen! 
+ *  NOTE: Bei Übergabe von Zeigern direkt aus den union Daten `strdup2` nicht vergessen! 
  */
 %union
 {
@@ -57,14 +61,6 @@
   /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
   char* str_val;
 
-  // /* Ein Integer-Wert für Nummer-Konstanten an zweiter Stelle, z.B. fuer Vergleichsoperationen */
-  // int right_int_val;
-  // /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen an zweiter Stelle, z.B. fuer Vergleichsoperationen */
-  // char* right_str_val;
-
-  // /* Ein Vergleichsoperator */
-  // TacOperation op;
-
   /* Speichert Werte von Typen */
   struct {
     slicc_tac::SymbolType symbol_type;
@@ -72,18 +68,11 @@
     int arr_element_amount;
   } type_val;
 
+  /* Ein Vergleichsoperator */
   TacOperation op;
 
-  /* Speichert Werte von Vergleichen */
-  struct {
-    bool left_is_int_literal;
-    char* left_str_val;
-    int left_int_val;
-    bool right_is_int_literal;
-    char* right_str_val;
-    int right_int_val;
-    TacOperation op;
-  } compare_val;
+  /* Speichert Werte von Operationen oder Vergleichen */
+  ParsedExpression expression_val;
 }
 
 /* 
@@ -105,7 +94,7 @@
 // Tokens für einzelne Operationen
 %token TOK_SEMICOLON TOK_COMMA
 %token TOK_ASSIGN 
-%token TOK_PLUS TOK_MINUS TOK_MUL TOK_DIV
+%token TOK_PLUS TOK_MINUS TOK_MUL TOK_DIV TOK_MOD
 %token TOK_EQ TOK_NEQ TOK_LT TOK_LEQ TOK_GT TOK_GEQ
 
 /**
@@ -115,8 +104,9 @@
  * Damit ist der Typ von `$$` vom Code in der Regel `type` ein `type_val`, und es kann z.B. `$$.symbol_type` oder `$$.arr_element_amount` gesetzt werden.
  */
 %type<type_val> type
-%type<compare_val> compare_expression
+%type<expression_val> compare_expression
 %type<op> comparison_operator
+%type<str_val> expression
 
 /* Das erste Symbol, mit dem der Syntaxparser gestartet wird */
 %start main
@@ -232,27 +222,47 @@ statement:
 
 /* Eine Zuweisung, z.B. num = num + 5; */
 statement_assignment:
-  TOK_ID TOK_ASSIGN expression
+  TOK_ID TOK_ASSIGN expression {
+    std::cout << "PARSER: Assignment: " << $1 << " " << std::endl;
+    driver.helper->tac_sub_expression({ 
+      {false, $3, 0}, { false, NULL, 0, }, TacOperation::ASSIGN 
+    });
+  }
   | TOK_ID TOK_LBRACKET TOK_INT_LITERAL TOK_RBRACKET TOK_ASSIGN expression
   | TOK_ID TOK_LBRACKET TOK_ID TOK_RBRACKET TOK_ASSIGN expression
   ;
 
 /* Der rechte Teil einer Zuweisung */
 expression:
-  TOK_INT_LITERAL
-  | TOK_ID
-  | func_call
-  | expression TOK_PLUS expression
-  | expression TOK_MINUS expression
-  | expression TOK_MUL expression
-  | expression TOK_DIV expression
-  | expression TOK_EQ expression
-  | expression TOK_NEQ expression
-  | expression TOK_LT expression
-  | expression TOK_LEQ expression
-  | expression TOK_GT expression
-  | expression TOK_GEQ expression
-  | TOK_LPAREN expression TOK_RPAREN
+  TOK_INT_LITERAL {
+    $$ = strdup2(driver.helper->tac_sub_expression({ { true, NULL, $1, }, { false, NULL, 0, }, TacOperation::ASSIGN }).c_str());
+  }
+  | TOK_ID {
+    $$ = $1;
+  }
+  // | func_call
+  | expression TOK_PLUS expression {
+    $$ = strdup2(driver.helper->tac_sub_expression({ { false, $1, 0, }, { false, $3, 0, }, TacOperation::ADD }).c_str());
+  }
+  | expression TOK_MINUS expression{
+    $$ = strdup2(driver.helper->tac_sub_expression({ { false, $1, 0, }, { false, $3, 0, }, TacOperation::SUB }).c_str());
+  }
+  | expression TOK_MUL expression{
+    $$ = strdup2(driver.helper->tac_sub_expression({ { false, $1, 0, }, { false, $3, 0, }, TacOperation::MUL }).c_str());
+  }
+  | expression TOK_DIV expression{
+    $$ = strdup2(driver.helper->tac_sub_expression({ { false, $1, 0, }, { false, $3, 0, }, TacOperation::DIV }).c_str());
+  }
+  | expression TOK_MOD expression{
+    $$ = strdup2(driver.helper->tac_sub_expression({ { false, $1, 0, }, { false, $3, 0, }, TacOperation::MOD }).c_str());
+  }
+  // | expression TOK_EQ expression
+  // | expression TOK_NEQ expression
+  // | expression TOK_LT expression
+  // | expression TOK_LEQ expression
+  // | expression TOK_GT expression
+  // | expression TOK_GEQ expression
+  // | TOK_LPAREN expression TOK_RPAREN
   ;
 
 comparison_operator:
@@ -278,20 +288,20 @@ comparison_operator:
 
 compare_expression:
   TOK_ID comparison_operator TOK_ID {
-    $$.left_is_int_literal = false; $$.right_is_int_literal = false;
-    $$.left_str_val = $1; $$.op = $2; $$.right_str_val = $3;
+    $$.left.is_int_literal = false; $$.right.is_int_literal = false;
+    $$.left.var_ref = $1; $$.op = $2; $$.right.var_ref = $3;
   }
   | TOK_ID comparison_operator TOK_INT_LITERAL {
-    $$.left_is_int_literal = false; $$.right_is_int_literal = true;
-    $$.left_str_val = $1; $$.op = $2; $$.right_int_val = $3;
+    $$.left.is_int_literal = false; $$.right.is_int_literal = true;
+    $$.left.var_ref = $1; $$.op = $2; $$.right.int_val = $3;
   }
   | TOK_INT_LITERAL comparison_operator TOK_ID {
-    $$.left_is_int_literal = true; $$.right_is_int_literal = false;
-    $$.left_int_val = $1; $$.op = $2; $$.right_str_val = $3;
+    $$.left.is_int_literal = true; $$.right.is_int_literal = false;
+    $$.left.int_val = $1; $$.op = $2; $$.right.var_ref = $3;
   }
   | TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL {
-    $$.left_is_int_literal = true; $$.right_is_int_literal = true;
-    $$.left_int_val = $1; $$.op = $2; $$.right_int_val = $3;
+    $$.left.is_int_literal = true; $$.right.is_int_literal = true;
+    $$.left.int_val = $1; $$.op = $2; $$.right.int_val = $3;
   }
   ;
 
@@ -299,23 +309,37 @@ compare_expression:
  * Ein if block, mit optionalem else
  */
 if:
-      TOK_IF TOK_LPAREN compare_expression[comp] TOK_RPAREN block {
-        std::cout << "PARSER: IF declaration: " << $comp.op << " " << std::endl;
-          // $comp.left_str_val << " " << $comp.left_int_val " " << $comp.op << " " << $comp.right_str_val << " " << $comp.right_int_val << std::endl;
-      
-        // // In arg1 ist die `0` für int_val der tatsächliche Wert
-        // TacArg arg1 = { NULL, NULL, 0, };
-        // // arg2 wird nicht benutzt
-        // TacArg arg2 = { NULL, NULL, 0, };
-        // driver.add_tac_entry(
-        //   TacOperation::LT,
-        //   arg1,
-        //   arg2,
-        //   name
-        // );
-      }
-    | TOK_IF TOK_LPAREN compare_expression TOK_RPAREN block TOK_ELSE block
+      if_head block 
+      {
+      std::cout << "PARSER: IF declaration end: " << " " << std::endl;
+
+      driver.helper->tac_if_after_block_declaration();
+    }
+    | if_head block TOK_ELSE {
+      std::cout << "PARSER: ELSE declaration start: " << std::endl;
+
+      driver.helper->tac_else_midrule_declaration();
+    } block
+      {
+      std::cout << "PARSER: ELSE declaration end: " << " " << std::endl;
+
+      driver.helper->tac_else_after_block_declaration();
+    }
     ;
+
+/* 
+ * Der Kopf eines if-Blocks
+ *
+ * Aus der Hauptregel extrahiert als Konfliktvermeidung fuer Bison;
+ * siehe https://www.gnu.org/software/bison/manual/html_node/Mid_002dRule-Conflicts.html
+ */
+if_head:
+  TOK_IF TOK_LPAREN compare_expression[comp] TOK_RPAREN 
+    {
+      std::cout << "PARSER: IF declaration start: " << std::endl;
+
+      driver.helper->tac_if_midrule_declaration($comp);
+    } 
 
 /*
  * Eine for-Schleife mit Abbruchbedingung und Zuweisung einer Variable mit jedem Durchlauf

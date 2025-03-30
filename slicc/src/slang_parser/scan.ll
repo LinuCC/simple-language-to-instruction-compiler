@@ -97,6 +97,7 @@ id      [a-z][a-z0-9_]*
 "-"                { return token::TOK_MINUS; }
 "*"                { return token::TOK_MUL; }
 "/"                { return token::TOK_DIV; }
+"%"                { return token::TOK_MOD; }
 
   /* Vergleiche */
 "=="               { return token::TOK_EQ; }

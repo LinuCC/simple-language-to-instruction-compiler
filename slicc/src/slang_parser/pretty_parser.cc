@@ -106,6 +106,8 @@ std::string tacOperationToString(TacOperation op) {
     return "ASSIGN";
   case GOTO:
     return "GOTO";
+  case NOT_GOTO:
+    return "NOT_GOTO";
   case LABEL:
     return "LABEL";
   default:

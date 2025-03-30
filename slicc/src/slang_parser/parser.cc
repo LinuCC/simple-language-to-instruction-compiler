@@ -44,11 +44,13 @@
 #include "scanner.hh"
 #include "../tac.hh"
 #include "strdup.hh"
+#include "parser_types.hh"
+#include "parser_helper.hh"
 
 // Verlinke den C++ Flex Scanner mit dem Bison Parser mit diesem Alias
 #define yylex driver.scanner->yylex
 
-#line 52 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 54 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
 
 #include "parser.hh"
@@ -144,9 +146,9 @@
 #define YYERROR         goto yyerrorlab
 #define YYRECOVERING()  (!!yyerrstatus_)
 
-#line 43 "parse.yy"
+#line 47 "parse.yy"
 namespace slang_parser {
-#line 150 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 152 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
   /// Build a parser object.
   Parser::Parser (FrontendDriver &driver_yyarg)
@@ -617,7 +619,7 @@ namespace slang_parser {
           switch (yyn)
             {
   case 4: // program: TOK_PROGRAM TOK_ID block
-#line 133 "parse.yy"
+#line 123 "parse.yy"
     {
       /* Setze für alle Symboltabelleneinträge, die in dem Block definiert wurden, den Programmnamen als parent */
       char* parent = strdup2((yystack_[1].value.str_val));
@@ -632,11 +634,11 @@ namespace slang_parser {
       );
       driver.identify_parent(parent);
     }
-#line 636 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 638 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
   case 10: // variable_declaration: type TOK_ID TOK_SEMICOLON
-#line 173 "parse.yy"
+#line 163 "parse.yy"
                                   {
       std::cout << "PARSER: Variable declaration: " << (yystack_[1].value.str_val) << " Type: " << (yystack_[2].value.type_val).symbol_type << std::endl;
       char* name = strdup2((yystack_[1].value.str_val));
@@ -661,11 +663,11 @@ namespace slang_parser {
         name
       );
     }
-#line 665 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 667 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
   case 11: // variable_declaration: type TOK_ID TOK_ASSIGN TOK_INT_LITERAL TOK_SEMICOLON
-#line 197 "parse.yy"
+#line 187 "parse.yy"
                                                                       {
       std::cout << "PARSER: Variable declaration: " << (yystack_[3].value.str_val) << " Type: " << (yystack_[4].value.type_val).symbol_type << std::endl;
       char* name = strdup2((yystack_[3].value.str_val));
@@ -685,133 +687,220 @@ namespace slang_parser {
         name
       );
     }
-#line 689 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 691 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 36: // comparison_operator: TOK_EQ
-#line 259 "parse.yy"
+  case 19: // statement_assignment: TOK_ID TOK_ASSIGN expression
+#line 225 "parse.yy"
+                               {
+    std::cout << "PARSER: Assignment: " << (yystack_[2].value.str_val) << " " << std::endl;
+    driver.helper->tac_sub_expression({ 
+      {false, (yystack_[0].value.str_val), 0}, { false, NULL, 0, }, TacOperation::ASSIGN 
+    });
+  }
+#line 702 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 22: // expression: TOK_INT_LITERAL
+#line 237 "parse.yy"
+                  {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { true, NULL, (yystack_[0].value.int_val), }, { false, NULL, 0, }, TacOperation::ASSIGN }).c_str());
+  }
+#line 710 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 23: // expression: TOK_ID
+#line 240 "parse.yy"
+           {
+    (yylhs.value.str_val) = (yystack_[0].value.str_val);
+  }
+#line 718 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 24: // expression: expression TOK_MUL expression
+#line 243 "parse.yy"
+                                 {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { false, (yystack_[2].value.str_val), 0, }, { false, (yystack_[0].value.str_val), 0, }, TacOperation::MUL }).c_str());
+  }
+#line 726 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 25: // expression: expression TOK_DIV expression
+#line 246 "parse.yy"
+                                 {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { false, (yystack_[2].value.str_val), 0, }, { false, (yystack_[0].value.str_val), 0, }, TacOperation::DIV }).c_str());
+  }
+#line 734 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 26: // expression: expression TOK_MOD expression
+#line 249 "parse.yy"
+                                 {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { false, (yystack_[2].value.str_val), 0, }, { false, (yystack_[0].value.str_val), 0, }, TacOperation::MOD }).c_str());
+  }
+#line 742 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 27: // expression: expression TOK_PLUS expression
+#line 252 "parse.yy"
+                                   {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { false, (yystack_[2].value.str_val), 0, }, { false, (yystack_[0].value.str_val), 0, }, TacOperation::ADD }).c_str());
+  }
+#line 750 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 28: // expression: expression TOK_MINUS expression
+#line 255 "parse.yy"
+                                   {
+    (yylhs.value.str_val) = strdup2(driver.helper->tac_sub_expression({ { false, (yystack_[2].value.str_val), 0, }, { false, (yystack_[0].value.str_val), 0, }, TacOperation::SUB }).c_str());
+  }
+#line 758 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 29: // comparison_operator: TOK_EQ
+#line 268 "parse.yy"
          {
     (yylhs.value.op) = TacOperation::EQ;
   }
-#line 697 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 766 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 37: // comparison_operator: TOK_NEQ
-#line 262 "parse.yy"
+  case 30: // comparison_operator: TOK_NEQ
+#line 271 "parse.yy"
             {
     (yylhs.value.op) = TacOperation::NE;
   }
-#line 705 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 774 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 38: // comparison_operator: TOK_LT
-#line 265 "parse.yy"
+  case 31: // comparison_operator: TOK_LT
+#line 274 "parse.yy"
            {
     (yylhs.value.op) = TacOperation::LT;
   }
-#line 713 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 782 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 39: // comparison_operator: TOK_LEQ
-#line 268 "parse.yy"
+  case 32: // comparison_operator: TOK_LEQ
+#line 277 "parse.yy"
             {
     (yylhs.value.op) = TacOperation::LE;
   }
-#line 721 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 790 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 40: // comparison_operator: TOK_GT
-#line 271 "parse.yy"
+  case 33: // comparison_operator: TOK_GT
+#line 280 "parse.yy"
            {
     (yylhs.value.op) = TacOperation::GT;
   }
-#line 729 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 798 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 41: // comparison_operator: TOK_GEQ
-#line 274 "parse.yy"
+  case 34: // comparison_operator: TOK_GEQ
+#line 283 "parse.yy"
             {
     (yylhs.value.op) = TacOperation::GE;
   }
-#line 737 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 806 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 42: // compare_expression: TOK_ID comparison_operator TOK_ID
-#line 280 "parse.yy"
+  case 35: // compare_expression: TOK_ID comparison_operator TOK_ID
+#line 289 "parse.yy"
                                     {
-    (yylhs.value.compare_val).left_is_int_literal = false; (yylhs.value.compare_val).right_is_int_literal = false;
-    (yylhs.value.compare_val).left_str_val = (yystack_[2].value.str_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_str_val = (yystack_[0].value.str_val);
+    (yylhs.value.expression_val).left.is_int_literal = false; (yylhs.value.expression_val).right.is_int_literal = false;
+    (yylhs.value.expression_val).left.var_ref = (yystack_[2].value.str_val); (yylhs.value.expression_val).op = (yystack_[1].value.op); (yylhs.value.expression_val).right.var_ref = (yystack_[0].value.str_val);
   }
-#line 746 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 815 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 43: // compare_expression: TOK_ID comparison_operator TOK_INT_LITERAL
-#line 284 "parse.yy"
+  case 36: // compare_expression: TOK_ID comparison_operator TOK_INT_LITERAL
+#line 293 "parse.yy"
                                                {
-    (yylhs.value.compare_val).left_is_int_literal = false; (yylhs.value.compare_val).right_is_int_literal = true;
-    (yylhs.value.compare_val).left_str_val = (yystack_[2].value.str_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_int_val = (yystack_[0].value.int_val);
+    (yylhs.value.expression_val).left.is_int_literal = false; (yylhs.value.expression_val).right.is_int_literal = true;
+    (yylhs.value.expression_val).left.var_ref = (yystack_[2].value.str_val); (yylhs.value.expression_val).op = (yystack_[1].value.op); (yylhs.value.expression_val).right.int_val = (yystack_[0].value.int_val);
   }
-#line 755 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 824 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 44: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_ID
-#line 288 "parse.yy"
+  case 37: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_ID
+#line 297 "parse.yy"
                                                {
-    (yylhs.value.compare_val).left_is_int_literal = true; (yylhs.value.compare_val).right_is_int_literal = false;
-    (yylhs.value.compare_val).left_int_val = (yystack_[2].value.int_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_str_val = (yystack_[0].value.str_val);
+    (yylhs.value.expression_val).left.is_int_literal = true; (yylhs.value.expression_val).right.is_int_literal = false;
+    (yylhs.value.expression_val).left.int_val = (yystack_[2].value.int_val); (yylhs.value.expression_val).op = (yystack_[1].value.op); (yylhs.value.expression_val).right.var_ref = (yystack_[0].value.str_val);
   }
-#line 764 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 833 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 45: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL
-#line 292 "parse.yy"
+  case 38: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL
+#line 301 "parse.yy"
                                                         {
-    (yylhs.value.compare_val).left_is_int_literal = true; (yylhs.value.compare_val).right_is_int_literal = true;
-    (yylhs.value.compare_val).left_int_val = (yystack_[2].value.int_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_int_val = (yystack_[0].value.int_val);
+    (yylhs.value.expression_val).left.is_int_literal = true; (yylhs.value.expression_val).right.is_int_literal = true;
+    (yylhs.value.expression_val).left.int_val = (yystack_[2].value.int_val); (yylhs.value.expression_val).op = (yystack_[1].value.op); (yylhs.value.expression_val).right.int_val = (yystack_[0].value.int_val);
   }
-#line 773 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 842 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 46: // if: TOK_IF TOK_LPAREN compare_expression TOK_RPAREN block
-#line 302 "parse.yy"
-                                                                  {
-        std::cout << "PARSER: IF declaration: " << (yystack_[2].value.compare_val).op << " " << std::endl;
-          // $comp.left_str_val << " " << $comp.left_int_val " " << $comp.op << " " << $comp.right_str_val << " " << $comp.right_int_val << std::endl;
-      
-        // // In arg1 ist die `0` für int_val der tatsächliche Wert
-        // TacArg arg1 = { NULL, NULL, 0, };
-        // // arg2 wird nicht benutzt
-        // TacArg arg2 = { NULL, NULL, 0, };
-        // driver.add_tac_entry(
-        //   TacOperation::LT,
-        //   arg1,
-        //   arg2,
-        //   name
-        // );
-      }
-#line 793 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+  case 39: // if: if_head block
+#line 312 "parse.yy"
+      {
+      std::cout << "PARSER: IF declaration end: " << " " << std::endl;
+
+      driver.helper->tac_if_after_block_declaration();
+    }
+#line 852 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 49: // type: TOK_INT
-#line 332 "parse.yy"
+  case 40: // $@1: %empty
+#line 317 "parse.yy"
+                             {
+      std::cout << "PARSER: ELSE declaration start: " << std::endl;
+
+      driver.helper->tac_else_midrule_declaration();
+    }
+#line 862 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 41: // if: if_head block TOK_ELSE $@1 block
+#line 322 "parse.yy"
+      {
+      std::cout << "PARSER: ELSE declaration end: " << " " << std::endl;
+
+      driver.helper->tac_else_after_block_declaration();
+    }
+#line 872 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 42: // if_head: TOK_IF TOK_LPAREN compare_expression TOK_RPAREN
+#line 337 "parse.yy"
+    {
+      std::cout << "PARSER: IF declaration start: " << std::endl;
+
+      driver.helper->tac_if_midrule_declaration((yystack_[1].value.expression_val));
+    }
+#line 882 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 44: // type: TOK_INT
+#line 355 "parse.yy"
           { 
     (yylhs.value.type_val).symbol_type = slicc_tac::SymbolType::INT; 
     (yylhs.value.type_val).arr_element_amount = 0;
   }
-#line 802 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 891 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 50: // type: TOK_INT_ARRAY TOK_INT_LITERAL TOK_RBRACKET
-#line 336 "parse.yy"
+  case 45: // type: TOK_INT_ARRAY TOK_INT_LITERAL TOK_RBRACKET
+#line 359 "parse.yy"
                                                            { 
     (yylhs.value.type_val).symbol_type = slicc_tac::SymbolType::INT_ARRAY; 
     (yylhs.value.type_val).arr_element_amount = (yystack_[1].value.int_val);
   }
-#line 811 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 900 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 56: // func_def: TOK_FUNC type TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
-#line 360 "parse.yy"
+  case 51: // func_def: TOK_FUNC type TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
+#line 383 "parse.yy"
       {
         driver.add_symbol_table_entry(
           strdup2((yystack_[4].value.str_val)),
@@ -824,11 +913,11 @@ namespace slang_parser {
         );
         driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
-#line 828 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 917 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 57: // func_def: TOK_FUNC TOK_VOID TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
-#line 373 "parse.yy"
+  case 52: // func_def: TOK_FUNC TOK_VOID TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
+#line 396 "parse.yy"
       {
         driver.add_symbol_table_entry(
           strdup2((yystack_[4].value.str_val)),
@@ -841,11 +930,11 @@ namespace slang_parser {
         );
         driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
-#line 845 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 934 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
 
-#line 849 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 938 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
             default:
               break;
@@ -1197,135 +1286,127 @@ namespace slang_parser {
   }
 
 
-  const signed char Parser::yypact_ninf_ = -77;
+  const signed char Parser::yypact_ninf_ = -50;
 
   const signed char Parser::yytable_ninf_ = -1;
 
-  const short
+  const signed char
   Parser::yypact_[] =
   {
-       6,     0,    27,    47,    67,   -77,    48,   -77,    47,     2,
-     -77,   -77,   108,   109,   110,   -77,   105,   111,    23,     5,
-     107,    17,    29,   -77,    17,   104,   -77,   -77,   112,   113,
-     114,   115,   116,    60,    60,   -77,   118,    23,    51,   -77,
-      84,    23,    23,   -77,   -77,   -77,   -77,   -77,   -16,   -77,
-     -77,    20,    20,    85,    85,   119,   117,    37,   -77,    23,
-      23,    23,    23,    23,    23,    23,    23,    23,    23,   120,
-     123,    63,   122,    79,   -77,   128,    29,   129,   124,   125,
-     126,   -77,   -77,   -77,   -77,   -77,   -77,    86,   106,    67,
-     131,   -77,    79,    79,    79,    79,    79,    79,    79,    79,
-      79,    79,   127,   130,    23,   -77,   133,   132,   -77,    67,
-      20,    67,   -77,   -77,   -77,   -77,   143,    11,   134,    23,
-      23,   -77,   -77,   -77,   -77,   -77,   -77,    67,    67,    79,
-      79,   -77,   -77
+      21,     5,    27,    60,    15,   -50,    54,   -50,    60,     1,
+     -50,   -50,    72,    47,    59,   -50,    58,    69,    55,     3,
+      67,     8,    62,   -50,     8,    73,   -50,    15,   -50,    74,
+      75,    77,    78,    80,    64,    64,   -50,   -50,     4,    66,
+      55,    55,   -50,   -50,   -50,   -50,   -50,    84,   -15,   -50,
+     -50,    48,    48,    16,    16,    81,    79,   -50,    55,    55,
+      55,    55,    55,    82,    85,    11,    86,    28,   -50,   -50,
+      89,    62,    91,    88,    87,    90,   -50,   -50,   -50,   -50,
+     -50,   -50,    68,    70,   -50,    93,    28,    28,    28,    28,
+      28,    92,    94,    55,   -50,    15,    95,    96,   -50,    15,
+      48,    15,   -50,   -50,   -50,   -50,    -2,   100,    55,    55,
+     -50,   -50,   -50,   -50,   -50,   -50,   -50,    15,    28,    28,
+     -50
   };
 
   const signed char
   Parser::yydefact_[] =
   {
-       0,     0,     0,     2,     0,     1,     0,     3,    54,     0,
-       4,    49,     0,     0,     0,    55,     0,     0,     0,     0,
-       0,     0,     8,     7,    12,     0,    15,    16,     0,     0,
-       0,     0,     0,     0,     0,    22,    23,     0,     0,    24,
-       0,     0,     0,     5,     6,     9,    13,    14,     0,    17,
-      50,     0,     0,     0,     0,     0,     0,     0,    18,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    52,     0,    19,    10,     0,     0,     0,     0,    58,
-       0,    36,    37,    38,    39,    40,    41,     0,     0,     0,
-       0,    35,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,     0,     0,     0,    51,     0,     0,    60,     0,
-       0,     0,    45,    44,    43,    42,    46,     0,     0,     0,
-       0,    53,    11,    61,    57,    59,    56,     0,     0,    20,
-      21,    47,    48
+       0,     0,     0,     2,     0,     1,     0,     3,    49,     0,
+       4,    44,     0,     0,     0,    50,     0,     0,     0,     0,
+       0,     0,     8,     7,    12,     0,    15,     0,    16,     0,
+       0,     0,     0,     0,     0,     0,    22,    23,     0,     0,
+       0,     0,     5,     6,     9,    13,    14,    39,     0,    17,
+      45,     0,     0,     0,     0,     0,     0,    18,     0,     0,
+       0,     0,     0,     0,     0,    47,     0,    19,    40,    10,
+       0,     0,     0,     0,    53,     0,    29,    30,    31,    32,
+      33,    34,     0,     0,    42,     0,    27,    28,    24,    25,
+      26,     0,     0,     0,    46,     0,     0,     0,    55,     0,
+       0,     0,    38,    37,    36,    35,     0,     0,     0,     0,
+      48,    41,    11,    56,    52,    54,    51,     0,    20,    21,
+      43
   };
 
-  const short
+  const signed char
   Parser::yypgoto_[] =
   {
-     -77,   -77,   -77,   -76,   -77,   135,   -77,    32,   -77,    39,
-     -18,    77,   121,   -77,   -77,    -5,    -6,    45,   148,   -77,
-     -50,   -77
+     -50,   -50,   -50,   -25,   -50,    97,   -50,    38,   -50,    18,
+     -18,    57,    98,   -50,   -50,   -50,   -50,    -5,   -50,    19,
+     105,   -50,   -49,   -50
   };
 
   const signed char
   Parser::yydefgoto_[] =
   {
        0,     2,     3,    10,    20,    21,    22,    23,    24,    25,
-      71,    87,    55,    26,    27,    77,    39,    72,     7,     8,
-      78,    79
+      65,    82,    55,    26,    95,    27,    28,    72,    30,    66,
+       7,     8,    73,    74
   };
 
-  const unsigned char
+  const signed char
   Parser::yytable_[] =
   {
-      38,    14,    80,    29,    28,    74,    16,    75,    17,     1,
-      18,    11,    12,   116,     4,    29,    19,    28,    29,    57,
-      40,    16,    41,    17,    73,    18,    40,     5,    42,    11,
-      12,    19,    76,   124,    42,   126,    35,    36,    11,    12,
-      37,    92,    93,    94,    95,    96,    97,    98,    99,   100,
-     101,   131,   132,    44,     6,    91,    46,    11,    12,    13,
-     125,    59,    60,    61,    62,    63,    64,    65,    66,    67,
-      68,   107,    58,    53,    54,    59,    60,    61,    62,    63,
-      64,    65,    66,    67,    68,   104,     9,    59,    60,    61,
-      62,    63,    64,    65,    66,    67,    68,    69,    70,   112,
-     113,   129,   130,    59,    60,    61,    62,    63,    64,    65,
-      66,    67,    68,    81,    82,    83,    84,    85,    86,   114,
-     115,    30,    33,    31,    32,    47,    48,    43,    34,   118,
-      50,    88,    51,    52,    49,    41,   102,    89,    90,   103,
-     105,   106,   109,   108,   111,   117,   123,   110,   127,   121,
-     119,     0,   128,   120,   122,    56,    15,    45
+      38,    14,    47,    75,    29,    16,    69,    17,    70,    18,
+      11,    12,    16,    39,    17,    19,    18,    29,    39,     4,
+      40,    41,    19,    67,     1,    57,    41,     5,    58,    59,
+      60,    61,    62,    93,     9,    58,    59,    60,    61,    62,
+      86,    87,    88,    89,    90,    76,    77,    78,    79,    80,
+      81,   115,    58,    59,    60,    61,    62,    11,    12,    43,
+      71,    32,    45,    11,    12,    13,    97,     6,    36,    37,
+     111,    11,    12,    33,   114,    34,   116,    53,    54,    63,
+      64,   102,   103,   104,   105,    31,    35,    42,    48,    68,
+     118,   119,   120,    50,    46,    51,    49,    52,    91,    84,
+      85,    92,    96,   107,    94,    98,    99,   106,   101,   100,
+     113,    83,   110,    15,     0,   108,   112,   109,   117,    44,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    56
   };
 
-  const short
+  const signed char
   Parser::yycheck_[] =
   {
-      18,     6,    52,     9,     9,    21,     4,    23,     6,     3,
-       8,     9,    10,    89,    14,    21,    14,    22,    24,    37,
-      15,     4,    17,     6,    42,     8,    15,     0,    23,     9,
-      10,    14,    12,   109,    23,   111,    13,    14,     9,    10,
-      17,    59,    60,    61,    62,    63,    64,    65,    66,    67,
-      68,   127,   128,    21,     7,    18,    24,     9,    10,    11,
-     110,    24,    25,    26,    27,    28,    29,    30,    31,    32,
-      33,    76,    21,    13,    14,    24,    25,    26,    27,    28,
-      29,    30,    31,    32,    33,    22,    19,    24,    25,    26,
-      27,    28,    29,    30,    31,    32,    33,    13,    14,    13,
-      14,   119,   120,    24,    25,    26,    27,    28,    29,    30,
-      31,    32,    33,    28,    29,    30,    31,    32,    33,    13,
-      14,    13,    17,    14,    14,    21,    14,    20,    17,    90,
-      16,    54,    17,    17,    21,    17,    16,    18,    21,    16,
-      18,    13,    18,    14,    18,    14,    14,    22,     5,   104,
-      23,    -1,    18,    23,    21,    34,     8,    22
+      18,     6,    27,    52,     9,     4,    21,     6,    23,     8,
+       9,    10,     4,    15,     6,    14,     8,    22,    15,    14,
+      17,    23,    14,    41,     3,    21,    23,     0,    24,    25,
+      26,    27,    28,    22,    19,    24,    25,    26,    27,    28,
+      58,    59,    60,    61,    62,    29,    30,    31,    32,    33,
+      34,   100,    24,    25,    26,    27,    28,     9,    10,    21,
+      12,    14,    24,     9,    10,    11,    71,     7,    13,    14,
+      95,     9,    10,    14,    99,    17,   101,    13,    14,    13,
+      14,    13,    14,    13,    14,    13,    17,    20,    14,     5,
+     108,   109,   117,    16,    21,    17,    21,    17,    16,    18,
+      21,    16,    13,    85,    18,    14,    18,    14,    18,    22,
+      14,    54,    93,     8,    -1,    23,    21,    23,    18,    22,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    35
   };
 
   const signed char
   Parser::yystos_[] =
   {
-       0,     3,    35,    36,    14,     0,     7,    52,    53,    19,
-      37,     9,    10,    11,    49,    52,     4,     6,     8,    14,
-      38,    39,    40,    41,    42,    43,    47,    48,    49,    50,
-      13,    14,    14,    17,    17,    13,    14,    17,    44,    50,
-      15,    17,    23,    20,    41,    39,    41,    21,    14,    21,
-      16,    17,    17,    13,    14,    46,    46,    44,    21,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    13,
-      14,    44,    51,    44,    21,    23,    12,    49,    54,    55,
-      54,    28,    29,    30,    31,    32,    33,    45,    45,    18,
-      21,    18,    44,    44,    44,    44,    44,    44,    44,    44,
-      44,    44,    16,    16,    22,    18,    13,    49,    14,    18,
-      22,    18,    13,    14,    13,    14,    37,    14,    43,    23,
-      23,    51,    21,    14,    37,    54,    37,     5,    18,    44,
-      44,    37,    37
+       0,     3,    36,    37,    14,     0,     7,    55,    56,    19,
+      38,     9,    10,    11,    52,    55,     4,     6,     8,    14,
+      39,    40,    41,    42,    43,    44,    48,    50,    51,    52,
+      53,    13,    14,    14,    17,    17,    13,    14,    45,    15,
+      17,    23,    20,    42,    40,    42,    21,    38,    14,    21,
+      16,    17,    17,    13,    14,    47,    47,    21,    24,    25,
+      26,    27,    28,    13,    14,    45,    54,    45,     5,    21,
+      23,    12,    52,    57,    58,    57,    29,    30,    31,    32,
+      33,    34,    46,    46,    18,    21,    45,    45,    45,    45,
+      45,    16,    16,    22,    18,    49,    13,    52,    14,    18,
+      22,    18,    13,    14,    13,    14,    14,    44,    23,    23,
+      54,    38,    21,    14,    38,    57,    38,    18,    45,    45,
+      38
   };
 
   const signed char
   Parser::yyr1_[] =
   {
-       0,    34,    35,    35,    36,    37,    38,    38,    39,    39,
-      40,    40,    41,    41,    42,    42,    42,    42,    42,    43,
-      43,    43,    44,    44,    44,    44,    44,    44,    44,    44,
-      44,    44,    44,    44,    44,    44,    45,    45,    45,    45,
-      45,    45,    46,    46,    46,    46,    47,    47,    48,    49,
-      49,    50,    51,    51,    52,    52,    53,    53,    54,    54,
-      55,    55
+       0,    35,    36,    36,    37,    38,    39,    39,    40,    40,
+      41,    41,    42,    42,    43,    43,    43,    43,    43,    44,
+      44,    44,    45,    45,    45,    45,    45,    45,    45,    46,
+      46,    46,    46,    46,    46,    47,    47,    47,    47,    48,
+      49,    48,    50,    51,    52,    52,    53,    54,    54,    55,
+      55,    56,    56,    57,    57,    58,    58
   };
 
   const signed char
@@ -1333,11 +1414,10 @@ namespace slang_parser {
   {
        0,     2,     1,     2,     3,     3,     2,     1,     1,     2,
        3,     5,     1,     2,     2,     1,     1,     2,     3,     3,
-       6,     6,     1,     1,     1,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     1,     1,     1,     1,
-       1,     1,     3,     3,     3,     3,     5,     7,     7,     1,
-       3,     4,     1,     3,     1,     2,     7,     7,     1,     3,
-       2,     3
+       6,     6,     1,     1,     3,     3,     3,     3,     3,     1,
+       1,     1,     1,     1,     1,     3,     3,     3,     3,     2,
+       0,     5,     4,     7,     1,     3,     4,     1,     3,     1,
+       2,     7,     7,     1,     3,     2,     3
   };
 
 
@@ -1352,12 +1432,13 @@ namespace slang_parser {
   "TOK_INT_ARRAY", "TOK_VOID", "TOK_REF", "TOK_INT_LITERAL", "TOK_ID",
   "TOK_LBRACKET", "TOK_RBRACKET", "TOK_LPAREN", "TOK_RPAREN", "TOK_LBRACE",
   "TOK_RBRACE", "TOK_SEMICOLON", "TOK_COMMA", "TOK_ASSIGN", "TOK_PLUS",
-  "TOK_MINUS", "TOK_MUL", "TOK_DIV", "TOK_EQ", "TOK_NEQ", "TOK_LT",
-  "TOK_LEQ", "TOK_GT", "TOK_GEQ", "$accept", "main", "program", "block",
-  "block_body", "variable_list", "variable_declaration", "statement_list",
-  "statement", "statement_assignment", "expression", "comparison_operator",
-  "compare_expression", "if", "for", "type", "func_call", "func_args",
-  "func_def_list", "func_def", "func_args_def", "func_arg_def", YY_NULLPTR
+  "TOK_MINUS", "TOK_MUL", "TOK_DIV", "TOK_MOD", "TOK_EQ", "TOK_NEQ",
+  "TOK_LT", "TOK_LEQ", "TOK_GT", "TOK_GEQ", "$accept", "main", "program",
+  "block", "block_body", "variable_list", "variable_declaration",
+  "statement_list", "statement", "statement_assignment", "expression",
+  "comparison_operator", "compare_expression", "if", "$@1", "if_head",
+  "for", "type", "func_call", "func_args", "func_def_list", "func_def",
+  "func_args_def", "func_arg_def", YY_NULLPTR
   };
 #endif
 
@@ -1366,13 +1447,12 @@ namespace slang_parser {
   const short
   Parser::yyrline_[] =
   {
-       0,   127,   127,   128,   132,   155,   161,   162,   166,   167,
-     173,   197,   220,   221,   226,   227,   228,   229,   230,   235,
-     236,   237,   242,   243,   244,   245,   246,   247,   248,   249,
-     250,   251,   252,   253,   254,   255,   259,   262,   265,   268,
-     271,   274,   280,   284,   288,   292,   302,   317,   324,   332,
-     336,   345,   349,   350,   354,   355,   359,   372,   388,   389,
-     393,   394
+       0,   117,   117,   118,   122,   145,   151,   152,   156,   157,
+     163,   187,   210,   211,   216,   217,   218,   219,   220,   225,
+     231,   232,   237,   240,   243,   246,   249,   252,   255,   268,
+     271,   274,   277,   280,   283,   289,   293,   297,   301,   311,
+     317,   317,   336,   347,   355,   359,   368,   372,   373,   377,
+     378,   382,   395,   411,   412,   416,   417
   };
 
   void
@@ -1439,10 +1519,10 @@ namespace slang_parser {
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34
     };
     // Last valid token kind.
-    const int code_max = 288;
+    const int code_max = 289;
 
     if (t <= 0)
       return symbol_kind::S_YYEOF;
@@ -1452,11 +1532,11 @@ namespace slang_parser {
       return symbol_kind::S_YYUNDEF;
   }
 
-#line 43 "parse.yy"
+#line 47 "parse.yy"
 } // slang_parser
-#line 1458 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 1538 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
-#line 397 "parse.yy"
+#line 420 "parse.yy"
 
 
 /*
