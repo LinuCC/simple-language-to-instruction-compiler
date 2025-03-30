@@ -4,6 +4,8 @@ lib/
 CMakeCache.txt
 Makefile
 cmake_install.cmake
+compile_commands.json
+.cache
 
 # Unsere Binary
 slicc

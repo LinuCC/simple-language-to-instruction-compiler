@@ -57,12 +57,33 @@
   /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
   char* str_val;
 
+  // /* Ein Integer-Wert für Nummer-Konstanten an zweiter Stelle, z.B. fuer Vergleichsoperationen */
+  // int right_int_val;
+  // /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen an zweiter Stelle, z.B. fuer Vergleichsoperationen */
+  // char* right_str_val;
+
+  // /* Ein Vergleichsoperator */
+  // TacOperation op;
+
   /* Speichert Werte von Typen */
   struct {
     slicc_tac::SymbolType symbol_type;
     /* Ein Array muss eine Anzahl an Elementen angeben, die hier gespeichert werden */
     int arr_element_amount;
   } type_val;
+
+  TacOperation op;
+
+  /* Speichert Werte von Vergleichen */
+  struct {
+    bool left_is_int_literal;
+    char* left_str_val;
+    int left_int_val;
+    bool right_is_int_literal;
+    char* right_str_val;
+    int right_int_val;
+    TacOperation op;
+  } compare_val;
 }
 
 /* 
@@ -94,6 +115,8 @@
  * Damit ist der Typ von `$$` vom Code in der Regel `type` ein `type_val`, und es kann z.B. `$$.symbol_type` oder `$$.arr_element_amount` gesetzt werden.
  */
 %type<type_val> type
+%type<compare_val> compare_expression
+%type<op> comparison_operator
 
 /* Das erste Symbol, mit dem der Syntaxparser gestartet wird */
 %start main
@@ -113,7 +136,7 @@ program:
       driver.add_symbol_table_entry(
         parent,
         slicc_tac::SymbolType::PROGRAM,
-        0,
+        @1.begin.line,
         0,
         strdup2("main"),
         0,
@@ -153,7 +176,7 @@ variable_declaration:
       driver.add_symbol_table_entry(
         name,
         $type.symbol_type,
-        0,
+        @1.begin.line,
         $type.arr_element_amount,
         NULL, // Parent nicht bekannt
         0,
@@ -177,7 +200,7 @@ variable_declaration:
       driver.add_symbol_table_entry(
         name,
         $type.symbol_type,
-        0,
+        @1.begin.line,
         0,
         NULL, // Parent nicht bekannt
         0,
@@ -233,26 +256,64 @@ expression:
   ;
 
 comparison_operator:
-  TOK_EQ
-  | TOK_NEQ
-  | TOK_LT
-  | TOK_LEQ
-  | TOK_GT
-  | TOK_GEQ
+  TOK_EQ {
+    $$ = TacOperation::EQ;
+  }
+  | TOK_NEQ {
+    $$ = TacOperation::NE;
+  }
+  | TOK_LT {
+    $$ = TacOperation::LT;
+  }
+  | TOK_LEQ {
+    $$ = TacOperation::LE;
+  }
+  | TOK_GT {
+    $$ = TacOperation::GT;
+  }
+  | TOK_GEQ {
+    $$ = TacOperation::GE;
+  }
   ;
 
 compare_expression:
-  TOK_ID comparison_operator TOK_ID
-  | TOK_ID comparison_operator TOK_INT_LITERAL
-  | TOK_INT_LITERAL comparison_operator TOK_ID
-  | TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL
+  TOK_ID comparison_operator TOK_ID {
+    $$.left_is_int_literal = false; $$.right_is_int_literal = false;
+    $$.left_str_val = $1; $$.op = $2; $$.right_str_val = $3;
+  }
+  | TOK_ID comparison_operator TOK_INT_LITERAL {
+    $$.left_is_int_literal = false; $$.right_is_int_literal = true;
+    $$.left_str_val = $1; $$.op = $2; $$.right_int_val = $3;
+  }
+  | TOK_INT_LITERAL comparison_operator TOK_ID {
+    $$.left_is_int_literal = true; $$.right_is_int_literal = false;
+    $$.left_int_val = $1; $$.op = $2; $$.right_str_val = $3;
+  }
+  | TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL {
+    $$.left_is_int_literal = true; $$.right_is_int_literal = true;
+    $$.left_int_val = $1; $$.op = $2; $$.right_int_val = $3;
+  }
   ;
 
 /* 
  * Ein if block, mit optionalem else
  */
 if:
-      TOK_IF TOK_LPAREN compare_expression TOK_RPAREN block
+      TOK_IF TOK_LPAREN compare_expression[comp] TOK_RPAREN block {
+        std::cout << "PARSER: IF declaration: " << $comp.op << " " << std::endl;
+          // $comp.left_str_val << " " << $comp.left_int_val " " << $comp.op << " " << $comp.right_str_val << " " << $comp.right_int_val << std::endl;
+      
+        // // In arg1 ist die `0` für int_val der tatsächliche Wert
+        // TacArg arg1 = { NULL, NULL, 0, };
+        // // arg2 wird nicht benutzt
+        // TacArg arg2 = { NULL, NULL, 0, };
+        // driver.add_tac_entry(
+        //   TacOperation::LT,
+        //   arg1,
+        //   arg2,
+        //   name
+        // );
+      }
     | TOK_IF TOK_LPAREN compare_expression TOK_RPAREN block TOK_ELSE block
     ;
 
@@ -300,7 +361,7 @@ func_def:
         driver.add_symbol_table_entry(
           strdup2($func_name),
           slicc_tac::SymbolType::FUNCTION,
-          0,
+          @1.begin.line,
           0,
           strdup2("main"),
           0,
@@ -313,7 +374,7 @@ func_def:
         driver.add_symbol_table_entry(
           strdup2($func_name),
           slicc_tac::SymbolType::FUNCTION,
-          0,
+          @1.begin.line,
           0,
           strdup2("main"),
           0,

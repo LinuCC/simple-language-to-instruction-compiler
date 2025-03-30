@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # pkgs-dotnet-sdk_8_0_pinned.url = "https://github.com/NixOS/nixpkgs/archive/ab7b6889ae9d484eed2876868209e33eb262511d.tar.gz";
   };
 
   outputs = { self, nixpkgs }:
@@ -28,10 +27,13 @@
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
           packages = with pkgs; [ 
-            bison cmake clang flex clang-tools cppcheck
+            bison libgcc stdenv cmake clang-tools clang lldb flex cppcheck conan
           ];
           shellHook = ''
+            LD_LIBRARY_PATH='${pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ]}'
+            PATH="${pkgs.clang-tools}/bin:$PATH"
           '';
+          LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [ pkgs.stdenv.cc.cc ];
         };
       });
     };

@@ -70,6 +70,14 @@ To compile a Slang program, pipe the code into `slicc`:
 cat ./examples/input.slang | ./slicc
 ```
 
+## Developing
+
+For `clangd` to work you might need to generate compile commands:
+
+```
+ cmake . -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+```
+
 ## Examples
 
 Sample Slang programs can be found in the `examples` directory.

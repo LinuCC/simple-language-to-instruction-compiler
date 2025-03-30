@@ -617,14 +617,14 @@ namespace slang_parser {
           switch (yyn)
             {
   case 4: // program: TOK_PROGRAM TOK_ID block
-#line 110 "parse.yy"
+#line 133 "parse.yy"
     {
       /* Setze für alle Symboltabelleneinträge, die in dem Block definiert wurden, den Programmnamen als parent */
       char* parent = strdup2((yystack_[1].value.str_val));
       driver.add_symbol_table_entry(
         parent,
         slicc_tac::SymbolType::PROGRAM,
-        0,
+        yystack_[2].location.begin.line,
         0,
         strdup2("main"),
         0,
@@ -636,14 +636,14 @@ namespace slang_parser {
     break;
 
   case 10: // variable_declaration: type TOK_ID TOK_SEMICOLON
-#line 150 "parse.yy"
+#line 173 "parse.yy"
                                   {
       std::cout << "PARSER: Variable declaration: " << (yystack_[1].value.str_val) << " Type: " << (yystack_[2].value.type_val).symbol_type << std::endl;
       char* name = strdup2((yystack_[1].value.str_val));
       driver.add_symbol_table_entry(
         name,
         (yystack_[2].value.type_val).symbol_type,
-        0,
+        yystack_[2].location.begin.line,
         (yystack_[2].value.type_val).arr_element_amount,
         NULL, // Parent nicht bekannt
         0,
@@ -665,14 +665,14 @@ namespace slang_parser {
     break;
 
   case 11: // variable_declaration: type TOK_ID TOK_ASSIGN TOK_INT_LITERAL TOK_SEMICOLON
-#line 174 "parse.yy"
+#line 197 "parse.yy"
                                                                       {
       std::cout << "PARSER: Variable declaration: " << (yystack_[3].value.str_val) << " Type: " << (yystack_[4].value.type_val).symbol_type << std::endl;
       char* name = strdup2((yystack_[3].value.str_val));
       driver.add_symbol_table_entry(
         name,
         (yystack_[4].value.type_val).symbol_type,
-        0,
+        yystack_[4].location.begin.line,
         0,
         NULL, // Parent nicht bekannt
         0,
@@ -688,31 +688,135 @@ namespace slang_parser {
 #line 689 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
-  case 49: // type: TOK_INT
+  case 36: // comparison_operator: TOK_EQ
+#line 259 "parse.yy"
+         {
+    (yylhs.value.op) = TacOperation::EQ;
+  }
+#line 697 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 37: // comparison_operator: TOK_NEQ
+#line 262 "parse.yy"
+            {
+    (yylhs.value.op) = TacOperation::NE;
+  }
+#line 705 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 38: // comparison_operator: TOK_LT
+#line 265 "parse.yy"
+           {
+    (yylhs.value.op) = TacOperation::LT;
+  }
+#line 713 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 39: // comparison_operator: TOK_LEQ
+#line 268 "parse.yy"
+            {
+    (yylhs.value.op) = TacOperation::LE;
+  }
+#line 721 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 40: // comparison_operator: TOK_GT
 #line 271 "parse.yy"
+           {
+    (yylhs.value.op) = TacOperation::GT;
+  }
+#line 729 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 41: // comparison_operator: TOK_GEQ
+#line 274 "parse.yy"
+            {
+    (yylhs.value.op) = TacOperation::GE;
+  }
+#line 737 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 42: // compare_expression: TOK_ID comparison_operator TOK_ID
+#line 280 "parse.yy"
+                                    {
+    (yylhs.value.compare_val).left_is_int_literal = false; (yylhs.value.compare_val).right_is_int_literal = false;
+    (yylhs.value.compare_val).left_str_val = (yystack_[2].value.str_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_str_val = (yystack_[0].value.str_val);
+  }
+#line 746 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 43: // compare_expression: TOK_ID comparison_operator TOK_INT_LITERAL
+#line 284 "parse.yy"
+                                               {
+    (yylhs.value.compare_val).left_is_int_literal = false; (yylhs.value.compare_val).right_is_int_literal = true;
+    (yylhs.value.compare_val).left_str_val = (yystack_[2].value.str_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_int_val = (yystack_[0].value.int_val);
+  }
+#line 755 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 44: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_ID
+#line 288 "parse.yy"
+                                               {
+    (yylhs.value.compare_val).left_is_int_literal = true; (yylhs.value.compare_val).right_is_int_literal = false;
+    (yylhs.value.compare_val).left_int_val = (yystack_[2].value.int_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_str_val = (yystack_[0].value.str_val);
+  }
+#line 764 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 45: // compare_expression: TOK_INT_LITERAL comparison_operator TOK_INT_LITERAL
+#line 292 "parse.yy"
+                                                        {
+    (yylhs.value.compare_val).left_is_int_literal = true; (yylhs.value.compare_val).right_is_int_literal = true;
+    (yylhs.value.compare_val).left_int_val = (yystack_[2].value.int_val); (yylhs.value.compare_val).op = (yystack_[1].value.op); (yylhs.value.compare_val).right_int_val = (yystack_[0].value.int_val);
+  }
+#line 773 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 46: // if: TOK_IF TOK_LPAREN compare_expression TOK_RPAREN block
+#line 302 "parse.yy"
+                                                                  {
+        std::cout << "PARSER: IF declaration: " << (yystack_[2].value.compare_val).op << " " << std::endl;
+          // $comp.left_str_val << " " << $comp.left_int_val " " << $comp.op << " " << $comp.right_str_val << " " << $comp.right_int_val << std::endl;
+      
+        // // In arg1 ist die `0` für int_val der tatsächliche Wert
+        // TacArg arg1 = { NULL, NULL, 0, };
+        // // arg2 wird nicht benutzt
+        // TacArg arg2 = { NULL, NULL, 0, };
+        // driver.add_tac_entry(
+        //   TacOperation::LT,
+        //   arg1,
+        //   arg2,
+        //   name
+        // );
+      }
+#line 793 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+    break;
+
+  case 49: // type: TOK_INT
+#line 332 "parse.yy"
           { 
     (yylhs.value.type_val).symbol_type = slicc_tac::SymbolType::INT; 
     (yylhs.value.type_val).arr_element_amount = 0;
   }
-#line 698 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 802 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
   case 50: // type: TOK_INT_ARRAY TOK_INT_LITERAL TOK_RBRACKET
-#line 275 "parse.yy"
+#line 336 "parse.yy"
                                                            { 
     (yylhs.value.type_val).symbol_type = slicc_tac::SymbolType::INT_ARRAY; 
     (yylhs.value.type_val).arr_element_amount = (yystack_[1].value.int_val);
   }
-#line 707 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 811 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
   case 56: // func_def: TOK_FUNC type TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
-#line 299 "parse.yy"
+#line 360 "parse.yy"
       {
         driver.add_symbol_table_entry(
           strdup2((yystack_[4].value.str_val)),
           slicc_tac::SymbolType::FUNCTION,
-          0,
+          yystack_[6].location.begin.line,
           0,
           strdup2("main"),
           0,
@@ -720,16 +824,16 @@ namespace slang_parser {
         );
         driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
-#line 724 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 828 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
   case 57: // func_def: TOK_FUNC TOK_VOID TOK_ID TOK_LPAREN func_args_def TOK_RPAREN block
-#line 312 "parse.yy"
+#line 373 "parse.yy"
       {
         driver.add_symbol_table_entry(
           strdup2((yystack_[4].value.str_val)),
           slicc_tac::SymbolType::FUNCTION,
-          0,
+          yystack_[6].location.begin.line,
           0,
           strdup2("main"),
           0,
@@ -737,11 +841,11 @@ namespace slang_parser {
         );
         driver.identify_parent(strdup2((yystack_[4].value.str_val)));
       }
-#line 741 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 845 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
     break;
 
 
-#line 745 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 849 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
             default:
               break;
@@ -1262,13 +1366,13 @@ namespace slang_parser {
   const short
   Parser::yyrline_[] =
   {
-       0,   104,   104,   105,   109,   132,   138,   139,   143,   144,
-     150,   174,   197,   198,   203,   204,   205,   206,   207,   212,
-     213,   214,   219,   220,   221,   222,   223,   224,   225,   226,
-     227,   228,   229,   230,   231,   232,   236,   237,   238,   239,
-     240,   241,   245,   246,   247,   248,   255,   256,   263,   271,
-     275,   284,   288,   289,   293,   294,   298,   311,   327,   328,
-     332,   333
+       0,   127,   127,   128,   132,   155,   161,   162,   166,   167,
+     173,   197,   220,   221,   226,   227,   228,   229,   230,   235,
+     236,   237,   242,   243,   244,   245,   246,   247,   248,   249,
+     250,   251,   252,   253,   254,   255,   259,   262,   265,   268,
+     271,   274,   280,   284,   288,   292,   302,   317,   324,   332,
+     336,   345,   349,   350,   354,   355,   359,   372,   388,   389,
+     393,   394
   };
 
   void
@@ -1350,9 +1454,9 @@ namespace slang_parser {
 
 #line 43 "parse.yy"
 } // slang_parser
-#line 1354 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
+#line 1458 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.cc"
 
-#line 336 "parse.yy"
+#line 397 "parse.yy"
 
 
 /*

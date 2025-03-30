@@ -34,14 +34,33 @@ typedef struct _TacArg {
 /**
  * Three-address code (TAC) Struktur als Zwischensprache zwischen
  * Compilerfrontend und Compilerbackend
+ *
+ * Beispiele von TACs:
+ * `int x = 0;` -> `op:ASSIGN arg1:int_val=0 res:var_ref=x`
+ * `x = x + 1;` -> `op:ADD arg1:var_ref=x arg2:int_val=1 res:var_ref=x`
+ * `if (x < 10) { ... }`
+ *   ->
+ *   `op:LT arg1:var_ref=x arg2:int_val=10 res:var_ref=AFTER_IF_BLOCK`
  */
 typedef struct _TacEntry {
   /**
    * Operation des TACs
    */
   TacOperation op;
+
+  /**
+   * Argument 1 der Operation
+   */
   TacArg arg1;
+
+  /**
+   * Argument 2 der Operation
+   */
   TacArg arg2;
+
+  /**
+   * Ergebnisreferenz der Operation
+   */
   char *res_ref;
 } TacEntry;
 

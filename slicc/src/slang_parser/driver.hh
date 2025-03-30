@@ -2,8 +2,6 @@
 #define DRIVER_HH_
 
 #include "../tac.hh"
-#include <fstream>
-#include <iostream>
 #include <list>
 #include <string>
 
@@ -42,13 +40,13 @@ public:
                     slicc_tac::TacArg arg2, char *res_ref);
 
   /**
-   * Weisst alle momentan noch unbekannten Symboleinträge diesem Parent hinzu
+   * Weist alle momentan noch unbekannten Symboleinträge diesem Parent hinzu
    */
   void identify_parent(char *name);
 
-  void print_symbol_table();
+  const char *symbol_table_type_to_string(SymbolType type);
 
-  void print_tac_entries();
+  void pretty_print();
 
   Scanner *scanner;
   Parser *parser;

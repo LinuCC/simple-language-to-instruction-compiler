@@ -214,6 +214,14 @@ namespace slang_parser {
   /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen */
   char* str_val;
 
+  // /* Ein Integer-Wert für Nummer-Konstanten an zweiter Stelle, z.B. fuer Vergleichsoperationen */
+  // int right_int_val;
+  // /* Ein String-Wert für Identifier wie Variablennamen oder Funktionsnamen an zweiter Stelle, z.B. fuer Vergleichsoperationen */
+  // char* right_str_val;
+
+  // /* Ein Vergleichsoperator */
+  // TacOperation op;
+
   /* Speichert Werte von Typen */
   struct {
     slicc_tac::SymbolType symbol_type;
@@ -221,7 +229,20 @@ namespace slang_parser {
     int arr_element_amount;
   } type_val;
 
-#line 225 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+  TacOperation op;
+
+  /* Speichert Werte von Vergleichen */
+  struct {
+    bool left_is_int_literal;
+    char* left_str_val;
+    int left_int_val;
+    bool right_is_int_literal;
+    char* right_str_val;
+    int right_int_val;
+    TacOperation op;
+  } compare_val;
+
+#line 246 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
     };
 #endif
@@ -888,7 +909,7 @@ namespace slang_parser {
 
 #line 43 "parse.yy"
 } // slang_parser
-#line 892 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 913 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 // "%code provides" blocks.
@@ -908,7 +929,7 @@ namespace slang_parser {
 
   
 
-#line 912 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
+#line 933 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/parser.hh"
 
 
 #endif // !YY_YY_USERS_LINUCC_CODE_PROJECTS_SLIC_SLICC_SRC_SLANG_PARSER_PARSER_HH_INCLUDED
