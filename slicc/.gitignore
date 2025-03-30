@@ -11,4 +11,5 @@ slicc
 # MacOS Cache
 .DS_Store
 
-
+.envrc
+.direnv

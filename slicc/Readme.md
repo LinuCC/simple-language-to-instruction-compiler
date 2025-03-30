@@ -15,6 +15,11 @@ sudo apt update
 sudo apt install cmake clang bison flex
 ```
 
+### Nix-Darwin / NixOS
+
+Use the flake in `nix-dev`.
+With direnv for example add a `.envrc` with the content `use flake ./nix-dev`, run `direnv allow` and you are good to go.
+
 ### macOS
 
 Install the Xcode Command Line Tools:

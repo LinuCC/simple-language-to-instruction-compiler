@@ -89,7 +89,6 @@ typedef int16_t flex_int16_t;
 typedef uint16_t flex_uint16_t;
 typedef int32_t flex_int32_t;
 typedef uint32_t flex_uint32_t;
-typedef uint64_t flex_uint64_t;
 #else
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
@@ -220,7 +219,7 @@ typedef size_t yy_size_t;
 #endif
 
 /* %if-not-reentrant */
-extern yy_size_t yyleng;
+extern int yyleng;
 /* %endif */
 
 /* %if-c-only */
@@ -241,7 +240,7 @@ extern yy_size_t yyleng;
      */
     #define  YY_LESS_LINENO(n) \
             do { \
-                yy_size_t yyl;\
+                int yyl;\
                 for ( yyl = n; yyl < yyleng; ++yyl )\
                     if ( yytext[yyl] == '\n' )\
                         --yylineno;\
@@ -291,7 +290,7 @@ struct yy_buffer_state
 	/* Number of characters read into yy_ch_buf, not including EOB
 	 * characters.
 	 */
-	yy_size_t yy_n_chars;
+	int yy_n_chars;
 
 	/* Whether we "own" the buffer - i.e., we know we created it,
 	 * and can realloc() it to grow it, and should free() it to
@@ -418,7 +417,7 @@ int yyFlexLexer::yywrap() { return 1; }
 #define YY_DO_BEFORE_ACTION \
 	(yytext_ptr) = yy_bp; \
 /* %% [2.0] code to fiddle yytext and yyleng for yymore() goes here \ */\
-	yyleng = (yy_size_t) (yy_cp - yy_bp); \
+	yyleng = (int) (yy_cp - yy_bp); \
 	(yy_hold_char) = *yy_cp; \
 	*yy_cp = '\0'; \
 /* %% [3.0] code to copy yytext_ptr to yytext[] goes here, if %array \ */\
@@ -601,12 +600,12 @@ typedef slang_parser::Parser::token_type token_type;
 
 #define yyterminate() return token::TOK_EOF
 
-#line 604 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
+#line 603 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 /*
 %option stack
 */
 /* Abbreviations.  */
-#line 609 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
+#line 608 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
 #define INITIAL 0
 
@@ -808,7 +807,7 @@ YY_DECL
 
 
   /* Tokens für die Kontrollstruktur */
-#line 811 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
+#line 810 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -857,7 +856,7 @@ yy_find_action:
 
 		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
 			{
-			yy_size_t yyl;
+			int yyl;
 			for ( yyl = 0; yyl < yyleng; ++yyl )
 				if ( yytext[yyl] == '\n' )
 					
@@ -1097,7 +1096,7 @@ YY_RULE_SETUP
 #line 132 "scan.ll"
 ECHO;
 	YY_BREAK
-#line 1100 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
+#line 1099 "/Users/linucc/code/projects/slic/slicc/src/slang_parser/scanner.cc"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1326,9 +1325,9 @@ void yyFlexLexer::switch_streams( std::istream* new_in, std::ostream* new_out )
 }
 
 #ifdef YY_INTERACTIVE
-size_t yyFlexLexer::LexerInput( char* buf, size_t /* max_size */ )
+int yyFlexLexer::LexerInput( char* buf, int /* max_size */ )
 #else
-size_t yyFlexLexer::LexerInput( char* buf, size_t max_size )
+int yyFlexLexer::LexerInput( char* buf, int max_size )
 #endif
 {
 	if ( yyin.eof() || yyin.fail() )
@@ -1355,7 +1354,7 @@ size_t yyFlexLexer::LexerInput( char* buf, size_t max_size )
 #endif
 }
 
-void yyFlexLexer::LexerOutput( const char* buf, size_t size )
+void yyFlexLexer::LexerOutput( const char* buf, int size )
 {
 	(void) yyout.write( buf, size );
 }
@@ -1420,7 +1419,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 	else
 		{
-			yy_size_t num_to_read =
+			int num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
@@ -1434,7 +1433,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 			if ( b->yy_is_our_buffer )
 				{
-				yy_size_t new_size = b->yy_buf_size * 2;
+				int new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1492,7 +1491,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 	if (((yy_n_chars) + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
+		int new_size = (yy_n_chars) + number_to_move + ((yy_n_chars) >> 1);
 		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc(
 			(void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf, (yy_size_t) new_size  );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
@@ -1596,7 +1595,7 @@ int yyFlexLexer::yy_get_next_buffer()
 	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
 		{ /* need to shift things up to make room */
 		/* +2 for EOB chars. */
-		yy_size_t number_to_move = (yy_n_chars) + 2;
+		int number_to_move = (yy_n_chars) + 2;
 		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
 					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
 		char *source =
@@ -1652,7 +1651,7 @@ int yyFlexLexer::yy_get_next_buffer()
 
 		else
 			{ /* need more input */
-			yy_size_t offset = (yy_c_buf_p) - (yytext_ptr);
+			int offset = (int) ((yy_c_buf_p) - (yytext_ptr));
 			++(yy_c_buf_p);
 
 			switch ( yy_get_next_buffer(  ) )
@@ -2137,7 +2136,7 @@ void yyFlexLexer::LexerError( const char* msg )
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
-        yy_size_t yyless_macro_arg = (n); \
+        int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
 		yytext[yyleng] = (yy_hold_char); \
 		(yy_c_buf_p) = yytext + yyless_macro_arg; \
