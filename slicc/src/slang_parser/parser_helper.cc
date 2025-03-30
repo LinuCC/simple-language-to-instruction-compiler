@@ -32,7 +32,7 @@ ParserHelper::tac_comparison_declaration(ParsedExpression &parsed_comparison) {
 
   op = parsed_comparison.op;
 
-  string target_name = driver.get_unique_var_name();
+  string target_name = driver.add_temporary_var(SymbolType::INT);
   char *target_name_c = strdup2(target_name.c_str());
   driver.add_tac_entry(op, arg1, arg2, target_name_c);
 
@@ -141,7 +141,7 @@ string ParserHelper::tac_sub_expression(ParsedExpression sub_expression) {
         is_int_literal ? NULL : strdup2(sub_expression.left.var_ref);
     int int_val = is_int_literal ? sub_expression.left.int_val : 0;
     TacArg arg1 = {var_ref, NULL, int_val};
-    string var_name = driver.get_unique_var_name();
+    string var_name = driver.add_temporary_var(SymbolType::INT);
     driver.add_tac_entry(TacOperation::ASSIGN, arg1, {NULL, NULL, 0},
                          strdup2(var_name.c_str()));
     return var_name;
@@ -158,7 +158,7 @@ string ParserHelper::tac_sub_expression(ParsedExpression sub_expression) {
     TacArg arg2 = {
         is_right_int_literal ? NULL : strdup2(sub_expression.right.var_ref),
         NULL, is_right_int_literal ? sub_expression.right.int_val : 0};
-    string var_name = driver.get_unique_var_name();
+    string var_name = driver.add_temporary_var(SymbolType::INT);
     driver.add_tac_entry(sub_expression.op, arg1, arg2,
                          strdup2(var_name.c_str()));
     return var_name;

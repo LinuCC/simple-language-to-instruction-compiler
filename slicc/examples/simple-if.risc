@@ -1,0 +1,8 @@
+li x1, 0
+li x2, 10
+li x4, 2
+li x5, x4
+li x6, 1
+li x8, x7
+li x9, 2
+li x12, x11

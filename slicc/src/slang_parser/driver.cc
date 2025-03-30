@@ -4,11 +4,10 @@
 #include "parser_helper.hh"
 #include "pretty_parser.hh"
 #include "scanner.hh"
+#include "strdup.hh"
 #include <fstream>
 #include <iostream>
 #include <list>
-
-using namespace slang_parser;
 
 namespace slang_parser {
 FrontendDriver::FrontendDriver() {
@@ -76,6 +75,17 @@ int FrontendDriver::add_tac_entry(slicc_tac::TacOperation op,
 string FrontendDriver::get_unique_var_name() {
   int id = this->unique_var_id++;
   return ":t" + to_string(id);
+}
+
+string FrontendDriver::add_temporary_var(SymbolType type) {
+  if (type != INT && type != INT_ARRAY) {
+    throw std::invalid_argument(
+        "Types other than INT or INT_ARRAY are not supported");
+  }
+  string var_name = get_unique_var_name();
+  add_symbol_table_entry(strdup2(var_name.c_str()), type, 0, 0, nullptr, 0,
+                         false);
+  return var_name;
 }
 
 int FrontendDriver::get_unique_symbol_id() { return this->unique_symbol_id++; }

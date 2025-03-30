@@ -1,5 +1,5 @@
-#ifndef DRIVER_HH_
-#define DRIVER_HH_
+#ifndef SLANG_PARSER_FRONTEND_DRIVER_HH_
+#define SLANG_PARSER_FRONTEND_DRIVER_HH_
 
 #include "../tac.hh"
 #include <list>
@@ -45,6 +45,11 @@ public:
    * Gibt eine eindeutige ID für Zwischenvariablen zurück
    */
   string get_unique_var_name();
+
+  /**
+   * Fügt eine temporäre Variable zur Symboltabelle hinzu
+   */
+  string add_temporary_var(SymbolType type);
 
   /**
    * Gibt eine eindeutige ID für Symbole oder GOTO-Labels zurück
@@ -110,4 +115,4 @@ private:
 
 } // namespace slang_parser
 
-#endif /* !DRIVER_HH_ */
+#endif /* !SLANG_PARSER_FRONTEND_DRIVER_HH_ */

@@ -81,3 +81,6 @@ For `clangd` to work you might need to generate compile commands:
 ## Examples
 
 Sample Slang programs can be found in the `examples` directory.
+
+To run built RISC-V machine code you can use various RISC-V interpreters that are available as web apps.
+One such interpreter can be found here: https://istrugatskiy.github.io/riscv-interpreter-web/ .
