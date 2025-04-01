@@ -1,5 +1,6 @@
 #include "driver.hh"
 #include "../tac.hh"
+#include "code_generator.hh"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -12,12 +13,18 @@ using namespace std;
 namespace risc_gen {
 
 BackendDriver::BackendDriver() {
+  this->code_generator = new CodeGenerator(*this);
+
   this->tac_entries = list<TacEntry>();
   this->symbol_table = list<SymbolTableEntry>();
   this->machine_code = "";
 }
 BackendDriver::~BackendDriver() {}
 
+/**
+ * Generiert Maschinencode aus TAC-Einträgen und Symboltabelle, die die
+ * Zwischensprache darstellen
+ */
 int BackendDriver::generate_machine_code(
     list<slicc_tac::TacEntry> tac_entries,
     list<slicc_tac::SymbolTableEntry> symbol_table) {
@@ -62,6 +69,9 @@ int BackendDriver::generate_machine_code(
   return 0;
 }
 
+/**
+ * Schreibt den generierten Maschinencode in eine Datei
+ */
 int BackendDriver::write_to_file(string &path) {
   ofstream file;
   file.open(path);

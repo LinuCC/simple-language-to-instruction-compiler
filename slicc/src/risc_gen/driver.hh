@@ -12,6 +12,8 @@ using namespace std;
 
 namespace risc_gen {
 
+class CodeGenerator;
+
 /**
  * Der RISC Backend Treiber generiert Maschinencode aus der geparsten
  * Zwischensprache
@@ -33,7 +35,6 @@ public:
    */
   int write_to_file(string &path);
 
-private:
   list<slicc_tac::TacEntry> tac_entries;
   list<slicc_tac::SymbolTableEntry> symbol_table;
   /**
@@ -41,7 +42,15 @@ private:
    */
   map<string, Register> symbol_table_map;
 
+  /**
+   * Der generierte Maschinencode
+   */
   string machine_code;
+
+  /**
+   * Hilfsklasse die den Maschinencode generiert
+   */
+  CodeGenerator *code_generator;
 };
 
 } // namespace risc_gen
