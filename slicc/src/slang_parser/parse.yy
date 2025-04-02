@@ -224,9 +224,7 @@ statement:
 statement_assignment:
   TOK_ID TOK_ASSIGN expression {
     std::cout << "PARSER: Assignment: " << $1 << " " << std::endl;
-    driver.helper->tac_sub_expression({ 
-      {false, $3, 0}, { false, NULL, 0, }, TacOperation::ASSIGN 
-    });
+    driver.helper->tac_statement_assignment($1, $3);
   }
   | TOK_ID TOK_LBRACKET TOK_INT_LITERAL TOK_RBRACKET TOK_ASSIGN expression
   | TOK_ID TOK_LBRACKET TOK_ID TOK_RBRACKET TOK_ASSIGN expression

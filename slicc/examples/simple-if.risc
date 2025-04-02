@@ -1,8 +1,50 @@
-li x1, 0
-li x2, 10
-li x4, 2
-li x5, x4
-li x6, 1
-li x8, x7
-li x9, 2
-li x12, x11
+li   x1 , 1  
+li   x2 , 10 
+slti x3 , x1 , 2  
+bne  x0 , x3 , AFTER_IF_0
+li   x4 , 1  
+addi x2 , x4 , 0  
+AFTER_IF_0:
+slti x5 , x1 , 1  
+bne  x0 , x5 , AFTER_IF_1
+li   x6 , 2  
+addi x2 , x6 , 0  
+AFTER_IF_1:
+slti x7 , x1 , 0  
+bne  x0 , x7 , AFTER_IF_2
+li   x8 , 3  
+addi x2 , x8 , 0  
+AFTER_IF_2:
+li   x9 , 1  
+slt  x9 , x9 , x1 
+xori x9 , x9 , 1  
+bne  x0 , x9 , AFTER_IF_3
+li   x10, 4  
+addi x2 , x10, 0  
+AFTER_IF_3:
+li   x0 , 0  
+beq  x1 , x11, CODEGEN_EQ_NOT_TRUE_0
+li   x11, 0  
+jal  x0 , CODEGEN_EQ_END_0
+CODEGEN_EQ_NOT_TRUE_0:
+li   x11, 1  
+CODEGEN_EQ_END_0:
+bne  x0 , x11, AFTER_IF_4
+li   x12, 1  
+addi x1 , x12, 0  
+AFTER_IF_4:
+slti x13, x1 , 1  
+xori x13, x13, 1  
+bne  x0 , x13, AFTER_IF_5
+li   x14, 2  
+addi x1 , x14, 0  
+li   x15, 1  
+add  x16, x1 , x15
+addi x1 , x16, 0  
+jal  x0 , AFTER_ELSE_6
+AFTER_IF_5:
+li   x17, 2  
+add  x18, x2 , x1 
+mul  x19, x17, x18
+addi x1 , x19, 0  
+AFTER_ELSE_6:

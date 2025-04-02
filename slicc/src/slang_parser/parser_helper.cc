@@ -112,6 +112,17 @@ int ParserHelper::tac_else_after_block_declaration() {
 }
 
 /**
+ * Erstellt TAC-Einträge für eine Zuweisung
+ */
+int ParserHelper::tac_statement_assignment(char *target_name,
+                                           char *expr_result_name) {
+  driver.add_tac_entry(TacOperation::ASSIGN,
+                       {strdup2(expr_result_name), NULL, 0}, {NULL, NULL, 0},
+                       target_name);
+  return 0;
+}
+
+/**
  * Erstellt TAC-Einträge für Ausdrücke
  *
  * Gibt den Namen der Zwischenvariable zurück, in der das Ergebnis des Ausdrucks
@@ -124,16 +135,7 @@ string ParserHelper::tac_sub_expression(ParsedExpression sub_expression) {
   //   // TODO: Kann optimiert werden indem die Zwischenvariable entfernt wird
   //   und
   //   // der Wert direkt eingesetzt wird
-  //
-  //   bool is_int_literal = sub_expression.left.is_int_literal;
-  //   TacArg arg1 = {is_int_literal ? NULL :
-  //   strdup2(sub_expression.left.var_ref),
-  //                  NULL, is_int_literal ? sub_expression.left.int_val : 0};
-  //   string var_name = driver.get_unique_var_name();
-  //   driver.add_tac_entry(TacOperation::ASSIGN, arg1, {NULL, NULL, 0},
-  //                        strdup2(var_name.c_str()));
-  //   return var_name;
-  // }
+
   switch (sub_expression.op) {
   case TacOperation::ASSIGN: {
     bool is_int_literal = sub_expression.left.is_int_literal;

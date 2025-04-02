@@ -18,6 +18,11 @@ public:
   ~ParserHelper();
 
   /**
+   * Erstellt TAC-Einträge für eine Zuweisung
+   */
+  int tac_statement_assignment(char *target_name, char *expr_result_name);
+
+  /**
    * Erstellt TAC-Einträge für Ausdrücke
    *
    * Gibt den Namen der Zwischenvariable zurück, in der das Ergebnis des

@@ -31,42 +31,7 @@ int BackendDriver::generate_machine_code(
   this->tac_entries = tac_entries;
   this->symbol_table = symbol_table;
 
-  cout << "\n\n==== Symbol Assignments" << endl;
-  cout << right << setw(20) << "Parent" << left << " " << setw(15) << "Name"
-       << left << setw(10) << "Register" << endl;
-
-  Register reg = Register::RA;
-  // Mapped die Variablen der Symboltabelle auf Register
-  for (auto entry : symbol_table) {
-    if (entry.type != SymbolType::INT) {
-      continue;
-    }
-    symbol_table_map[entry.name] = reg;
-    // FIXME: Grosser Hack, bei dem wir einfach Register hochzählen und
-    // zuweisen. Explodiert mit mehr als 31 Variablen. Super stumpf.
-    reg = static_cast<Register>(static_cast<int>(reg) + 1);
-    cout << right << setw(20) << entry.parent << left << " " << setw(13)
-         << entry.name << "  " << left << "x" << symbol_table_map[entry.name]
-         << endl;
-  }
-
-  for (auto entry : tac_entries) {
-    if (entry.op == TacOperation::ASSIGN) {
-      string ref;
-      if (entry.arg1.var_ref == nullptr) {
-        ref = to_string(entry.arg1.int_val);
-      } else {
-        ref = "x" +
-              to_string(static_cast<int>(symbol_table_map[entry.arg1.var_ref]));
-      }
-      machine_code += "li ";
-      machine_code +=
-          "x" + to_string(static_cast<int>(symbol_table_map[entry.res_ref]));
-      machine_code += ", " + ref + "\n";
-    }
-  }
-
-  return 0;
+  return this->code_generator->generate_machine_code();
 }
 
 /**
